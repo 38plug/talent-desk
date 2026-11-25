@@ -1,0 +1,9 @@
+# Reference only — Talent Desk uses hosted Supabase for production.
+# Do not require `supabase start` / Docker for Vercel.
+# Apply schema via SQL Editor: migrations/0001_shared_desk.sql
+
+[project]
+id = "talent-desk"
+
+[api]
+enabled = true

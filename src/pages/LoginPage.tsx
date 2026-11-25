@@ -5,9 +5,10 @@ import { useAuth } from '@/auth/AuthProvider'
 import { AuthShell } from '@/components/auth/AuthShell'
 import { MotionButtonShell } from '@/components/motion/Motion'
 import { Button, Input, Label, Spinner } from '@/components/ui'
-import { loginAccount } from '@/lib/api'
+import { isCloudSyncEnabled, loginAccount } from '@/lib/api'
 import { APP_NAME } from '@/lib/constants'
 import { friendlyAuthError } from '@/lib/local-db'
+import { friendlyCloudAuthError } from '@/lib/supabase'
 import { fadeUp, springSnappy, staggerContainer } from '@/lib/motion'
 import { playSfx } from '@/lib/sfx'
 
@@ -33,8 +34,8 @@ export function LoginPage() {
       notifyAuthChanged()
       navigate('/')
     } catch (err) {
-      const friendly = friendlyAuthError(err)
-      setError(friendly.message)
+      const friendly = isCloudSyncEnabled ? friendlyCloudAuthError(err) : friendlyAuthError(err)
+      setError(friendly.hint ? `${friendly.message} ${friendly.hint}` : friendly.message)
     } finally {
       setBusy(false)
     }
@@ -59,7 +60,9 @@ export function LoginPage() {
           </span>
         </motion.div>
         <motion.p className="text-xs leading-relaxed text-ink-muted" variants={reduce ? undefined : fadeUp}>
-          Accounts and desk data stay in this browser. Empty until you add records or import JSON.
+          {isCloudSyncEnabled
+            ? 'Cloud sync is on — the shared team desk loads from hosted Supabase after sign-in.'
+            : 'Cloud sync is off — accounts and desk data stay in this browser until VITE_SUPABASE_* is set.'}
         </motion.p>
         <motion.div variants={reduce ? undefined : fadeUp}>
           <Label htmlFor="email">Email</Label>

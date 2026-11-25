@@ -20,7 +20,7 @@ Provision/commission lives on the **offer** (fixed fee or percent of expected sa
 
 - Pipeline: Screening → Interview → Offer → Accepted → Hired / Rejected.
 - Offers: Live / Paused / Closed; categories `forex` | `chinese`.
-- Auth is email/password against browser `localStorage` (PBKDF2). No shared cloud DB.
+- Auth is email/password. With hosted Supabase env set: shared cloud Auth + desk. Without: browser `localStorage` (PBKDF2) fallback.
 - Empty desk shows honest zeros — never seeded demo KPIs.
 
 ## Capabilities
@@ -32,14 +32,14 @@ Provision/commission lives on the **offer** (fixed fee or percent of expected sa
 | Offers | Card grid with glass preview modal; OCR scan (tesseract.js); MyMemory translate; provision + Telegram |
 | Interviews | Schedule against candidate / optional offer |
 | Earnings | Estimated → Pending → Paid / Overdue; CSV export |
-| Settings | Profile, password, JSON desk import/export |
-| Admin | Role-gated seats console on this device |
+| Settings | Profile, password, JSON desk import/export, cloud upload |
+| Admin | Role-gated seats console |
 
 ## Constraints
 
-- Device-local data only (`localStorage`). Move desks via Settings JSON export/import.
+- Preferred: hosted Supabase shared desk (see `docs/cloud-sync.md`). Fallback: device-local `localStorage`.
 - Max 4 non-owner accounts; reserved owner mailbox.
-- No Supabase, Docker, Next.js API routes, or `VITE_SUPABASE_*`.
+- No Docker / Cloudflared requirement. No Next.js API routes. Never expose `service_role` to the browser.
 - Header search is chrome only (no query).
 - Do not invent customer KPIs, testimonials, or benchmarks in docs or UI.
 

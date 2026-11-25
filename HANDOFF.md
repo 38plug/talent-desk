@@ -1,14 +1,14 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `973e81ebe0c5d1447e55845db4043ba5acbb5d6f` (PRs #19–#21 — admin seats, role select, full shared desk; product = Vite SPA + localStorage)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21.
+> **Documented from:** `3ca9bdc42501c2baa04adb432dc6b2ea06a08a80` (PR #22 — hosted Supabase cloud sync + PRs #19–#21 shared desk; product = Vite SPA + optional cloud)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag) from PR #22.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
 
 ## What it is
 
-Operate-mode **forex recruiting command center**: track candidates, scan offers (forex + Chinese packages), schedule interviews, and confirm estimated provision into income. One Vite static SPA on Vercel. Auth and desk data live in the browser (`localStorage`). There is no Supabase, no Edge Functions, no marketing site, and no demo-preview bypass.
+Operate-mode **forex recruiting command center**: track candidates, scan offers (forex + Chinese packages), schedule interviews, and confirm estimated provision into income. One Vite static SPA on Vercel. Persistence is **hosted Supabase** when `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` are set (shared team desk + realtime); otherwise browser `localStorage`. No Docker requirement, no marketing site, and no demo-preview bypass.
 
 After sign-in:
 
@@ -40,9 +40,14 @@ Unsigned visitors always go to `/login`. There is no `talent-desk-demo-ui` flag.
 
 ```
 Browser (Vite 8 + React 19 + React Router 7)
-  ├─ Accounts + session  →  localStorage (PBKDF2-SHA-256, 100k iterations)
-  ├─ Desk data           →  localStorage (candidates, offers, interviews, earnings, activities)
-  ├─ Import / export     →  Settings JSON (format: talent-desk-export)
+  ├─ Cloud mode (VITE_SUPABASE_* set)
+  │    ├─ Auth            →  Supabase Auth (email/password)
+  │    ├─ Desk data       →  hosted Postgres (shared RLS for all authenticated)
+  │    └─ Realtime        →  postgres_changes → invalidate TanStack Query
+  ├─ Local fallback (env unset)
+  │    ├─ Accounts + session → localStorage (PBKDF2-SHA-256, 100k iterations)
+  │    └─ Desk data          → localStorage (shared on this device)
+  ├─ Import / export     →  Settings JSON (format: talent-desk-export) + cloud upload
   ├─ Offer scan          →  tesseract.js in-browser OCR
   ├─ Offer translate     →  MyMemory (EN/PT stay; CJK/Cyrillic/etc. → PT)
   ├─ Motion              →  framer-motion + GSAP slide-pill
@@ -53,9 +58,9 @@ Browser (Vite 8 + React 19 + React Router 7)
 - **Dev server:** `npm run dev` → `http://127.0.0.1:5173` (`vite.config.ts` `host: true`, port 5173).
 - **Build:** `tsc -b && vite build`. Lint: `oxlint`. Output: `dist`.
 - **Host:** Vercel SPA (`vercel.json`: framework `vite`, `npm run build` → `dist`, rewrite `/(.*)` → `/index.html`). `.vercel` is gitignored.
-- **Auth:** email/password against `talent-desk.accounts.v1`. First account (or reserved `OWNER_EMAIL`) becomes `owner`. Max 4 non-owner seats.
-- **Data:** per-device rows in `talent-desk.data.v1`. Empty by default. `getDashboardData` returns honest zeros (`isDemo: false`) — never `DEMO_METRICS`.
-- **No env required.** `.env.example` is a comment-only stub. No `VITE_SUPABASE_*`.
+- **Auth:** email/password — Supabase Auth in cloud mode; `talent-desk.accounts.v1` (PBKDF2) in local fallback. First account / reserved `OWNER_EMAIL` → `owner`. Max 4 non-owner seats.
+- **Data:** shared team desk (cloud tables or local `talent-desk.data.v1`). Empty by default. `getDashboardData` returns honest zeros (`isDemo: false`) — never `DEMO_METRICS`.
+- **Env (optional):** `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` enable cloud sync. Unset → localStorage. Never put `service_role` in `VITE_*`.
 - **Production alias (README):** `https://talent-desk-leadforge3.vercel.app`
 
 ## Hosting
@@ -65,11 +70,11 @@ Production is a static Vite SPA on Vercel. Client-side routes (`/candidates`, `/
 | Path | Notes |
 | --- | --- |
 | GitHub import | Framework **Vite**, root `.`, build `npm run build`, output `dist` |
-| Env | None required |
-| Data | Device-local. Move desks via Settings JSON export/import |
+| Env | Optional `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` for cloud sync |
+| Data | Hosted Supabase shared desk, or device-local localStorage fallback |
 | Claim | An agent may leave a temporary Vercel deploy with a claim link (~60 min). After claim: `vercel link` or dashboard import |
 
-Do not reintroduce `VITE_*` backend URLs. Do not put service-role keys anywhere.
+Do not put service-role keys in the browser / `VITE_*`. Hosted Supabase only — no Docker for Vercel.
 
 ## Auth
 
@@ -156,12 +161,15 @@ src/pages/InterviewsPage.tsx
 src/pages/EarningsPage.tsx
 src/pages/SettingsPage.tsx              → password + JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
-src/lib/api.ts                         → app façade over local-db; canViewAdmin / canManagePipeline
 src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle
 src/components/motion/*                → PageTransition (springSoft opacity/y, no filter), Motion, AnimatedNumber, SoundToggle
 src/components/ui/*                    → Button, Input, Card (p-6, CardTitle text-xl), Badge (`stageTone` / `marketTone` / `genderTone`), Modal/Drawer (body portal, springSnappy, glass), charts
+src/lib/api.ts                         → app façade (cloud-db when sync on, else local-db); canViewAdmin / canManagePipeline
+src/lib/supabase.ts                    → client + isCloudSyncEnabled feature flag
+src/lib/cloud-db.ts                    → hosted Supabase CRUD + upload/migrate
 src/lib/local-db.ts                    → accounts, shared-desk CRUD, merge-import, PBKDF2, migrateCandidate, preferred-admin bootstrap
+src/auth/CloudRealtimeSync.tsx         → invalidate queries on postgres_changes
 src/lib/constants.ts                   → APP_NAME, roles, MANAGEABLE_ROLES, ADMIN_VIEW/MANAGE, PIPELINE_ROLES, CANDIDATE_MARKETS, CANDIDATE_GENDERS, marketLabel, genderLabel
 src/lib/types.ts
 src/lib/demo-data.ts                   → SPARK_SERIES shapes only (not KPI values)
@@ -171,6 +179,8 @@ src/lib/slide-pill.ts                  → GSAP stretchy lime pill (hover+active
 src/lib/sfx.ts                         → Web Audio, muted by default
 src/lib/utils.ts                       → cn, money, telegram handles
 docs/local-data.md                     → localStorage keys + export JSON + candidate fields + shared-desk note
+docs/cloud-sync.md                     → hosted Supabase setup checklist
+supabase/migrations/0001_shared_desk.sql → schema + shared RLS + realtime
 scripts/smoke-shared-desk.mjs          → owner→other visibility; seat delete keeps rows
 vercel.json                            → Vite SPA: dist + client rewrites
 README.md                              → local setup + Vercel runbook
@@ -213,14 +223,14 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 ## Invariants for the next build
 
 1. **Auth screen first.** Do not put Overview on an anonymous first paint. Do not restore a demo-UI bypass.
-2. **Device-local rows only.** Accounts and pipeline live in `localStorage` on this browser. Do not share earnings across devices without an explicit JSON import. On this device, every signed-in seat already shares the same pipeline.
+2. **Shared team desk.** Cloud mode: all authenticated teammates share candidates/offers/interviews/earnings. Local fallback: shared on that device (every signed-in seat). `user_id` is creator attribution only.
 3. **Four-seat cap.** Non-owner accounts ≤ `MAX_ACCOUNTS`. Owner mailbox stays reserved (`OWNER_EMAIL`).
 4. **Confirm estimated → Pending.** `confirmEarning` must not jump straight to Paid. Estimated is not income.
 5. **Empty desk is zeros.** Never invent `DEMO_METRICS` as live money. The Overview banner must stay while the pipeline is empty.
 6. **Friendly auth errors.** Map through `friendlyAuthError`. Do not surface stack traces on login.
 7. **Visual world is The Lime Glass Desk.** New UI goes through `DESIGN.md` (lime conversion, peach kickers, charcoal `#111`, Plus Jakarta / JetBrains Mono, stretchy pill, glass Overview, occupied type). Do not restore The Neon Signal Desk (violet conversion, `#080A10`, magenta inset nav).
 8. **SFX stay muted by default.** Do not auto-unmute. Honor `prefers-reduced-motion`.
-9. **No backend env.** Do not reintroduce `@supabase/*`, Edge Functions, or `VITE_SUPABASE_*` unless a later rebuild explicitly adds a server.
+9. **Cloud sync is opt-in via env.** Hosted Supabase with `VITE_SUPABASE_*` is supported; keep localStorage fallback when unset. Never require Docker. Never expose `service_role` to the client.
 10. **Do not commit secrets.** Password hashes, salts, and export JSON with credentials stay out of git. Do not print `OWNER_EMAIL` in docs.
 11. **Vercel is a SPA, not an SSR host.** Keep `vercel.json` rewrites to `index.html`.
 12. **Overlays live on `document.body`.** Do not put CSS `filter` on `PageTransition`. Do not put `backdrop-blur` on the modal overlay. Framer blur on the **dialog panel** during open is the preview motion.

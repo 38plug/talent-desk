@@ -2,9 +2,11 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@/auth/AuthProvider'
+import { CloudRealtimeSync } from '@/auth/CloudRealtimeSync'
 import { AdminRoute, ProtectedRoute } from '@/auth/ProtectedRoute'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageLoader } from '@/components/ui'
+import { isCloudSyncEnabled } from '@/lib/supabase'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 
@@ -35,7 +37,8 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 30_000,
       retry: 1,
-      refetchOnWindowFocus: false,
+      // Cloud: refresh shared desk when returning to the tab
+      refetchOnWindowFocus: isCloudSyncEnabled,
     },
   },
 })
@@ -48,6 +51,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <CloudRealtimeSync />
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />

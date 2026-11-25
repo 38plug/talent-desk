@@ -5,9 +5,10 @@ import { useAuth } from '@/auth/AuthProvider'
 import { AuthShell } from '@/components/auth/AuthShell'
 import { MotionButtonShell } from '@/components/motion/Motion'
 import { Button, Input, Label, Spinner } from '@/components/ui'
-import { registerAccount } from '@/lib/api'
+import { isCloudSyncEnabled, registerAccount } from '@/lib/api'
 import { APP_NAME, MAX_ACCOUNTS } from '@/lib/constants'
 import { friendlyAuthError } from '@/lib/local-db'
+import { friendlyCloudAuthError } from '@/lib/supabase'
 import { fadeUp, springSnappy, staggerContainer } from '@/lib/motion'
 import { playSfx } from '@/lib/sfx'
 
@@ -39,8 +40,8 @@ export function RegisterPage() {
       notifyAuthChanged()
       navigate('/')
     } catch (err) {
-      const friendly = friendlyAuthError(err)
-      setError(friendly.message)
+      const friendly = isCloudSyncEnabled ? friendlyCloudAuthError(err) : friendlyAuthError(err)
+      setError(friendly.hint ? `${friendly.message} ${friendly.hint}` : friendly.message)
     } finally {
       setBusy(false)
     }
