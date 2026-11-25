@@ -122,12 +122,51 @@ function saveAccounts(accounts: StoredAccount[]) {
   writeJson(KEYS.accounts, accounts)
 }
 
+function normalizeAge(value: unknown): number | null {
+  if (value === null || value === undefined || value === '') return null
+  const n = typeof value === 'number' ? value : Number(value)
+  return Number.isFinite(n) ? n : null
+}
+
+/** Fill missing profile fields on older candidate rows without wiping data. */
+export function migrateCandidate(raw: Partial<Candidate> & Record<string, unknown>): Candidate {
+  return {
+    id: String(raw.id ?? ''),
+    userId: String(raw.userId ?? ''),
+    name: String(raw.name ?? ''),
+    email: (raw.email as string) ?? null,
+    phone: (raw.phone as string) ?? null,
+    source: (raw.source as string) ?? null,
+    stage: (raw.stage as Candidate['stage']) ?? 'Screening',
+    offerId: (raw.offerId as string) ?? null,
+    telegram: (raw.telegram as string) ?? null,
+    sentBy: (raw.sentBy as string) ?? null,
+    country: (raw.country as string) ?? null,
+    age: normalizeAge(raw.age),
+    languages: (raw.languages as string) ?? null,
+    currentLocation: (raw.currentLocation as string) ?? null,
+    notes: (raw.notes as string) ?? null,
+    expectedSalary: normalizeAge(raw.expectedSalary),
+    createdAt: String(raw.createdAt ?? ''),
+    updatedAt: String(raw.updatedAt ?? ''),
+  }
+}
+
+function migrateDeskData(data: DeskData): DeskData {
+  return {
+    ...data,
+    candidates: (data.candidates ?? []).map((c) =>
+      migrateCandidate(c as Partial<Candidate> & Record<string, unknown>),
+    ),
+  }
+}
+
 export function loadData(): DeskData {
-  return readJson<DeskData>(KEYS.data, emptyData())
+  return migrateDeskData(readJson<DeskData>(KEYS.data, emptyData()))
 }
 
 function saveData(data: DeskData) {
-  writeJson(KEYS.data, data)
+  writeJson(KEYS.data, migrateDeskData(data))
 }
 
 export function getSession(): AuthSession | null {
@@ -305,7 +344,7 @@ export function upsertCandidateRow(
     const idx = data.candidates.findIndex((c) => c.id === existingId && c.userId === userId)
     if (idx < 0) throw new Error('Candidate not found')
     const prev = data.candidates[idx]!
-    data.candidates[idx] = {
+    data.candidates[idx] = migrateCandidate({
       ...prev,
       name: payload.name,
       email: payload.email ?? null,
@@ -315,13 +354,17 @@ export function upsertCandidateRow(
       offerId: payload.offerId ?? null,
       telegram: payload.telegram ?? null,
       sentBy: payload.sentBy ?? null,
+      country: payload.country ?? null,
+      age: payload.age ?? null,
+      languages: payload.languages ?? null,
+      currentLocation: payload.currentLocation ?? null,
       notes: payload.notes ?? null,
       expectedSalary: payload.expectedSalary ?? null,
       updatedAt: now,
-    }
+    })
     pushActivity(data, userId, 'candidate', existingId, `Updated candidate ${payload.name}`)
   } else {
-    const row: Candidate = {
+    const row: Candidate = migrateCandidate({
       id: id(),
       userId,
       name: payload.name,
@@ -332,11 +375,15 @@ export function upsertCandidateRow(
       offerId: payload.offerId ?? null,
       telegram: payload.telegram ?? null,
       sentBy: payload.sentBy ?? null,
+      country: payload.country ?? null,
+      age: payload.age ?? null,
+      languages: payload.languages ?? null,
+      currentLocation: payload.currentLocation ?? null,
       notes: payload.notes ?? null,
       expectedSalary: payload.expectedSalary ?? null,
       createdAt: now,
       updatedAt: now,
-    }
+    })
     data.candidates.unshift(row)
     pushActivity(data, userId, 'candidate', row.id, `Added candidate ${payload.name}`)
   }
@@ -645,13 +692,15 @@ export async function importDeskJson(raw: unknown): Promise<{ accounts: number; 
   }
 
   saveAccounts(accounts)
-  saveData({
-    candidates: data.candidates ?? [],
-    offers: data.offers ?? [],
-    interviews: data.interviews ?? [],
-    earnings: data.earnings ?? [],
-    activities: data.activities ?? [],
-  })
+  saveData(
+    migrateDeskData({
+      candidates: data.candidates ?? [],
+      offers: data.offers ?? [],
+      interviews: data.interviews ?? [],
+      earnings: data.earnings ?? [],
+      activities: data.activities ?? [],
+    }),
+  )
 
   const rows =
     (data.candidates?.length ?? 0) +

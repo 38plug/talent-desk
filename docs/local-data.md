@@ -38,6 +38,8 @@ Auth and pipeline data live in the browser. Nothing is seeded.
 }
 ```
 
+Candidate rows may include `country`, `age`, `languages`, and `currentLocation` (null/empty when unset). Older exports missing those keys are migrated to empty on load/import — existing data is not wiped.
+
 Settings → Download JSON export / Upload / paste. Import **replaces** accounts + data on that device.
 
 Accounts may include a plaintext `"password"` instead of hash/salt when preparing a one-time restore for another browser.
