@@ -23,7 +23,7 @@ Fallback store when cloud sync is off (`VITE_SUPABASE_*` unset). Nothing is seed
 
 | Field | Type | Notes |
 |-------|------|--------|
-| `name`, `stage`, … | string / enums | Pipeline core |
+| `name`, `stage`, … | string / enums | Pipeline core; stage auto-syncs from interviews (`Interview` / `Accepted` / `Rejected`) |
 | `country` | `string \| null` | Profile |
 | `age` | `number \| null` | Profile |
 | `languages` | `string \| null` | Free text |
@@ -34,6 +34,20 @@ Fallback store when cloud sync is off (`VITE_SUPABASE_*` unset). Nothing is seed
 Older exports missing profile / market / gender keys migrate to `null` on load/import — existing rows are not wiped. Unknown market/gender strings become `null`.
 
 Deleting a candidate removes that row and cascades interviews and earnings that reference the candidate id. Linked offers are not deleted.
+
+## Interview outcomes (in `data.interviews`)
+
+| Outcome | Effect |
+|---------|--------|
+| (empty / free text) | Candidate stage → **Interview** on schedule via `upsertInterview` |
+| `Confirmed` | Candidate → **Accepted**; Estimated earning from offer commission (`src/lib/commission.ts`); notes may include `interview:<id>` |
+| `Declined by company` | Candidate → **Rejected** |
+
+Candidates page runs `reconcileInterviewCandidateStages` on load against each candidate’s latest interview by `scheduledAt`.
+
+## Earnings statuses (in `data.earnings`)
+
+`Estimated` | `Pending` | `Paid` | `Overdue`. Interview **Confirmed** seeds **Estimated** (Awaiting). Ledger UI can change status per row. Confirming Estimated → Pending is income; Estimated alone is not.
 
 ## Export format
 
@@ -71,4 +85,4 @@ The full desk is **shared** across every account on this device. `listOffers` / 
 
 Accounts may include a plaintext `"password"` instead of hash/salt when preparing a one-time restore for another browser. UI export with passwords currently means hash + salt, not plaintext.
 
-Do not commit export JSON with credentials into git.
+Do not commit export JSON with credentials into git. Do not commit Telegram session / api hash values.

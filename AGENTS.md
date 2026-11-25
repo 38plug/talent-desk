@@ -11,6 +11,7 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 - Tailwind v4 via `@import "tailwindcss"` + `@theme` in `src/index.css` — **no** `tailwind.config.*`
 - Data + auth: `src/lib/api.ts` routes to **hosted Supabase** when `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` are set (`src/lib/cloud-db.ts` + `src/lib/supabase.ts`); otherwise `src/lib/local-db.ts` over `localStorage`.
 - Host: Vercel SPA (`vercel.json` rewrite to `index.html`). Cloud sync uses hosted Supabase only — no Docker / Cloudflared.
+- Optional Telegram: `VITE_TELEGRAM_API_ID` + `VITE_TELEGRAM_API_HASH` (or paste on `/telegram`); personal MTProto via teleproto — not a bot.
 
 ## Read first
 
@@ -32,6 +33,10 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 - Ship empty Overview as zeros — never invent demo income.
 - Keep cloud sync feature-flagged: unset/placeholder `VITE_SUPABASE_*` → localStorage fallback.
 - Shared desk: all authenticated teammates CRUD the full pipeline; `user_id` is creator attribution only.
+- Route interview writes through `upsertInterview` so stage sync stays: schedule → Interview; Confirmed → Accepted; Declined by company → Rejected.
+- Past interviews: lime **Confirmed** (Estimated commission via `estimateOfferCommission`) and rose **Declined**.
+- Header bell: Added candidate/offer only (1s poll); do not fold interview reminders into it.
+- Telegram: Chats vs Groups; never commit api_id / api_hash / session strings.
 
 ## Don't
 
@@ -42,9 +47,11 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 - Do not commit secrets, password hashes, export JSON with credentials, or print `OWNER_EMAIL` in docs.
 - Do not seed `DEMO_METRICS` or a demo-UI bypass on login.
 - Do not invent extra market/gender options beyond `forex`/`chinese` and `male`/`female`.
+- Do not replace personal Telegram with a bot-token flow or Telegram-blue chrome.
+- Do not leave Confirmed as a cyan free-text badge or paint Declined in magenta.
 
 ## PR hygiene
 
 - Branch from `main`. Prefer focused PRs.
 - Run `npm run typecheck` (and `npm run build` when touching routes/assets) before claiming done.
-- Refresh `HANDOFF.md` / `DESIGN.md` when UI, auth, data model, motion, or hosting changes.
+- Refresh `HANDOFF.md` / `DESIGN.md` / `PRODUCT.md` / `README.md` / `docs/*` when UI, auth, data model, motion, Telegram, notifications, interviews, or hosting changes.

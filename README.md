@@ -12,6 +12,7 @@ Charcoal lime-glass UI (`#111` canvas, lime `#C6F432` conversion, peach kickers)
 
 - Node 20+
 - (Cloud sync) A free [Supabase](https://supabase.com) project — no Docker required
+- (Optional Telegram) api_id + api_hash from [my.telegram.org](https://my.telegram.org) — personal MTProto client, not a bot
 
 ## Run locally
 
@@ -37,6 +38,10 @@ See **[`docs/cloud-sync.md`](./docs/cloud-sync.md)** for the full checklist.
 5. Redeploy. Register owner + teammates. First login auto-uploads local desk when cloud is empty.
 
 **Do not enable production sync until those secrets are set.** The SPA ships safely in localStorage mode when env is unset.
+
+Optional Telegram (names only — never commit real values):
+
+- `VITE_TELEGRAM_API_ID` / `VITE_TELEGRAM_API_HASH` — or paste on `/telegram` (stored in this browser)
 
 ## Deploy on Vercel
 
@@ -68,18 +73,23 @@ Settings → **Import / export desk data**, or **Upload this browser’s local d
 - Framer Motion + GSAP (stretchy lime nav pill)
 - Web Audio SFX (muted by default)
 - Recharts, lucide-react, tesseract.js (scan offer)
+- teleproto (optional personal Telegram MTProto client)
 
 ## Modules
 
 | Route | Module |
 |-------|--------|
 | `/` | Overview — KPI heroes, neon charts, estimated confirm, needs attention |
-| `/candidates` | Pipeline table — country / age / languages / currentLocation, market Forex\|Chinese, gender Male\|Female, edit / delete |
-| `/offers` | Forex + Chinese cards — click opens glass preview animation; OCR scan, provision, Telegram |
-| `/interviews` | Schedule against candidate / offer |
-| `/earnings` | Estimated → Pending (confirm) → Paid / Overdue; CSV export |
-| `/settings` | Profile, password, JSON import/export, cloud upload |
+| `/candidates` | Pipeline table — languages / market / gender; schedule → calendar; stage sync from interviews |
+| `/offers` | Forex + Chinese cards — glass preview (linked candidates); OCR scan, provision, Telegram |
+| `/interviews` | Upcoming / past; Confirmed → Estimated commission + Accepted; Declined → Rejected; start alerts |
+| `/calendar` | Interview Calendar — month / week / day |
+| `/earnings` | Estimated → Pending → Paid / Overdue; per-row status select; CSV export |
+| `/telegram` | Personal Telegram — Chats vs Groups; candidate match |
+| `/settings` | Profile, password, interview alerts, JSON import/export, cloud upload |
 | `/admin` | Role-gated seats console |
+
+Header: live clock + notification bell (new offer / candidate activity).
 
 Roles: `owner` > `admin` > `moderator` > `user`. Max **4** non-owner seats. Cloud mode shares the full desk across authenticated teammates.
 

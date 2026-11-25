@@ -6,7 +6,7 @@ Web SPA (Vite + React 19), hosted as static files on Vercel.
 
 ## Users
 
-Forex recruiters running a small desk: sourcing candidates, matching them to live job offers (forex + Chinese packages), scheduling interviews, and tracking commission. One primary operator per account, occasionally a small agency team (max 4 non-owner seats). Work happens in long desk sessions with dense, scannable data.
+Forex recruiters running a small desk: sourcing candidates, matching them to live job offers (forex + Chinese packages), scheduling interviews, tracking commission, and reading personal Telegram alongside the pipeline. One primary operator per account, occasionally a small agency team (max 4 non-owner seats). Work happens in long desk sessions with dense, scannable data.
 
 ## Product purpose
 
@@ -14,7 +14,7 @@ A command center that keeps candidate pipeline, offer economics, interview sched
 
 ## Positioning
 
-Provision/commission lives on the **offer** (fixed fee or percent of expected salary), not as a free-floating candidate rule. Earnings start as **Estimated**, move to **Pending** when the operator confirms, then **Paid** / **Overdue**. Pipeline stage changes write activity events.
+Provision/commission lives on the **offer** (fixed fee or percent of expected salary), not as a free-floating candidate rule. Earnings start as **Estimated**, move to **Pending** when the operator confirms, then **Paid** / **Overdue**. Pipeline stage changes write activity events. Interview lifecycle auto-updates candidate stage (schedule → Interview; Confirmed → Accepted; Declined by company → Rejected).
 
 ## Operating context
 
@@ -28,12 +28,14 @@ Provision/commission lives on the **offer** (fixed fee or percent of expected sa
 | Module | What it does |
 |--------|----------------|
 | Overview | KPI heroes, charts, estimated confirm → Pending, needs attention, recent candidates |
-| Candidates | CRUD table + drawer; fields include country, age, languages, currentLocation; market Forex\|Chinese; gender Male\|Female; filters; named delete (cascades interviews + earnings) |
-| Offers | Card grid with glass preview modal; OCR scan (tesseract.js); MyMemory translate; provision + Telegram |
-| Interviews | Schedule against candidate / optional offer |
-| Earnings | Estimated → Pending → Paid / Overdue; CSV export |
-| Telegram | Personal MTProto chat in-desk (optional; user api_id/hash; not a bot) |
-| Settings | Profile, password, JSON desk import/export, cloud upload |
+| Candidates | CRUD table + drawer; languages / market / gender; filters; schedule → calendar; named delete (cascades interviews + earnings); stage reconciles from latest interview on load |
+| Offers | Card grid with glass preview (linked candidates by `offerId`); OCR scan (tesseract.js); MyMemory translate; provision + Telegram |
+| Interviews | Upcoming / past lists; schedule against candidate / optional offer; past **Confirmed** (Estimated commission + Accepted) / **Declined** (Rejected); start alerts (~1 min before) |
+| Interview Calendar | Month / week / day of `scheduledAt`; deep-link `?candidate=` from Candidates |
+| Earnings | Estimated → Pending → Paid / Overdue; per-row status select; CSV export; interview Confirmed seeds Estimated awaiting |
+| Telegram | Personal MTProto chat (teleproto, not a bot); Chats vs Groups; candidate match panel; optional `VITE_TELEGRAM_*` or paste api_id/hash |
+| Header | Live clock + notification bell (Added candidate / Added offer, 1s poll) |
+| Settings | Profile, password, interview alerts, JSON desk import/export, cloud upload |
 | Admin | Role-gated seats console |
 
 ## Constraints
@@ -43,6 +45,7 @@ Provision/commission lives on the **offer** (fixed fee or percent of expected sa
 - No Docker / Cloudflared requirement. No Next.js API routes. Never expose `service_role` to the browser.
 - Header search is chrome only (no query).
 - Do not invent customer KPIs, testimonials, or benchmarks in docs or UI.
+- Do not commit Telegram api_id / api_hash / session strings or print `OWNER_EMAIL` in docs.
 
 ## Brand
 
@@ -58,6 +61,7 @@ Provision/commission lives on the **offer** (fixed fee or percent of expected sa
 4. Dense information stays scannable under time pressure.
 5. Account scarcity is deliberate; do not hide the four-seat cap.
 6. Empty desks stay empty — no fake demo metrics.
+7. Interview decisions and schedule keep STAGE honest without manual retagging.
 
 ## Accessibility
 

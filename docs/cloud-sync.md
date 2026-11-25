@@ -49,10 +49,15 @@ Migration adds tables to `supabase_realtime`. The SPA subscribes and invalidates
 
 ## Offline / fallback
 
-If env vars are missing or placeholders, `isCloudSyncEnabled` is false and the app uses `localStorage` (current on-device shared desk). Sidebar/SFX prefs always stay local.
+If env vars are missing or placeholders, `isCloudSyncEnabled` is false and the app uses `localStorage` (current on-device shared desk). Sidebar/SFX prefs, interview-reminder prefs, notification watermark, and Telegram api/session always stay local.
+
+## Optional Telegram env
+
+Personal MTProto client (not cloud sync). Optional `VITE_TELEGRAM_API_ID` + `VITE_TELEGRAM_API_HASH` in `.env` / Vercel, or paste on `/telegram` → `talent-desk.telegram-api.v1`. Session stays in `talent-desk.telegram-session.v1`. See [`HANDOFF.md`](../HANDOFF.md) and [`.env.example`](../.env.example). Never commit real ids, hashes, or session strings.
 
 ## Secrets (do not commit)
 
 - Anon key is public to the browser by design (RLS protects data).
 - **Never** put `service_role` in `VITE_*` or Vercel client env.
 - Do not commit export JSON with password hashes.
+- Do not commit Telegram api_id / api_hash / session strings.
