@@ -26,6 +26,16 @@ export type EarningStatus = (typeof EARNING_STATUSES)[number]
 export const OFFER_CATEGORIES = ['forex', 'chinese'] as const
 export type OfferCategory = (typeof OFFER_CATEGORIES)[number]
 
+/** Same values as offer categories — single-select desk market on candidates. */
+export const CANDIDATE_MARKETS = OFFER_CATEGORIES
+export type CandidateMarket = OfferCategory
+
+export function marketLabel(market: CandidateMarket | null | undefined): string {
+  if (market === 'forex') return 'Forex'
+  if (market === 'chinese') return 'Chinese'
+  return '—'
+}
+
 export const OFFER_STATUSES = ['Live', 'Paused', 'Closed'] as const
 export type OfferStatus = (typeof OFFER_STATUSES)[number]
 

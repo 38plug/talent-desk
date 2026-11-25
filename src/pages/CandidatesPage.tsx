@@ -12,6 +12,7 @@ import {
   PageLoader,
   Select,
   Textarea,
+  marketTone,
   stageTone,
 } from '@/components/ui'
 import {
@@ -20,7 +21,13 @@ import {
   fetchOffers,
   upsertCandidate,
 } from '@/lib/api'
-import { PIPELINE_STAGES, type PipelineStage } from '@/lib/constants'
+import {
+  CANDIDATE_MARKETS,
+  marketLabel,
+  PIPELINE_STAGES,
+  type CandidateMarket,
+  type PipelineStage,
+} from '@/lib/constants'
 import { ensureAtHandle } from '@/lib/utils'
 import type { Candidate } from '@/lib/types'
 
@@ -30,6 +37,7 @@ type CandidateForm = {
   phone: string
   source: string
   stage: PipelineStage
+  market: CandidateMarket | ''
   offerId: string
   telegram: string
   sentBy: string
@@ -47,6 +55,7 @@ const emptyForm: CandidateForm = {
   phone: '',
   source: '',
   stage: 'Screening',
+  market: '',
   offerId: '',
   telegram: '',
   sentBy: '',
@@ -65,6 +74,7 @@ function candidateToForm(c: Candidate): CandidateForm {
     phone: c.phone ?? '',
     source: c.source ?? '',
     stage: c.stage,
+    market: c.market ?? '',
     offerId: c.offerId ?? '',
     telegram: c.telegram ?? '',
     sentBy: c.sentBy ?? '',
@@ -84,6 +94,7 @@ function formToPayload(form: CandidateForm) {
     phone: form.phone || null,
     source: form.source || null,
     stage: form.stage,
+    market: form.market || null,
     offerId: form.offerId || null,
     telegram: form.telegram || null,
     sentBy: form.sentBy || null,
@@ -111,6 +122,7 @@ export function CandidatesPage() {
 
   const [q, setQ] = useState('')
   const [stageFilter, setStageFilter] = useState('all')
+  const [marketFilter, setMarketFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<CandidateForm>(emptyForm)
@@ -177,6 +189,7 @@ export function CandidatesPage() {
           phone: c.phone,
           source: c.source,
           stage: payload.stage ?? c.stage,
+          market: c.market,
           offerId: c.offerId,
           telegram: payload.telegram !== undefined ? payload.telegram : c.telegram,
           sentBy: payload.sentBy !== undefined ? payload.sentBy : c.sentBy,
@@ -213,12 +226,19 @@ export function CandidatesPage() {
   const filtered = useMemo(() => {
     return candidates.filter((c) => {
       if (stageFilter !== 'all' && c.stage !== stageFilter) return false
+      if (marketFilter !== 'all') {
+        if (marketFilter === 'unset') {
+          if (c.market) return false
+        } else if (c.market !== marketFilter) {
+          return false
+        }
+      }
       if (!q.trim()) return true
       const hay =
-        `${c.name} ${c.telegram ?? ''} ${c.sentBy ?? ''} ${c.source ?? ''} ${c.country ?? ''} ${c.languages ?? ''} ${c.currentLocation ?? ''}`.toLowerCase()
+        `${c.name} ${c.telegram ?? ''} ${c.sentBy ?? ''} ${c.source ?? ''} ${c.country ?? ''} ${c.languages ?? ''} ${c.currentLocation ?? ''} ${c.market ?? ''}`.toLowerCase()
       return hay.includes(q.toLowerCase())
     })
-  }, [candidates, q, stageFilter])
+  }, [candidates, q, stageFilter, marketFilter])
 
   if (isLoading) return <PageLoader />
 
@@ -236,6 +256,12 @@ export function CandidatesPage() {
               {s}
             </option>
           ))}
+        </Select>
+        <Select value={marketFilter} onChange={(e) => setMarketFilter(e.target.value)} className="w-40">
+          <option value="all">All markets</option>
+          <option value="forex">Forex</option>
+          <option value="chinese">Chinese</option>
+          <option value="unset">Unset</option>
         </Select>
         <Button onClick={openAdd}>
           <Plus className="h-4 w-4" /> Add candidate
@@ -259,6 +285,7 @@ export function CandidatesPage() {
               <thead className="bg-white/[0.02] text-xs uppercase tracking-wide text-ink-dim">
                 <tr>
                   <th className="px-4 py-3">Candidate</th>
+                  <th className="px-4 py-3">Market</th>
                   <th className="px-4 py-3">Location</th>
                   <th className="px-4 py-3">Stage</th>
                   <th className="px-4 py-3">Source</th>
@@ -287,6 +314,13 @@ export function CandidatesPage() {
                         {c.age != null ? ` · ${c.age}` : ''}
                         {c.languages ? ` · ${c.languages}` : ''}
                       </p>
+                    </td>
+                    <td className="px-4 py-3">
+                      {c.market ? (
+                        <Badge tone={marketTone(c.market)}>{marketLabel(c.market)}</Badge>
+                      ) : (
+                        <span className="text-ink-dim">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-ink-muted">
                       {locationLine(c) ?? '—'}
@@ -372,6 +406,22 @@ export function CandidatesPage() {
           <div>
             <Label>Source</Label>
             <Input value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} />
+          </div>
+          <div>
+            <Label>Market</Label>
+            <Select
+              value={form.market}
+              onChange={(e) =>
+                setForm({ ...form, market: e.target.value as CandidateMarket | '' })
+              }
+            >
+              <option value="">Unset</option>
+              {CANDIDATE_MARKETS.map((m) => (
+                <option key={m} value={m}>
+                  {marketLabel(m)}
+                </option>
+              ))}
+            </Select>
           </div>
           <div>
             <Label>Stage</Label>
@@ -516,6 +566,14 @@ export function CandidatesPage() {
                   Save
                 </Button>
               </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-ink-muted">Market</span>
+              {selected.market ? (
+                <Badge tone={marketTone(selected.market)}>{marketLabel(selected.market)}</Badge>
+              ) : (
+                <span className="text-sm text-ink-dim">Unset</span>
+              )}
             </div>
             <div className="rounded-xl border border-border bg-canvas-raised p-3 text-sm text-ink-muted">
               <p>Source: {selected.source ?? '—'}</p>

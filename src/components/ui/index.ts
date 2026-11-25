@@ -1,7 +1,7 @@
 export { Button } from './Button'
 export { Input, Textarea, Label, Select } from './Input'
 export { Card, CardHeader, CardTitle, CardSubtitle, CardEmpty } from './Card'
-export { Badge, stageTone } from './Badge'
+export { Badge, marketTone, stageTone } from './Badge'
 export { Modal, Drawer } from './Modal'
 export { EmptyState, Spinner, PageLoader } from './EmptyState'
 export { Sparkline, NeonAreaChart, NeonBarChart, NeonDonut } from './charts'

@@ -3,7 +3,13 @@
  * Empty by default — no demo/seed KPIs.
  */
 
-import { MAX_ACCOUNTS, OWNER_EMAIL, type Role } from './constants'
+import {
+  MAX_ACCOUNTS,
+  OFFER_CATEGORIES,
+  OWNER_EMAIL,
+  type OfferCategory,
+  type Role,
+} from './constants'
 import type {
   Activity,
   Candidate,
@@ -128,6 +134,12 @@ function normalizeAge(value: unknown): number | null {
   return Number.isFinite(n) ? n : null
 }
 
+function normalizeMarket(value: unknown): OfferCategory | null {
+  if (value === null || value === undefined || value === '') return null
+  const s = String(value).toLowerCase()
+  return (OFFER_CATEGORIES as readonly string[]).includes(s) ? (s as OfferCategory) : null
+}
+
 /** Fill missing profile fields on older candidate rows without wiping data. */
 export function migrateCandidate(raw: Partial<Candidate> & Record<string, unknown>): Candidate {
   return {
@@ -138,6 +150,7 @@ export function migrateCandidate(raw: Partial<Candidate> & Record<string, unknow
     phone: (raw.phone as string) ?? null,
     source: (raw.source as string) ?? null,
     stage: (raw.stage as Candidate['stage']) ?? 'Screening',
+    market: normalizeMarket(raw.market),
     offerId: (raw.offerId as string) ?? null,
     telegram: (raw.telegram as string) ?? null,
     sentBy: (raw.sentBy as string) ?? null,
@@ -351,6 +364,7 @@ export function upsertCandidateRow(
       phone: payload.phone ?? null,
       source: payload.source ?? null,
       stage: payload.stage ?? prev.stage,
+      market: payload.market !== undefined ? payload.market : prev.market,
       offerId: payload.offerId ?? null,
       telegram: payload.telegram ?? null,
       sentBy: payload.sentBy ?? null,
@@ -372,6 +386,7 @@ export function upsertCandidateRow(
       phone: payload.phone ?? null,
       source: payload.source ?? null,
       stage: payload.stage ?? 'Screening',
+      market: payload.market ?? null,
       offerId: payload.offerId ?? null,
       telegram: payload.telegram ?? null,
       sentBy: payload.sentBy ?? null,

@@ -17,11 +17,12 @@ import {
   NeonDonut,
   PageLoader,
   Sparkline,
+  marketTone,
   stageTone,
 } from '@/components/ui'
 import { confirmEarning, getDashboardData } from '@/lib/api'
 import { SPARK_SERIES } from '@/lib/demo-data'
-import { APP_NAME } from '@/lib/constants'
+import { APP_NAME, marketLabel } from '@/lib/constants'
 import { springSoft } from '@/lib/motion'
 import { playSfx } from '@/lib/sfx'
 import { formatMoney } from '@/lib/utils'
@@ -368,6 +369,7 @@ export function DashboardPage() {
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Market</th>
                 <th>Stage</th>
                 <th>Source</th>
                 <th>Telegram</th>
@@ -376,7 +378,7 @@ export function DashboardPage() {
             <tbody>
               {data.recentCandidates.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="!py-10 text-center text-base text-ink-muted">
+                  <td colSpan={5} className="!py-10 text-center text-base text-ink-muted">
                     No candidates yet for this account.
                   </td>
                 </tr>
@@ -390,6 +392,13 @@ export function DashboardPage() {
                     onMouseEnter={() => playSfx('hover')}
                   >
                     <td className="font-semibold">{c.name}</td>
+                    <td>
+                      {c.market ? (
+                        <Badge tone={marketTone(c.market)}>{marketLabel(c.market)}</Badge>
+                      ) : (
+                        <span className="text-ink-dim">—</span>
+                      )}
+                    </td>
                     <td>
                       <Badge tone={stageTone(c.stage)}>{c.stage}</Badge>
                     </td>
