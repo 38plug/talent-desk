@@ -56,7 +56,9 @@ Deleting a candidate removes that row and cascades interviews and earnings that 
 }
 ```
 
-Settings → Download JSON export / Upload / paste. Import **replaces** accounts + data on that device.
+Settings → Download JSON export / Upload / paste. Import replaces pipeline data. Accounts are **merged** by email (incoming credentials win); an export with no accounts leaves existing seats untouched.
+
+Offers, candidates, and interviews are **desk-shared** across every account on this device. Earnings stay private per account.
 
 Accounts may include a plaintext `"password"` instead of hash/salt when preparing a one-time restore for another browser. UI export with passwords currently means hash + salt, not plaintext.
 

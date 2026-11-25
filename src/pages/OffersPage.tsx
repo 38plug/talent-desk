@@ -14,7 +14,8 @@ import {
   Textarea,
   stageTone,
 } from '@/components/ui'
-import { deleteOffer, fetchOffers, upsertOffer } from '@/lib/api'
+import { useAuth } from '@/auth/AuthProvider'
+import { canManagePipeline, deleteOffer, fetchOffers, upsertOffer } from '@/lib/api'
 import { parseOfferText, translateOfferText, type ParsedOfferPreview } from '@/lib/parse-offer'
 import type { Offer, OfferFormValues } from '@/lib/types'
 import { ensureAtHandle, formatMoney } from '@/lib/utils'
@@ -88,6 +89,9 @@ function formatWhen(iso: string | null | undefined): string {
 }
 
 export function OffersPage() {
+  const { profile } = useAuth()
+  // All signed-in roles (user → owner) share offers on this device.
+  const canEdit = canManagePipeline(profile?.role ?? 'user')
   const qc = useQueryClient()
   const { data: offers = [], isLoading } = useQuery({ queryKey: ['offers'], queryFn: fetchOffers })
   const [formOpen, setFormOpen] = useState(false)
@@ -182,20 +186,24 @@ export function OffersPage() {
           <option value="forex">Forex</option>
           <option value="chinese">Chinese</option>
         </Select>
-        <div className="ml-auto flex gap-2">
-          <Button variant="secondary" onClick={() => setScanOpen(true)}>
-            <ScanLine className="h-4 w-4" /> Scan offer
-          </Button>
-          <Button
-            onClick={() => {
-              setEditId(undefined)
-              setForm(blank())
-              setFormOpen(true)
-            }}
-          >
-            <Plus className="h-4 w-4" /> Post offer
-          </Button>
-        </div>
+        {canEdit ? (
+          <div className="ml-auto flex gap-2">
+            <Button variant="secondary" onClick={() => setScanOpen(true)}>
+              <ScanLine className="h-4 w-4" /> Scan offer
+            </Button>
+            <Button
+              onClick={() => {
+                setEditId(undefined)
+                setForm(blank())
+                setFormOpen(true)
+              }}
+            >
+              <Plus className="h-4 w-4" /> Post offer
+            </Button>
+          </div>
+        ) : (
+          <div className="ml-auto" />
+        )}
       </div>
 
       {filtered.length === 0 ? (
@@ -203,9 +211,11 @@ export function OffersPage() {
           title="No offers posted"
           description="Post a forex or Chinese desk offer, or scan a screenshot into an editable preview."
           action={
-            <Button onClick={() => setFormOpen(true)}>
-              <Plus className="h-4 w-4" /> Post offer
-            </Button>
+            canEdit ? (
+              <Button onClick={() => setFormOpen(true)}>
+                <Plus className="h-4 w-4" /> Post offer
+              </Button>
+            ) : undefined
           }
         />
       ) : (
@@ -248,29 +258,31 @@ export function OffersPage() {
               {o.telegram ? (
                 <p className="text-xs text-cyan">Recruiter {ensureAtHandle(o.telegram)}</p>
               ) : null}
-              <div className="mt-auto flex gap-2">
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="flex-1"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    openEdit(o)
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    remove.mutate(o.id)
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+              {canEdit ? (
+                <div className="mt-auto flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openEdit(o)
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      remove.mutate(o.id)
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : null}
             </article>
           ))}
         </div>
@@ -286,6 +298,7 @@ export function OffersPage() {
         {previewOffer ? (
           <OfferPreview
             offer={previewOffer}
+            canEdit={canEdit}
             onEdit={() => {
               openEdit(previewOffer)
             }}
@@ -356,10 +369,12 @@ function DetailTile({ label, value }: { label: string; value: ReactNode }) {
 
 function OfferPreview({
   offer,
+  canEdit = true,
   onEdit,
   onDelete,
 }: {
   offer: Offer
+  canEdit?: boolean
   onEdit: () => void
   onDelete: () => void
 }) {
@@ -426,14 +441,16 @@ function OfferPreview({
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
-        <Button variant="secondary" onClick={onEdit}>
-          Edit offer
-        </Button>
-        <Button variant="danger" onClick={onDelete}>
-          <Trash2 className="h-4 w-4" /> Delete
-        </Button>
-      </div>
+      {canEdit ? (
+        <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
+          <Button variant="secondary" onClick={onEdit}>
+            Edit offer
+          </Button>
+          <Button variant="danger" onClick={onDelete}>
+            <Trash2 className="h-4 w-4" /> Delete
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

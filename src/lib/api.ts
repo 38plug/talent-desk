@@ -1,4 +1,5 @@
 import {
+  adminCreateAccountRow,
   adminDeleteAccountRow,
   adminListStats,
   adminResetPasswordRow,
@@ -37,7 +38,7 @@ import type {
   Offer,
   Profile,
 } from './types'
-import { ADMIN_VIEW_ROLES, type Role } from './constants'
+import { ADMIN_VIEW_ROLES, PIPELINE_ROLES, type Role } from './constants'
 import { parseNumericInput, stripAtHandle } from './utils'
 
 /** Honest empty desk — never invents fake income/candidates. */
@@ -368,6 +369,20 @@ export async function adminResetLink(id: string): Promise<string> {
 
 export function canViewAdmin(role: Role | null | undefined): boolean {
   return !!role && ADMIN_VIEW_ROLES.includes(role)
+}
+
+/** Offers + candidates CRUD — all desk roles (not owner-only). */
+export function canManagePipeline(role: Role | null | undefined): boolean {
+  return !!role && PIPELINE_ROLES.includes(role)
+}
+
+export async function adminCreateAccount(input: {
+  email: string
+  password: string
+  fullName?: string
+  role?: Role
+}) {
+  return adminCreateAccountRow(input)
 }
 
 export function exportDataJson(includeCredentialHashes = false): string {

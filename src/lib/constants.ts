@@ -10,6 +10,9 @@ export type Role = (typeof ROLES)[number]
 export const ADMIN_VIEW_ROLES: Role[] = ['owner', 'admin', 'moderator']
 export const ADMIN_MANAGE_ROLES: Role[] = ['owner', 'admin']
 
+/** Every signed-in role may see/create/edit/remove desk-shared offers & candidates. */
+export const PIPELINE_ROLES: Role[] = ['owner', 'admin', 'moderator', 'user']
+
 export const PIPELINE_STAGES = [
   'Screening',
   'Interview',
