@@ -6,9 +6,9 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
     <input
       ref={ref}
       className={cn(
-        'h-10 w-full rounded-[12px] border border-border bg-canvas-raised px-3 text-sm text-ink',
+        'h-10 w-full rounded-[12px] border border-border-strong bg-canvas-raised/90 px-3 text-sm text-ink',
         'placeholder:text-ink-dim',
-        'focus:border-violet/60 focus:outline-none focus:ring-2 focus:ring-violet/25',
+        'focus:border-violet/70 focus:outline-none focus:ring-2 focus:ring-violet/30',
         'disabled:opacity-50',
         className,
       )}
@@ -25,9 +25,9 @@ export const Textarea = forwardRef<
   <textarea
     ref={ref}
     className={cn(
-      'min-h-24 w-full rounded-[12px] border border-border bg-canvas-raised px-3 py-2 text-sm text-ink',
+      'min-h-24 w-full rounded-[12px] border border-border-strong bg-canvas-raised/90 px-3 py-2 text-sm text-ink',
       'placeholder:text-ink-dim',
-      'focus:border-violet/60 focus:outline-none focus:ring-2 focus:ring-violet/25',
+      'focus:border-violet/70 focus:outline-none focus:ring-2 focus:ring-violet/30',
       className,
     )}
     {...props}
@@ -55,8 +55,8 @@ export function Select({
   return (
     <select
       className={cn(
-        'h-10 w-full rounded-[12px] border border-border bg-canvas-raised px-3 text-sm text-ink',
-        'focus:border-violet/60 focus:outline-none focus:ring-2 focus:ring-violet/25',
+        'h-10 w-full rounded-[12px] border border-border-strong bg-canvas-raised/90 px-3 text-sm text-ink',
+        'focus:border-violet/70 focus:outline-none focus:ring-2 focus:ring-violet/30',
         className,
       )}
       {...props}

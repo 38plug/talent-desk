@@ -57,7 +57,7 @@ export function DashboardPage() {
     {
       label: 'Estimated awaiting',
       value: formatMoney(data.estimated),
-      delta: 'Confirm to move into income',
+      delta: 'Confirm → income',
       spark: SPARK_SERIES.candidates,
       color: '#A78BFA',
       icon: Bell,
@@ -152,7 +152,7 @@ export function DashboardPage() {
                 <p className="mt-1 text-2xl font-extrabold tracking-tight tabular text-ink">
                   {k.value}
                 </p>
-                <p className="mt-1 truncate text-[11px] text-ink-dim">{k.delta}</p>
+                <p className="mt-1 text-[11px] leading-snug text-ink-dim">{k.delta}</p>
               </div>
               <Sparkline data={k.spark} color={k.color} />
             </div>
@@ -238,7 +238,8 @@ export function DashboardPage() {
                   <Button
                     size="sm"
                     variant="cyan"
-                    disabled={confirm.isPending}
+                    disabled={confirm.isPending || data.isDemo}
+                    title={data.isDemo ? 'Connect Supabase to confirm estimates' : undefined}
                     onClick={() => confirm.mutate(e.id)}
                   >
                     Confirmed

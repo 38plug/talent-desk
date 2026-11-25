@@ -1,4 +1,98 @@
-import type { DashboardMetrics } from './types'
+import type { Candidate, DashboardMetrics, Earning } from './types'
+
+const demoCandidates: Candidate[] = [
+  {
+    id: 'demo-c1',
+    userId: 'demo',
+    name: 'Maria Santos',
+    email: null,
+    phone: null,
+    source: 'Telegram',
+    stage: 'Offer',
+    offerId: null,
+    telegram: 'maria_fx',
+    sentBy: 'desk_lead',
+    notes: null,
+    expectedSalary: 2200,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-c2',
+    userId: 'demo',
+    name: 'Alex Chen',
+    email: null,
+    phone: null,
+    source: 'Referral',
+    stage: 'Interview',
+    offerId: null,
+    telegram: 'achen_fx',
+    sentBy: 'recruiter_a',
+    notes: null,
+    expectedSalary: 2800,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-c3',
+    userId: 'demo',
+    name: 'João Silva',
+    email: null,
+    phone: null,
+    source: 'Inbound',
+    stage: 'Accepted',
+    offerId: null,
+    telegram: 'joao_s',
+    sentBy: 'desk_lead',
+    notes: null,
+    expectedSalary: 1600,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-c4',
+    userId: 'demo',
+    name: 'Lina Park',
+    email: null,
+    phone: null,
+    source: 'LinkedIn',
+    stage: 'Screening',
+    offerId: null,
+    telegram: null,
+    sentBy: 'scout_b',
+    notes: null,
+    expectedSalary: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+]
+
+const demoEstimated: Array<Earning & { candidateName?: string }> = [
+  {
+    id: 'demo-e1',
+    userId: 'demo',
+    candidateId: 'demo-c3',
+    offerId: null,
+    amount: 500,
+    status: 'Estimated',
+    notes: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    candidateName: 'João Silva',
+  },
+  {
+    id: 'demo-e2',
+    userId: 'demo',
+    candidateId: 'demo-c1',
+    offerId: null,
+    amount: 1200,
+    status: 'Estimated',
+    notes: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    candidateName: 'Maria Santos',
+  },
+]
 
 /** Fallback KPIs when tables are empty so the desk still feels alive. */
 export const DEMO_METRICS: DashboardMetrics = {
@@ -27,7 +121,7 @@ export const DEMO_METRICS: DashboardMetrics = {
     { label: 'Sat', income: 900, estimated: 200 },
     { label: 'Sun', income: 700, estimated: 150 },
   ],
-  estimatedList: [],
+  estimatedList: demoEstimated,
   attention: [
     {
       id: 'demo-1',
@@ -51,7 +145,7 @@ export const DEMO_METRICS: DashboardMetrics = {
       href: '/earnings',
     },
   ],
-  recentCandidates: [],
+  recentCandidates: demoCandidates,
   activity: [],
   isDemo: true,
 }
