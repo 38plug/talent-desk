@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Plus, ScanLine, Trash2 } from 'lucide-react'
 import { createWorker } from 'tesseract.js'
@@ -69,6 +69,24 @@ function provisionLabel(o: Offer): string {
   return o.commissionType === 'percent' ? `${v}%` : formatMoney(v)
 }
 
+function salaryLabel(o: Offer): string {
+  if (o.category === 'chinese') return formatMoney(o.salary)
+  if (o.salaryMin != null && o.salaryMax != null && o.salaryMin !== o.salaryMax) {
+    return `${formatMoney(o.salaryMin)} – ${formatMoney(o.salaryMax)}`
+  }
+  return formatMoney(o.salaryMin ?? o.salaryMax ?? o.salary)
+}
+
+function formatWhen(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return '—'
+  return d.toLocaleString(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+}
+
 export function OffersPage() {
   const qc = useQueryClient()
   const { data: offers = [], isLoading } = useQuery({ queryKey: ['offers'], queryFn: fetchOffers })
@@ -78,8 +96,9 @@ export function OffersPage() {
   const [scanOpen, setScanOpen] = useState(false)
   const [scanBusy, setScanBusy] = useState(false)
   const [scanMsg, setScanMsg] = useState<string | null>(null)
-  const [preview, setPreview] = useState<ParsedOfferPreview | null>(null)
+  const [scanPreview, setScanPreview] = useState<ParsedOfferPreview | null>(null)
   const [filter, setFilter] = useState<'all' | 'forex' | 'chinese'>('all')
+  const [previewOffer, setPreviewOffer] = useState<Offer | null>(null)
 
   const save = useMutation({
     mutationFn: () => upsertOffer(form, editId),
@@ -89,12 +108,19 @@ export function OffersPage() {
       setForm(blank())
       await qc.invalidateQueries({ queryKey: ['offers'] })
       await qc.invalidateQueries({ queryKey: ['dashboard'] })
+      if (previewOffer && editId === previewOffer.id) {
+        const next = (await fetchOffers()).find((o) => o.id === editId)
+        setPreviewOffer(next ?? null)
+      }
     },
   })
 
   const remove = useMutation({
     mutationFn: deleteOffer,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['offers'] }),
+    onSuccess: async (_data, id) => {
+      if (previewOffer?.id === id) setPreviewOffer(null)
+      await qc.invalidateQueries({ queryKey: ['offers'] })
+    },
   })
 
   const filtered = useMemo(
@@ -105,7 +131,7 @@ export function OffersPage() {
   async function onScanFile(file: File) {
     setScanBusy(true)
     setScanMsg(null)
-    setPreview(null)
+    setScanPreview(null)
     try {
       const worker = await createWorker(['eng', 'rus', 'por', 'deu', 'chi_sim', 'jpn', 'kor'])
       const { data } = await worker.recognize(file)
@@ -116,7 +142,7 @@ export function OffersPage() {
           ? 'Translated to Portuguese for parsing. Review every field before creating.'
           : 'English/Portuguese kept as-is. Review every field before creating.',
       )
-      setPreview(parseOfferText(text))
+      setScanPreview(parseOfferText(text))
     } catch (err) {
       setScanMsg(err instanceof Error ? err.message : 'Scan failed')
     } finally {
@@ -125,14 +151,20 @@ export function OffersPage() {
   }
 
   function openCreateFromPreview() {
-    if (!preview) return
+    if (!scanPreview) return
     setForm({
       ...blank(),
-      ...preview,
+      ...scanPreview,
       status: 'Live',
     })
     setEditId(undefined)
     setScanOpen(false)
+    setFormOpen(true)
+  }
+
+  function openEdit(o: Offer) {
+    setEditId(o.id)
+    setForm(fromOffer(o))
     setFormOpen(true)
   }
 
@@ -179,7 +211,20 @@ export function OffersPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((o) => (
-            <article key={o.id} className="card-surface flex flex-col gap-3 !p-4">
+            <article
+              key={o.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`Preview offer ${o.title}`}
+              className="card-surface flex cursor-pointer flex-col gap-3 !p-4 transition-[border-color,box-shadow] hover:border-lime/25 hover:shadow-[0_0_0_1px_rgb(198_244_50/0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime"
+              onClick={() => setPreviewOffer(o)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setPreviewOffer(o)
+                }
+              }}
+            >
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-xs uppercase tracking-wide text-ink-dim">{o.category}</p>
@@ -196,9 +241,7 @@ export function OffersPage() {
                 <div className="rounded-xl bg-canvas-raised px-3 py-2">
                   <p className="text-[11px] text-ink-dim">Salary</p>
                   <p className="tabular font-semibold">
-                    {o.category === 'chinese'
-                      ? formatMoney(o.salary)
-                      : formatMoney(o.salaryMin)}
+                    {o.category === 'chinese' ? formatMoney(o.salary) : formatMoney(o.salaryMin)}
                   </p>
                 </div>
               </div>
@@ -210,15 +253,21 @@ export function OffersPage() {
                   size="sm"
                   variant="secondary"
                   className="flex-1"
-                  onClick={() => {
-                    setEditId(o.id)
-                    setForm(fromOffer(o))
-                    setFormOpen(true)
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openEdit(o)
                   }}
                 >
                   Edit
                 </Button>
-                <Button size="sm" variant="danger" onClick={() => remove.mutate(o.id)}>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    remove.mutate(o.id)
+                  }}
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -226,6 +275,24 @@ export function OffersPage() {
           ))}
         </div>
       )}
+
+      <Modal
+        open={!!previewOffer}
+        onClose={() => setPreviewOffer(null)}
+        title="Offer preview"
+        wide
+        glass
+      >
+        {previewOffer ? (
+          <OfferPreview
+            offer={previewOffer}
+            onEdit={() => {
+              openEdit(previewOffer)
+            }}
+            onDelete={() => remove.mutate(previewOffer.id)}
+          />
+        ) : null}
+      </Modal>
 
       <Modal
         open={formOpen}
@@ -260,11 +327,12 @@ export function OffersPage() {
           />
           {scanBusy ? <p className="text-sm text-cyan">Scanning…</p> : null}
           {scanMsg ? <p className="text-sm text-ink-muted">{scanMsg}</p> : null}
-          {preview ? (
+          {scanPreview ? (
             <div className="rounded-xl border border-border bg-canvas-raised p-4 text-sm">
-              <p className="font-semibold">{preview.title}</p>
+              <p className="font-semibold">{scanPreview.title}</p>
               <p className="text-ink-muted">
-                {preview.category} · provision {preview.commissionValue || preview.commission || '—'}
+                {scanPreview.category} · provision{' '}
+                {scanPreview.commissionValue || scanPreview.commission || '—'}
               </p>
               <Button className="mt-3" onClick={openCreateFromPreview}>
                 Edit preview & create
@@ -273,6 +341,99 @@ export function OffersPage() {
           ) : null}
         </div>
       </Modal>
+    </div>
+  )
+}
+
+function DetailTile({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="rounded-xl border border-border/80 bg-canvas-raised/80 px-3 py-2.5">
+      <p className="text-[11px] uppercase tracking-wide text-ink-dim">{label}</p>
+      <p className="mt-0.5 text-sm font-semibold text-ink">{value}</p>
+    </div>
+  )
+}
+
+function OfferPreview({
+  offer,
+  onEdit,
+  onDelete,
+}: {
+  offer: Offer
+  onEdit: () => void
+  onDelete: () => void
+}) {
+  const packageFlags = (
+    [
+      ['accommodation', 'Accommodation', offer.accommodation],
+      ['visa', 'Visa', offer.visa],
+      ['flight', 'Flight', offer.flight],
+      ['videoCall', 'Video call', offer.videoCall],
+    ] as const
+  ).filter(([, , on]) => on)
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-wide text-ink-dim">{offer.category}</p>
+          <h3 className="text-xl font-bold text-ink">{offer.title}</h3>
+          <p className="text-sm text-ink-muted">{offer.company || 'No company listed'}</p>
+        </div>
+        <Badge tone={stageTone(offer.status)}>{offer.status}</Badge>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        <DetailTile label="Provision" value={provisionLabel(offer)} />
+        <DetailTile label="Salary" value={salaryLabel(offer)} />
+        <DetailTile
+          label="Provision type"
+          value={offer.commissionType === 'percent' ? 'Percent of salary' : 'Fixed amount'}
+        />
+        <DetailTile label="Location" value={offer.location || '—'} />
+        <DetailTile
+          label="Recruiter"
+          value={
+            offer.telegram ? (
+              <span className="text-cyan">{ensureAtHandle(offer.telegram)}</span>
+            ) : (
+              '—'
+            )
+          }
+        />
+        {offer.roleType ? <DetailTile label="Role type" value={offer.roleType} /> : null}
+        <DetailTile label="Created" value={formatWhen(offer.createdAt)} />
+        <DetailTile label="Updated" value={formatWhen(offer.updatedAt)} />
+      </div>
+
+      {packageFlags.length > 0 ? (
+        <div>
+          <p className="mb-2 text-[11px] uppercase tracking-wide text-ink-dim">Package</p>
+          <div className="flex flex-wrap gap-2">
+            {packageFlags.map(([key, label]) => (
+              <Badge key={key} tone="lime">
+                {label}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <div>
+        <p className="mb-2 text-[11px] uppercase tracking-wide text-ink-dim">Description</p>
+        <div className="rounded-xl border border-border/80 bg-canvas-raised/80 px-4 py-3 text-sm whitespace-pre-wrap text-ink-muted">
+          {offer.description?.trim() ? offer.description : 'No description provided.'}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
+        <Button variant="secondary" onClick={onEdit}>
+          Edit offer
+        </Button>
+        <Button variant="danger" onClick={onDelete}>
+          <Trash2 className="h-4 w-4" /> Delete
+        </Button>
+      </div>
     </div>
   )
 }
