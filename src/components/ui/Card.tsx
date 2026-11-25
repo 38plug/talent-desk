@@ -30,8 +30,21 @@ export function CardTitle({
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <h3 className={cn('text-base font-semibold text-ink', className)} {...props}>
+    <h3 className={cn('text-lg font-semibold tracking-tight text-ink', className)} {...props}>
       {children}
     </h3>
+  )
+}
+
+/** Supporting line under a card title — sized to balance empty glass panels. */
+export function CardSubtitle({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p className={cn('mt-1 text-sm leading-snug text-ink-muted', className)} {...props}>
+      {children}
+    </p>
   )
 }
