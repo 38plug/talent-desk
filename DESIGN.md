@@ -1,14 +1,17 @@
 ---
 name: Talent Desk
-description: Neon-dark forex recruiting command center — violet/cyan/magenta signals on near-black canvas, Plus Jakarta Sans, glow chrome.
+description: Charcoal lime-glass forex recruiting command center — #111 canvas, lime conversion, peach kickers, Plus Jakarta Sans, stretchy nav pill.
 colors:
-  canvas: "#080A10"
-  canvas-raised: "#0B0D14"
-  surface: "#121622"
-  surface-raised: "#171C2B"
-  surface-hover: "#1C2235"
+  canvas: "#111111"
+  canvas-raised: "#161616"
+  surface: "#1A1A1A"
+  surface-raised: "#1F1F1F"
+  surface-hover: "#262626"
   border: "rgb(255 255 255 / 0.08)"
   border-strong: "rgb(255 255 255 / 0.14)"
+  lime: "#C6F432"
+  lime-glow: "#D9FF6A"
+  peach: "#F4B183"
   violet: "#7C3AED"
   violet-glow: "#A78BFA"
   cyan: "#22D3EE"
@@ -36,20 +39,26 @@ typography:
     letterSpacing: "-0.02em"
   title:
     fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1rem"
+    fontSize: "1.125rem"
     fontWeight: 600
-    lineHeight: 1.35
-    letterSpacing: "normal"
+    lineHeight: 1.3
+    letterSpacing: "-0.015em"
   body:
     fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
+  subtitle:
+    fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.875rem"
+    fontWeight: 400
+    lineHeight: 1.375
+    letterSpacing: "normal"
   label:
     fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.625rem"
-    fontWeight: 600
+    fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "0.18em"
   mono:
@@ -74,17 +83,18 @@ spacing:
   section: "32px"
   gutter: "32px"
   rail: "17rem"
+  rail-collapsed: "4.75rem"
 components:
   button-primary:
-    backgroundColor: "{colors.violet}"
-    textColor: "#FFFFFF"
+    backgroundColor: "{colors.lime}"
+    textColor: "{colors.canvas}"
     typography: "{typography.title}"
     rounded: "{rounded.control}"
     padding: "0 16px"
     height: "40px"
   button-primary-hover:
-    backgroundColor: "{colors.violet-glow}"
-    textColor: "#FFFFFF"
+    backgroundColor: "{colors.lime-glow}"
+    textColor: "{colors.canvas}"
     rounded: "{rounded.control}"
   button-secondary:
     backgroundColor: "{colors.surface-raised}"
@@ -95,6 +105,12 @@ components:
   button-ghost:
     backgroundColor: "transparent"
     textColor: "{colors.ink-muted}"
+    rounded: "{rounded.control}"
+    padding: "0 16px"
+    height: "40px"
+  button-lime:
+    backgroundColor: "{colors.lime}"
+    textColor: "{colors.canvas}"
     rounded: "{rounded.control}"
     padding: "0 16px"
     height: "40px"
@@ -117,7 +133,7 @@ components:
     padding: "0 16px"
     height: "40px"
   input-field:
-    backgroundColor: "rgb(11 13 20 / 0.90)"
+    backgroundColor: "rgb(22 22 22 / 0.90)"
     textColor: "{colors.ink}"
     rounded: "{rounded.control}"
     padding: "0 12px"
@@ -127,9 +143,14 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.card}"
     padding: "20px"
+  glass-panel:
+    backgroundColor: "rgb(20 20 20 / 0.78)"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.card}"
+    padding: "20px"
   chip-pill:
-    backgroundColor: "rgb(124 58 237 / 0.15)"
-    textColor: "{colors.violet-glow}"
+    backgroundColor: "rgb(198 244 50 / 0.15)"
+    textColor: "{colors.lime}"
     rounded: "{rounded.pill}"
     padding: "2px 10px"
   nav-link:
@@ -138,8 +159,8 @@ components:
     rounded: "{rounded.nav}"
     padding: "10px 12px"
   nav-link-active:
-    backgroundColor: "rgb(124 58 237 / 0.28)"
-    textColor: "{colors.ink}"
+    backgroundColor: "{colors.lime}"
+    textColor: "{colors.canvas}"
     rounded: "{rounded.nav}"
     padding: "10px 12px"
 ---
@@ -148,61 +169,65 @@ components:
 
 ## Overview
 
-**Creative North Star: "The Neon Signal Desk"**
+**Creative North Star: "The Lime Glass Desk"**
 
-Talent Desk is a night-shift recruiting floor: near-black canvas, violet/cyan/magenta signal glows, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA, not a marketing site. Auth is a centered neon card on a mesh of blurred orbs. Once inside, a 17rem raised rail plus a sticky glass header hold the desk; the working canvas is KPI heroes, neon charts, and data tables — never a photo-led landing.
+Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA, not a marketing site. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay and a sound toggle. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.
 
-The room is signed by a 14–18px rounded **TD** mark filled with a violet→magenta→cyan gradient and a violet bloom. Violet is the conversion color (primary CTA, active nav wash). Cyan is the focus/link/chart signal. Magenta is the register CTA, the “Desk” kicker, and the 3px inset bar on the active nav row. Emerald / amber / rose are pipeline status only — not a second brand.
+The room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.
 
-Density is operational. Cards sit at 20px radius with a 1px white-8% seam and an inner highlight. Motion is 200ms ease on chrome; charts glow via SVG filters. `prefers-reduced-motion` collapses animations to 0.01ms. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and filling large interiors with solid violet.
+Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius). Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash). Motion is cinematic: GSAP stretchy slide-pill, Framer blur page transitions, spring stagger on the dashboard. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.
 
 **Key Characteristics:**
-- Near-black canvas (`#080A10`) with a four-stop mesh of violet / cyan / magenta orbs
-- Violet (`#7C3AED`) as conversion; cyan (`#22D3EE`) as focus and charts; magenta (`#EC4899`) as the second signal
+- Charcoal canvas (`#111111`) with a lime / violet / peach mesh and optional film grain on auth
+- Lime (`#C6F432`) as conversion; peach (`#F4B183`) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only
 - Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips
 - Plus Jakarta Sans for all UI; JetBrains Mono only for money and counts (`.tabular`)
-- Gradient TD mark + glow as the brand lockup
-- Neon Recharts (area / bar / donut / spark) as the dashboard signature, not a marketing hero
-- Auth orbs (`filter: blur(48px)`) behind a glowing card — no rail until session or demo UI
+- Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)
+- GSAP stretchy lime nav pill + collapsible 17rem → 4.75rem rail
+- Glass dashboard panels (`.glass-panel`) as the working signature; neon Recharts (lime + peach)
+- Auth glass card on orbs — no rail until session; no demo-preview bypass
 
 ## Colors
 
-A three-signal neon palette on near-black. Neutrals are cool slate, never cream.
+A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 
 ### Primary
-- **Signal Violet** (`#7C3AED`): Conversion. Primary CTA, active pill, selection wash, scrollbar rest. Keep large fills rare — the dashboard hero gradient is the exception.
-- **Violet Glow** (`#A78BFA`): Primary hover, page-kicker, estimated KPI spark, chart dash series.
-- **Violet Bloom** (`0 0 28px rgb(124 58 237 / 0.4)`): Primary button rest, brand mark, active nav.
+- **Signal Lime** (`#C6F432`): Conversion. Primary CTA, “Join Talent Desk”, active nav pill, selection (`rgb(198 244 50 / 0.35)` on `#111`), scrollbar rest, in-page links, confirm buttons. Keep large fills rare — the lime hero CTA and the stretchy pill are the exceptions.
+- **Lime Glow** (`#D9FF6A`): Primary hover, gauge end-stop.
+- **Lime Bloom** (`0 0 28px rgb(198 244 50 / 0.35)`): Primary button rest, TD mark, active pill, dashboard lime CTA.
 
 ### Secondary
-- **Signal Cyan** (`#22D3EE`): Focus rings, in-page links, cyan CTA, income spark/area, live-desk hero. Global `:focus-visible` is a 2px cyan outline, 2px offset.
+- **Peach** (`#F4B183`): `.floating-label` kickers (“Desk”, `APP_NAME`, auth tagline), estimated chart series (dashed), bar-chart end-stop, auth orb, gauge start-stop. Peach is voice, not conversion.
+- **Signal Violet** (`#7C3AED`): Heritage. KPI spark, donut slice, leftover field `:focus` ring. Do not use as the primary CTA.
+- **Violet Glow** (`#A78BFA`): Estimated KPI spark; leftover empty-state eyebrow.
+- **Signal Cyan** (`#22D3EE`): Income spark, cyan button variant, sound-toggle hover. Global `:focus-visible` is **lime**, not cyan.
 - **Cyan Glow** (`#67E8F9`): Cyan button hover.
-- **Signal Magenta** (`#EC4899`): Register CTA, “Desk” kicker, candidates KPI spark, donut slice. Active nav draws a 3px magenta inset bar.
-- **Magenta Glow** (`#F472B6`): Magenta hover and operator-chip rim.
+- **Signal Magenta** (`#EC4899`): Candidates KPI spark; magenta button variant still exists but register is lime, not magenta.
+- **Magenta Glow** (`#F472B6`): Magenta hover.
 
 ### Tertiary
-- **Emerald** (`#10B981`): Hired / Paid / Live / auth-healthy. Status only.
-- **Amber** (`#F59E0B`): Screening / Paused / interviews KPI / connectivity warning. Status only.
+- **Emerald** (`#10B981`): Hired / Paid / Live. Status only.
+- **Amber** (`#F59E0B`): Screening / Paused / interviews KPI. Status only.
 - **Rose** (`#F43F5E`): Overdue / Rejected / Closed / form errors. Status and danger buttons only.
 
 ### Neutral
-- **Canvas** (`#080A10`): Page ground, `body` fill.
-- **Canvas Raised** (`#0B0D14`): Rail, field wells (`bg-canvas-raised/90`).
-- **Surface** (`#121622`): Cards, modal, drawer.
-- **Surface Raised** (`#171C2B`): Secondary buttons, chart tooltip fill.
-- **Surface Hover** (`#1C2235`): Secondary hover.
-- **Ink** (`#F8FAFC`): Primary text. Selection is violet-40% on white.
-- **Ink Muted** (`#94A3B8`): Supporting copy, inactive nav.
-- **Ink Dim** (`#64748B`): Placeholders, table headers, axis ticks.
+- **Canvas** (`#111111`): Page ground, `body` fill, lime-on-canvas text.
+- **Canvas Raised** (`#161616`): Rail, field wells (`bg-canvas-raised/90`).
+- **Surface** (`#1A1A1A`): Modal, some rest cards, chart tooltip fill.
+- **Surface Raised** (`#1F1F1F`): Secondary buttons.
+- **Surface Hover** (`#262626`): Secondary hover.
+- **Ink** (`#F8FAFC`): Primary text.
+- **Ink Muted** (`#94A3B8`): Supporting copy, inactive nav, chart ticks.
+- **Ink Dim** (`#64748B`): Placeholders, table headers, taglines.
 - **Border** (`rgb(255 255 255 / 0.08)`): Default seam.
-- **Border Strong** (`rgb(255 255 255 / 0.14)`): Field rest stroke (tightened for auth readability).
+- **Border Strong** (`rgb(255 255 255 / 0.14)`): Field rest stroke.
 
 ### Named Rules
-**The Violet Conversion Rule.** `#7C3AED` is the irreversible action: Sign in, primary save, active pill. Cyan and magenta may light charts, links, and register — they do not replace the primary CTA on a working pane.
+**The Lime Conversion Rule.** `#C6F432` is the irreversible action: Enter Talent Desk, Join Talent Desk, Confirm, Open candidates, the stretchy nav pill. Peach, violet, cyan, and magenta may light charts and kickers — they do not replace the primary CTA on a working pane.
 
 **The Status-Not-Brand Rule.** Emerald, amber, and rose map pipeline / earning / offer states through `stageTone`. Do not promote them into a four-color brand.
 
-**The Mesh-Is-Atmosphere Rule.** `.bg-mesh` orbs are ground lighting, not a fill token for cards. Cards stay on `card-surface` (steel gradient + 6% violet wash).
+**The Mesh-Is-Atmosphere Rule.** `.bg-mesh` orbs are ground lighting, not a fill token for cards. Dashboard panes stay on `.glass-panel`; forms stay on `.card-surface`.
 
 ## Typography
 
@@ -210,123 +235,143 @@ A three-signal neon palette on near-black. Neutrals are cool slate, never cream.
 **Body Font:** Plus Jakarta Sans
 **Label/Mono Font:** JetBrains Mono (with ui-monospace) via `--font-mono` and `.tabular`
 
-**Character:** One geometric sans does the room — extra-bold tracking-tight titles, semibold controls, medium labels. Mono is reserved for money, KPI numerals, and nav indexes (`01`–`07`). There is no serif editorial voice.
+**Character:** One geometric sans does the room — extra-bold tracking-tight titles, semibold controls, medium labels. Mono is reserved for money, KPI numerals, and nav indexes (`01`–`07`). There is no serif editorial voice. Dashboard card titles are `text-lg`; subtitles and empty-state body are `text-sm` / `text-base` so glass panels do not look empty.
 
 ### Hierarchy
-- **Display** (800, `text-3xl`–`text-4xl`, tracking tight): Login wordmark, dashboard “Pipeline command center”, live-desk paid figure.
+- **Display** (800, `text-3xl`–`text-4xl`, tracking tight, lime text-glow on auth): Login wordmark, dashboard “Pipeline command center”, live-desk paid figure.
 - **Headline** (800, `text-lg`–`text-xl`): Sticky header page title (`Overview`, `Candidates`, …).
-- **Title** (600–700, `text-base`): Card titles, operator name, table names.
-- **Body** (400–500, `14px`): Forms, descriptions, table cells, connectivity hints.
-- **Label** (600, `10–11px`, tracking `0.16–0.22em`, uppercase): “Desk”, `APP_NAME` kicker, table thead, empty-state eyebrow.
-- **Mono** (500, tabular-nums): `formatMoney`, spark KPI values, nav index digits.
+- **Title** (600, `text-lg` / `CardTitle`): Card titles, operator name, table names. Sized up so glass panes read as occupied.
+- **Subtitle** (400, `text-sm` leading-snug muted / `CardSubtitle`): Supporting line under a card title.
+- **Body** (400–500, `14px`): Forms, descriptions, table cells. Empty-state body and chart axis ticks are `13–16px`, not 11px gray dust.
+- **Label** (700, `10–11px`, tracking `0.16–0.22em`, uppercase, peach via `.floating-label`): “Desk”, `APP_NAME` kicker, table thead (`0.06em` on thead).
+- **Mono** (500, tabular-nums): `formatMoney`, spark KPI values, nav index digits, `AnimatedNumber`.
 
 ### Named Rules
 **The One-Sans Rule.** Plus Jakarta Sans is the product face. Do not introduce Inter, Geist, Syne, or a serif masthead. JetBrains Mono does not set sentences.
 
-**The Tracked Kicker Rule.** Eyebrows are 10px uppercase with `0.18–0.22em` tracking in violet-glow or magenta-glow — not a lime square, not a serif kicker.
+**The Tracked Kicker Rule.** Eyebrows are 10px uppercase with `0.18–0.22em` tracking in **peach** (`.floating-label`). Do not restore a magenta kicker or a lime square badge as the system eyebrow.
+
+**The Occupied Glass Rule.** Card titles are `text-lg`; subtitles `text-sm`; empty-state and chart ticks stay readable (`13px+`). Do not drop supporting copy back to 11px gray on glass.
 
 ## Layout
 
-The authenticated product is a rail-plus-canvas command floor.
+The authenticated product is a collapsible rail-plus-canvas command floor.
 
-- **Rail:** Fixed `17rem` (`w-[17rem]`), `bg-canvas-raised/95` + `backdrop-blur-xl`, 1px right seam. Brand lockup, “Desk” kicker, indexed nav, operator chip, ghost Sign out. Below `lg` it slides off-canvas (`-translate-x-full`) behind a `bg-black/55` scrim.
-- **Header:** Sticky, `bg-canvas/75` + blur, 12px vertical padding. Page title left; search (md+) and initials avatar right. Mobile hamburger is a 12px-radius bordered square.
-- **Main:** `px-4 py-6` → `sm:px-6` → `lg:px-8`. Vertical stack `space-y-5` / `gap-4` / `gap-5`.
-- **Auth:** Centered `max-w-md` card on `.bg-mesh` with three `.auth-orb` blobs. No rail.
-- **Dashboard:** 5-col hero (`3 + 2`) at `lg`; 4 KPI cards; then area + donut, bar + estimated list, attention + recent table.
-- **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover violet-6%.
+- **Rail:** Fixed `17rem` expanded / `4.75rem` collapsed (`talent-desk.sidebar-collapsed`). `bg-canvas-raised/95` + `backdrop-blur-xl`, 1px right seam. Width transition `400ms` `cubic-bezier(0.16, 1, 0.3, 1)`. Brand lockup, peach “Desk” kicker, indexed nav with a GSAP lime slide-pill, operator chip (lime/10 wash), ghost Sign out, collapse control. Below `lg` it slides off-canvas (`-translate-x-full`) behind a `bg-black/55` scrim.
+- **Header:** Sticky, `bg-canvas/80` + blur, 12px vertical padding. Page title left; search (md+), sound toggle, lime-ring initials avatar right. Mobile hamburger is a 12px-radius bordered square.
+- **Main:** `px-4 py-6` → `sm:px-6` → `lg:px-8`. Vertical stack `space-y-5` / `gap-4`. Page content swaps through `PageTransition` (blur + scale).
+- **Auth:** Centered `max-w-md` `.glass-panel.card-glow` on `.bg-mesh` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`). Film-grain overlay. Sound toggle top-right. No rail.
+- **Dashboard:** 5-col hero (`3 + 2`) at `lg`; 4 glass KPI cards; then area + attention, donut + bar + estimated list, recent table. Empty desk shows a lime/10 banner and zeros — never seeded demo income.
+- **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover lime-5%.
 - **Dialogs:** Modal `max-w-lg` (or `max-w-2xl` wide) at 20px radius; candidate detail is a right `max-w-md` drawer.
 
 Spacing rhythm is 8 / 12 / 16 / 20 / 24 / 32.
 
 ## Elevation & Depth
 
-Depth is glow plus tonal steel, not Material elevation. Cards are opaque gradients with an inset 1px white highlight. The page mesh and auth orbs supply atmosphere.
+Depth is glass plus lime bloom, not Material elevation. Dashboard panes are frosted (blur 20px, saturate 1.25) with an inset 1px white highlight and a 6% lime seam. Forms stay opaque charcoal. The page mesh and auth orbs supply atmosphere.
 
 ### Shadow Vocabulary
-- **Violet glow** (`0 0 28px rgb(124 58 237 / 0.4), 0 0 8px rgb(124 58 237 / 0.25)`): Primary CTA, TD mark, active pill.
-- **Cyan glow** (`0 0 28px rgb(34 211 238 / 0.35), 0 0 8px rgb(34 211 238 / 0.2)`): Cyan CTA, live-desk hero (`0 0 40px`).
-- **Magenta glow** (`0 0 28px rgb(236 72 153 / 0.35)`): Magenta CTA, operator chip rim.
-- **Card glow** (`inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(124 58 237 / 0.12), 0 12px 40px rgb(0 0 0 / 0.35)`): Auth card (`.card-glow`); login adds `0 0 80px rgb(124 58 237 / 0.22)`.
-- **Hero violet** (`0 0 48px rgb(124 58 237 / 0.4)`): Dashboard command-center slab.
-- **Active nav** (inset 3px magenta bar + 1px violet seam + `0 0 24px rgb(124 58 237 / 0.2)`).
-- **Focus** (inputs): `ring-2 ring-violet/30` + `border-violet/70`. Global `:focus-visible` is cyan, not violet.
+- **Lime glow** (`0 0 28px rgb(198 244 50 / 0.35), 0 0 8px rgb(198 244 50 / 0.2)`): Primary CTA, TD mark, active pill, confirm lime.
+- **Violet glow** (`0 0 28px rgb(124 58 237 / 0.4)`): Heritage CTA variant only.
+- **Cyan glow** (`0 0 28px rgb(34 211 238 / 0.35)`): Cyan CTA variant.
+- **Magenta glow** (`0 0 28px rgb(236 72 153 / 0.35)`): Magenta CTA variant.
+- **Card glow** (`inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(198 244 50 / 0.1), 0 12px 40px rgb(0 0 0 / 0.4)`): Auth / KPI `.card-glow`.
+- **Auth bloom** (`0 0 80px rgb(198 244 50 / 0.12)`): Login glass extra bloom.
+- **Hero lime** (`0 0 48px rgb(198 244 50 / 0.15)`): Dashboard command-center slab.
+- **Glass panel** (`inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(198 244 50 / 0.06), 0 18px 48px rgb(0 0 0 / 0.45)`): Dashboard working panes.
+- **Focus (global)** (`outline: 2px solid #C6F432; outline-offset: 2px`).
+- **Focus (fields, leftover):** `ring-2 ring-violet/30` + `border-violet/70`. Search uses lime (`border-lime/50` + `ring-lime/20`).
 - **Badge** (`0 0 12px rgb(0 0 0 / 0.15)`): Soft rest under pills.
 
 ### Named Rules
-**The Glow-Is-Signal Rule.** Bloom belongs on conversion, brand mark, active nav, and charts. Do not put a 48px glow under every card — rest cards use `card-surface` only (inset highlight, no outer bloom).
+**The Glow-Is-Signal Rule.** Bloom belongs on conversion, brand mark, the stretchy pill, and charts. Rest forms use `.card-surface` only (inset highlight, no outer bloom). Dashboard KPIs may take `.card-glow` on glass.
 
-**The Steel Card Rule.** Working surfaces are `.card-surface`: 165° steel gradient + 6% violet wash, 1px `--color-border`, 20px radius. Do not restyle them into glassmorphism or a flat `#111`.
+**The Glass Desk Rule.** Overview panes are `.glass-panel` (`backdrop-filter: blur(20px) saturate(1.25)`). Do not flatten them back to opaque navy steel (`#121622`) or a single un-blurred `#111` slab.
 
 ## Shapes
 
-The silhouette is softly rounded night chrome — 12px controls, 20px slabs, full pills for status.
+The silhouette is softly rounded charcoal chrome — 12px controls, 20px slabs, full pills for status, a 14px-round clip on the nav pill.
 
-- **Brand mark:** 14px at 44px (rail); 18px at 64px (auth).
-- **Nav rows:** 14px.
+- **Brand mark:** 14px at 44px (rail); 18px at 64px (auth). Solid lime fill, black letters — not a violet→magenta→cyan gradient.
+- **Nav rows / slide pill:** 14px (`round 14px` clip-path).
 - **Buttons / fields / header menu:** 10–12px (`rounded-[10px]` sm, `12px` md/lg).
-- **Search:** full pill (`rounded-full`).
-- **Cards / modal / empty / dashboard heroes:** 20px (`--radius-card` / `rounded-[20px]`).
-- **Operator chip:** 18px outer gradient frame, 17px inner.
-- **Badges / pill toggles / header avatar:** `9999px`.
-- **Table:** no radius on rows; the wrapping card carries the 20px.
+- **Search / sound toggle / avatar:** full pill.
+- **Cards / modal / empty / dashboard heroes / glass:** 20px (`--radius-card`).
+- **Operator chip:** 18px, lime/25 border, lime/10 fill.
+- **Badges / pill toggles:** `9999px`. Active pill-toggle is solid lime on `#111`.
+- **Table:** no radius on rows; the wrapping glass card carries the 20px.
 
-Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick up a 30% tint of their signal color.
+Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick up a 30% tint of their tone.
 
 ## Components
 
 ### Buttons
-- **Shape:** 12px (10px at `sm`), height 40px (`h-8` sm / `h-11` lg), semibold, 8px icon gap, 200ms transition.
-- **Primary:** Violet fill, white text, 20px violet bloom. Hover `#A78BFA`.
+- **Shape:** 12px (10px at `sm`), height 40px (`h-8` sm / `h-11` lg), semibold, 8px icon gap, 200ms transition. Hover plays `pop`; click plays `tap` (when SFX unmuted).
+- **Primary:** Lime fill, canvas (`#111`) text, 20px lime bloom. Hover `#D9FF6A`. “Enter Talent Desk”.
+- **Lime (alias):** Same fill; used for “Join Talent Desk” and “Confirmed”.
 - **Secondary:** Surface-raised, 1px border, hover `border-strong` + surface-hover.
 - **Ghost:** Transparent, muted text; hover ink + `white/5`. Sign out in the rail.
-- **Cyan / Magenta:** Signal fills with matching glow. Magenta is **Join Talent Desk** only.
+- **Cyan / Magenta:** Heritage signal fills. Magenta is **not** the register CTA anymore.
 - **Danger:** Rose veil 15% + rose text + rose/30 border.
 - **Disabled:** 45% opacity, no pointer.
+- **Motion shell:** `MotionButtonShell` scales 1.015 / 0.985 on hover/tap.
 
 ### Chips / Badges
-- Full pill, 11px semibold, 1px tinted border, 15% fill of the tone. Tones: violet, cyan, magenta, emerald, amber, rose, muted.
+- Full pill, 11px semibold, 1px tinted border, 15% fill of the tone. Tones now include **lime** plus violet, cyan, magenta, emerald, amber, rose, muted.
 - `stageTone()` maps Hired/Paid/Live → emerald; Accepted/Pending/Interview → cyan; Offer/Estimated → violet; Overdue/Rejected/Closed → rose; Paused/Screening → amber.
-- Pill toggle (`.pill-toggle`): surface well; active item is solid violet + glow.
+- Pill toggle (`.pill-toggle`): surface well; active item is solid lime + glow.
 
 ### Cards / Containers
-- **`Card`:** `.card-surface p-5`. Header is title left, actions right.
-- **Dashboard heroes:** `.hero-gradient-violet` (`#6d28d9 → #a21caf → #db2777`) and `.hero-gradient-cyan` (`#0e7490 → #0891b2 → #22d3ee`), 20px radius, inner blur orbs.
-- **Empty:** 20px dashed border, `bg-surface/40`, 64px vertical padding, tracked violet-glow eyebrow.
-- **Demo banner:** 16px, cyan/10 fill, cyan/30 border, 24px cyan bloom.
+- **`Card`:** `.card-surface p-5` (settings, forms). Header is title left, actions right.
+- **Dashboard panes:** `.glass-panel` + optional `.card-glow`. KPI cards `!p-4`.
+- **Dashboard heroes:** `.hero-gradient-violet` is now a charcoal→violet-wash→green-black slab (`#1a1a1a → #2a1848 → #1a2a22`), not a solid violet fill. `.hero-gradient-cyan` is a lime slab (`#c6f432 → #a8d92a → #8bc420`) used as the live-desk companion only if reapplied — current live-desk pane is glass, not that gradient.
+- **Empty:** 20px dashed border, `bg-surface/40`, 64px vertical padding. Eyebrow is still violet-glow (leftover); prefer peach `.floating-label` on new empties.
+- **Empty-desk banner:** 16px, lime/10 fill, lime/30 border, 24px lime bloom. Honest zeros, not demo metrics.
 
 ### Inputs / Fields
 - **Style:** 12px radius, `border-border-strong`, `bg-canvas-raised/90`, 14px ink, dim placeholder. Height 40px.
-- **Focus:** Violet/70 border + 2px violet/30 ring. Do not swap this for the global cyan outline on text fields.
+- **Focus (shipped):** Violet/70 border + 2px violet/30 ring on `Input` / `Textarea` / `Select`. Search (header) uses lime. Global `:focus-visible` is lime. New fields should follow search/global (lime), not grow the violet leftover.
 - **Search (header):** Full pill, `bg-surface/80`, 240px, icon inset. Chrome only — no query handler.
-- **Error:** Rose/10 panel with rose title and muted hint. Connectivity uses amber (warning) or emerald (healthy).
+- **Error:** Rose/30 panel, 14px radius, rose title.
 
 ### Navigation
-Rail: 17rem, TD gradient mark, “Talent Desk” 15px extrabold + tagline 10px dim. “Desk” kicker in magenta-glow. Rows are 14px radius; inactive muted; hover `white/5`. Active uses `.nav-active` (violet wash, magenta inset bar). Indexes are 10px mono dim. Operator chip is a 1px magenta→violet→cyan frame. Mobile: hamburger + scrim.
+Rail: collapsible 17rem / 4.75rem, solid lime TD mark, “Talent Desk” 15px extrabold + 10px dim tagline. “Desk” kicker in peach. Rows are 14px radius; inactive muted; hover ink. Active text is canvas (`#111`) on the GSAP `.nav-pill` (full-bleed lime, clip-path inset, lead 0.36s `power3.out`, trail 0.55s `power3.inOut`). Indexes are 10px mono dim (hidden when collapsed). Operator chip is a lime-tinted well. Collapse plays `thud`; nav click plays `bass`; nav hover plays `pop`. Mobile: hamburger + scrim.
 
-Header kicker is violet-glow uppercase `APP_NAME`; title is the current nav label. Avatar is a 40px gradient disc with initials.
+Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Avatar is a 40px lime/20 disc with lime ring.
+
+### Signature: stretchy lime pill
+`src/lib/slide-pill.ts`. The pill is a lime rectangle under the nav; clip-path reveals the active row with a stretchy lead/trail. Reduced motion snaps via `setPillImmediate`. Do not restore a 3px magenta inset bar as the active treatment.
 
 ### Signature: neon charts
-`Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Cyan + violet area (estimated series dashed), cyan→violet bar gradient, donut palette cyan/violet/magenta/emerald/amber/rose. Tooltips: `#171C2B`, 12px radius. Sparklines sit on KPI cards; they do not replace the TD mark.
+`Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Lime + peach area (estimated series dashed), lime→peach bar gradient, donut palette lime/peach/violet/emerald/amber/rose. Axis ticks 13px muted. Tooltips: `#1A1A1A`, 12px radius, 13px type. Gauge ring on the live-desk pane is peach→lime with a lime drop-shadow. Sparklines sit on KPI cards; they do not replace the TD mark.
 
 ### Auth card (signature)
-Centered `max-w-md` `.card-surface.card-glow` with three `.auth-orb` blobs (violet, cyan, magenta; `blur(48px)`, 55% opacity). Login CTA is primary violet (“Enter Talent Desk”); register is magenta (“Join Talent Desk”). Links between them are cyan. Auth chip brands **Talent Desk** (not “Neon desk”).
+Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`, drifting via Framer). Film grain overlay. Login CTA is primary lime (“Enter Talent Desk”); register is `variant="lime"` (“Join Talent Desk”). Links between them are lime. No “Preview Talent Desk UI”. Sound toggle is top-right on the shell.
+
+### Motion + SFX
+- **Page:** blur 8px → 0 + scale 0.985 → 1 in 0.45s `[0.16, 1, 0.3, 1]`; exit blur 6px in 0.22s.
+- **Dashboard:** `staggerContainer` 0.07 / 0.08; items `fadeUp` (y 18, blur 6px) with hover lift −2px.
+- **Numbers:** `AnimatedNumber` tabular.
+- **SFX:** Web Audio `thud` / `bass` / `pop` / `hover` / `tap` / `success` / `whoosh`. Key `talent-desk.sfx-muted`. Default muted. Honors `prefers-reduced-motion`.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep canvas / canvas-raised / surface as the ground family and `#7C3AED` as the primary conversion color.
+- **Do** keep canvas / canvas-raised / surface as the charcoal ground family and `#C6F432` as the primary conversion color.
 - **Do** set titles in extra-bold Plus Jakarta Sans; money and indexes in JetBrains Mono (`.tabular`).
-- **Do** build panes from `.card-surface`, `.data-table`, and the radius steps (10 / 12 / 14 / 18 / 20 / pill).
+- **Do** build the Overview from `.glass-panel` + `.data-table`; build Settings/forms from `.card-surface`.
 - **Do** map pipeline and earning states through `stageTone` — emerald / cyan / violet / rose / amber.
-- **Do** keep the TD gradient mark + glow as the lockup; do not replace it with a wordmark-only header.
-- **Do** honor `prefers-reduced-motion` (global 0.01ms) and keep chrome transitions at 200ms.
-- **Do** keep auth as a centered neon card with orbs; do not put the rail on `/login` or `/register`.
+- **Do** keep the solid lime TD mark + glow as the lockup; keep the stretchy lime nav pill.
+- **Do** honor `prefers-reduced-motion` (global 0.01ms, no SFX) and keep chrome transitions at 200ms unless a named motion token applies.
+- **Do** keep auth as a centered glass card with orbs; do not put the rail on `/login` or `/register`.
+- **Do** keep SFX muted by default; never auto-unmute.
 
 ### Don't:
-- **Don't** introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on `#080A10`.
-- **Don't** sharpen chrome to 2px rectangles or restore a single-accent lime/hot-pink world from other studios.
-- **Don't** fill working cards with solid violet, cyan, or magenta. Glow is for conversion, mark, charts, and heroes.
-- **Don't** treat emerald / amber / rose as brand fills.
+- **Don't** restore the violet-conversion Neon Signal Desk (`#080A10` canvas, `#7C3AED` primary CTA, magenta inset nav bar, gradient TD mark).
+- **Don't** introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on `#111111`.
+- **Don't** sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.
+- **Don't** treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill.
 - **Don't** add a second product look for Admin — it uses the same cards, tables, and badges.
-- **Don't** commit secrets, service-role keys, or live anon tokens into either design file.
+- **Don't** seed demo income or restore a demo-preview bypass on the login screen.
+- **Don't** commit secrets, password hashes, or live account JSON into either design file.
