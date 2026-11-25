@@ -23,27 +23,30 @@ export function Sparkline({
   color?: string
 }) {
   const series = data.map((v, i) => ({ i, v }))
+  const filterId = `sparkGlow-${color.replace('#', '')}`
   return (
-    <div className="h-12 w-24">
+    <div className="h-12 w-28 shrink-0">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={series}>
-          <Line
-            type="monotone"
-            dataKey="v"
-            stroke={color}
-            strokeWidth={2.5}
-            dot={false}
-            filter="url(#sparkGlow)"
-          />
           <defs>
-            <filter id="sparkGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+            <filter id={filterId} x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
               <feMerge>
+                <feMergeNode in="coloredBlur" />
                 <feMergeNode in="coloredBlur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
           </defs>
+          <Line
+            type="monotone"
+            dataKey="v"
+            stroke={color}
+            strokeWidth={2.75}
+            dot={false}
+            filter={`url(#${filterId})`}
+            isAnimationActive={false}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -83,14 +86,22 @@ export function NeonAreaChart({
               borderRadius: 12,
             }}
           />
-          <Area type="monotone" dataKey={aKey} stroke="#22D3EE" fill="url(#gCyan)" strokeWidth={2.5} />
+          <Area
+            type="monotone"
+            dataKey={aKey}
+            stroke="#22D3EE"
+            fill="url(#gCyan)"
+            strokeWidth={3}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(34,211,238,0.65))' }}
+          />
           <Area
             type="monotone"
             dataKey={bKey}
-            stroke="#7C3AED"
+            stroke="#A78BFA"
             fill="url(#gViolet)"
-            strokeWidth={2}
-            strokeDasharray="4 4"
+            strokeWidth={2.5}
+            strokeDasharray="5 5"
+            style={{ filter: 'drop-shadow(0 0 6px rgba(124,58,237,0.55))' }}
           />
         </AreaChart>
       </ResponsiveContainer>

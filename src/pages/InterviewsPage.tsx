@@ -74,15 +74,14 @@ export function InterviewsPage() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-3">
-        <div className="inline-flex rounded-full border border-border bg-surface p-1">
+        <div className="pill-toggle inline-flex">
           {(['upcoming', 'past'] as const).map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setTab(t)}
-              className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize ${
-                tab === t ? 'bg-violet text-white' : 'text-ink-muted'
-              }`}
+              data-active={tab === t}
+              className="pill-toggle-item capitalize"
             >
               {t}
             </button>
