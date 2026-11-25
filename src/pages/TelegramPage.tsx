@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { LogOut, MessageCircle, Search, Send, UserPlus } from 'lucide-react'
 import { Button, EmptyState, Input, Label, PageLoader } from '@/components/ui'
 import { fetchCandidates } from '@/lib/api'
+import { NewMessage } from 'teleproto/events'
 import {
   clearTelegramSession,
   createTelegramClient,
@@ -243,6 +244,71 @@ export function TelegramPage() {
     void startClient(creds)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only connect
   }, [])
+
+  // Live chat: MTProto NewMessage push + 1s poll of the open thread / dialog list.
+  useEffect(() => {
+    if (step !== 'ready') return
+    const client = clientRef.current
+    if (!client) return
+
+    let cancelled = false
+    let inFlight = false
+    const activeRef = { current: active }
+
+    async function refreshOpenChat(scroll: boolean) {
+      const row = activeRef.current
+      if (!row?.entity || cancelled) return
+      try {
+        const msgs = await client!.getMessages(row.entity as never, { limit: 60 })
+        if (cancelled) return
+        const next = mapMessages(msgs)
+        setMessages((prev) => {
+          if (
+            prev.length === next.length &&
+            prev.every((m, i) => m.id === next[i]?.id && m.text === next[i]?.text)
+          ) {
+            return prev
+          }
+          return next
+        })
+        if (scroll) {
+          requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }))
+        }
+      } catch {
+        /* keep last frame */
+      }
+    }
+
+    async function tick() {
+      if (cancelled || inFlight) return
+      inFlight = true
+      try {
+        await refreshDialogs(client!)
+        await refreshOpenChat(false)
+      } finally {
+        inFlight = false
+      }
+    }
+
+    const onNew = () => {
+      void refreshDialogs(client)
+      void refreshOpenChat(true)
+    }
+    client.addEventHandler(onNew, new NewMessage({}))
+
+    const id = window.setInterval(() => void tick(), 1_000)
+    void tick()
+
+    return () => {
+      cancelled = true
+      window.clearInterval(id)
+      try {
+        client.removeEventHandler(onNew, new NewMessage({}))
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [step, active, refreshDialogs])
 
   async function onSaveCreds(e: React.FormEvent) {
     e.preventDefault()
