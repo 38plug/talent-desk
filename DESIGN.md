@@ -167,11 +167,13 @@ components:
 
 # Design System: Talent Desk
 
+> Visual SoT for the Vite + React 19 SPA on Vercel. Companion: [`.impeccable/design.json`](./.impeccable/design.json). Product/architecture: [`HANDOFF.md`](./HANDOFF.md), [`PRODUCT.md`](./PRODUCT.md). Settings UI still shows a leftover violet/cyan/magenta swatch card — this file wins.
+
 ## Overview
 
 **Creative North Star: "The Lime Glass Desk"**
 
-Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA, not a marketing site. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay and a sound toggle. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.
+Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA (localStorage auth + desk data), not a marketing site and not a Supabase/Next.js app. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay and a sound toggle. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.
 
 The room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.
 
