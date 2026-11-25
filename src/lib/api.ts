@@ -71,6 +71,7 @@ import type {
   Profile,
 } from './types'
 import { ADMIN_VIEW_ROLES, PIPELINE_ROLES, type Role } from './constants'
+import { stageForInterviewOutcome } from './interview-stage'
 import { parseNumericInput, stripAtHandle } from './utils'
 
 export { isCloudSyncEnabled }
@@ -371,6 +372,52 @@ export async function deleteOffer(id: string): Promise<void> {
   deleteOfferRow(userId, id)
 }
 
+async function syncCandidateStageFromInterview(
+  userId: string,
+  candidateId: string,
+  outcome: string | null | undefined,
+  offerId?: string | null,
+): Promise<void> {
+  const candidates = isCloudSyncEnabled
+    ? await cloudListCandidates()
+    : listCandidates()
+  const cand = candidates.find((c) => c.id === candidateId)
+  if (!cand) return
+
+  const nextStage = stageForInterviewOutcome(outcome)
+  const nextOfferId = offerId !== undefined && offerId !== null ? offerId : cand.offerId
+  if (cand.stage === nextStage && cand.offerId === nextOfferId) return
+
+  const patch: Partial<Candidate> & { name: string } = {
+    name: cand.name,
+    email: cand.email,
+    phone: cand.phone,
+    source: cand.source,
+    stage: nextStage,
+    market: cand.market,
+    gender: cand.gender,
+    offerId: nextOfferId,
+    telegram: cand.telegram,
+    sentBy: cand.sentBy,
+    country: cand.country,
+    age: cand.age,
+    languages: cand.languages,
+    currentLocation: cand.currentLocation,
+    notes: cand.notes,
+    expectedSalary: cand.expectedSalary,
+  }
+
+  if (isCloudSyncEnabled) {
+    await cloudUpsertCandidate(userId, patch, candidateId)
+  } else {
+    upsertCandidateRow(userId, patch, candidateId)
+  }
+}
+
+/**
+ * Create/update interview and auto-set candidate stage:
+ * scheduled → Interview; Confirmed → Accepted; Declined by company → Rejected.
+ */
 export async function upsertInterview(
   payload: {
     candidateId: string
@@ -384,9 +431,55 @@ export async function upsertInterview(
   const userId = await requireActorId()
   if (isCloudSyncEnabled) {
     await cloudUpsertInterview(userId, payload, id)
-    return
+  } else {
+    upsertInterviewRow(userId, payload, id)
   }
-  upsertInterviewRow(userId, payload, id)
+  await syncCandidateStageFromInterview(
+    userId,
+    payload.candidateId,
+    payload.outcome,
+    payload.offerId,
+  )
+}
+
+/** Align candidate stages with their latest interview (scheduled → Interview, etc.). */
+export async function reconcileInterviewCandidateStages(): Promise<number> {
+  const userId = await requireActorId()
+  const interviews = isCloudSyncEnabled
+    ? await cloudListInterviews()
+    : listInterviews()
+  if (interviews.length === 0) return 0
+
+  const candidates = isCloudSyncEnabled
+    ? await cloudListCandidates()
+    : listCandidates()
+  const byId = new Map(candidates.map((c) => [c.id, c]))
+
+  const latestByCandidate = new Map<string, Interview>()
+  for (const row of interviews) {
+    const prev = latestByCandidate.get(row.candidateId)
+    if (
+      !prev ||
+      new Date(row.scheduledAt).getTime() > new Date(prev.scheduledAt).getTime()
+    ) {
+      latestByCandidate.set(row.candidateId, row)
+    }
+  }
+
+  let updated = 0
+  for (const row of latestByCandidate.values()) {
+    const before = byId.get(row.candidateId)
+    const nextStage = stageForInterviewOutcome(row.outcome)
+    if (!before || before.stage === nextStage) continue
+    await syncCandidateStageFromInterview(
+      userId,
+      row.candidateId,
+      row.outcome,
+      row.offerId,
+    )
+    updated += 1
+  }
+  return updated
 }
 
 export async function deleteInterview(id: string): Promise<void> {

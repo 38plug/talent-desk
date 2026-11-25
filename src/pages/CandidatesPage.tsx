@@ -24,6 +24,7 @@ import {
   deleteCandidate,
   fetchCandidates,
   fetchOffers,
+  reconcileInterviewCandidateStages,
   upsertCandidate,
 } from '@/lib/api'
 import {
@@ -166,6 +167,17 @@ export function CandidatesPage() {
     setEditTg(match.telegram ?? '')
     setEditSentBy(match.sentBy ?? '')
   }, [searchParams, candidates, isLoading])
+
+  // One-shot: candidates with interviews but still Screening/Offer → Interview (or Accepted/Rejected).
+  useEffect(() => {
+    let cancelled = false
+    void reconcileInterviewCandidateStages().then((n) => {
+      if (!cancelled && n > 0) void qc.invalidateQueries({ queryKey: ['candidates'] })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [qc])
 
   function clearCandidateDeepLink() {
     if (!searchParams.has('id')) return
