@@ -6,7 +6,7 @@ No Docker required. Do not point Vercel at `127.0.0.1`.
 
 ## Pedro setup checklist
 
-1. **Create a free hosted project** at [supabase.com/dashboard](https://supabase.com/dashboard).
+1. **Hosted project** — Pedro’s ref: `oglaqmpevvvuxnhntiiz` ([dashboard](https://supabase.com/dashboard/project/oglaqmpevvvuxnhntiiz)).
 2. **Apply schema** — SQL Editor → paste and run [`supabase/migrations/0001_shared_desk.sql`](../supabase/migrations/0001_shared_desk.sql) once.
 3. **Auth settings** — Authentication → Providers → Email:
    - Enable Email.
@@ -23,8 +23,10 @@ No Docker required. Do not point Vercel at `127.0.0.1`.
 
    | Name | Value |
    |------|--------|
-   | `VITE_SUPABASE_URL` | `https://<ref>.supabase.co` |
-   | `VITE_SUPABASE_ANON_KEY` | hosted anon key |
+   | `VITE_SUPABASE_URL` | `https://oglaqmpevvvuxnhntiiz.supabase.co` |
+   | `VITE_SUPABASE_ANON_KEY` | **anon / publishable** key from Dashboard → Settings → API (NOT `sb_secret_` / service_role) |
+
+   Project ref: `oglaqmpevvvuxnhntiiz`.
 
 7. **Redeploy** Vercel (Vite bakes env at build time).
 8. **Register** owner + teammates on the live site (email/password). Seat cap remains 4 non-owner.
