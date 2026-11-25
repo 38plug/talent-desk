@@ -62,13 +62,14 @@ export const NAV_ITEMS = [
   { to: '/candidates', label: 'Candidates', icon: 'Users', index: '02' },
   { to: '/offers', label: 'Offers', icon: 'Briefcase', index: '03' },
   { to: '/interviews', label: 'Interviews', icon: 'Calendar', index: '04' },
-  { to: '/earnings', label: 'Earnings', icon: 'Wallet', index: '05' },
-  { to: '/settings', label: 'Settings', icon: 'Settings', index: '06' },
+  { to: '/calendar', label: 'Interview Calendar', icon: 'CalendarDays', index: '05' },
+  { to: '/earnings', label: 'Earnings', icon: 'Wallet', index: '06' },
+  { to: '/settings', label: 'Settings', icon: 'Settings', index: '07' },
 ] as const
 
 export const ADMIN_NAV = {
   to: '/admin',
   label: 'Admin',
   icon: 'Shield',
-  index: '07',
+  index: '08',
 } as const

@@ -13,12 +13,13 @@ Operate-mode **forex recruiting command center**: track candidates, scan offers 
 After sign-in:
 
 1. **Overview** (`/`) — KPI heroes, neon charts, estimated list (confirm → Pending), Needs Attention, recent candidates. Empty desk → zeros (no demo seed).
-2. **Candidates** (`/candidates`) — glowing **Total candidates** counter at the top (`candidates.length`, unfiltered by stage/search; lime glow + `AnimatedNumber` ticker; respects `prefers-reduced-motion`; refreshes on add/delete / realtime). Pipeline table (name, **languages** column, market, gender, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Row Edit/Delete are icon-only (aria-label + title). Profile fields: country, age, languages, current location, **market** (`forex` | `chinese` | null), **gender** (`male` | `female` | null) — migrated on load; older rows stay unset. Filters: stage, market (incl. Unset), gender (incl. Unset). Delete cascades interviews + earnings linked by candidate id; offers stay.
+2. **Candidates** (`/candidates`) — glowing **Total candidates** counter at the top (`candidates.length`, unfiltered by stage/search; lime glow + `AnimatedNumber` ticker; respects `prefers-reduced-motion`; refreshes on add/delete / realtime). Pipeline table (name, **languages** column, market, gender, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Row actions: Schedule interview (→ `/calendar?candidate=`), Edit, Delete — icon-only (aria-label + title). Drawer also has Schedule interview. Profile fields: country, age, languages, current location, **market** (`forex` | `chinese` | null), **gender** (`male` | `female` | null) — migrated on load; older rows stay unset. Filters: stage, market (incl. Unset), gender (incl. Unset). Delete cascades interviews + earnings linked by candidate id; offers stay.
 3. **Offers** (`/offers`) — forex + Chinese cards. Click a card (Enter/Space) opens a wide **glass preview** modal (`Modal glass`) with full details. Card Edit/Delete are icon-only (`stopPropagation`, aria-label + title). OCR scan + parse, provision wording, Telegram handle.
-4. **Interviews** (`/interviews`) — schedule against a candidate / offer.
-5. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
-6. **Settings** (`/settings`) — profile, **Storage** row (cloud vs this-browser), change password, **JSON import/export**. When `cloudSync`: a **Cloud sync** card with “Upload this browser’s local desk to cloud”. Pipeline copy.
-7. **Admin** (`/admin`) — role-gated seats console. KPI cards: seats used, accounts, pipeline row totals, estimated aggregate. Accounts table with role `Select`. Local mode: password/delete + Add account. Cloud mode: role change + delete profile row still work; Add account / set password / reset **throw** (create seats via Register or Dashboard; password via Dashboard). Owner / admin manage; moderator is view-only.
+4. **Interviews** (`/interviews`) — list upcoming / past; schedule against a candidate / offer. Link through to the calendar.
+5. **Interview Calendar** (`/calendar`) — month / week / day views of `scheduledAt`. Create or edit via modal (candidate picker + datetime). Deep-link `?candidate=<id>` opens the schedule modal preselected (from Candidates row / drawer).
+6. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
+7. **Settings** (`/settings`) — profile, **Storage** row (cloud vs this-browser), change password, **JSON import/export**. When `cloudSync`: a **Cloud sync** card with “Upload this browser’s local desk to cloud”. Pipeline copy.
+8. **Admin** (`/admin`) — role-gated seats console. KPI cards: seats used, accounts, pipeline row totals, estimated aggregate. Accounts table with role `Select`. Local mode: password/delete + Add account. Cloud mode: role change + delete profile row still work; Add account / set password / reset **throw** (create seats via Register or Dashboard; password via Dashboard). Owner / admin manage; moderator is view-only.
 
 Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome only.
 
@@ -163,9 +164,12 @@ src/auth/ProtectedRoute.tsx            → session required; AdminRoute
 src/pages/LoginPage.tsx                → helper copy: cloud on vs off; friendlyCloudAuthError when sync on
 src/pages/RegisterPage.tsx             → MAX_ACCOUNTS copy; friendlyCloudAuthError when sync on
 src/pages/DashboardPage.tsx           → recent table: market + gender chips
-src/pages/CandidatesPage.tsx          → glowing unfiltered total counter (AnimatedNumber), add/edit (wide modal), market/gender filters + chips, drawer, named delete confirm
+src/pages/CandidatesPage.tsx          → glowing unfiltered total counter (AnimatedNumber), schedule→calendar deep-link, add/edit (wide modal), market/gender filters + chips, drawer, named delete confirm
 src/pages/OffersPage.tsx              → card grid + glass preview modal; Edit/Delete stopPropagation
-src/pages/InterviewsPage.tsx
+src/pages/InterviewsPage.tsx           → upcoming/past list + link to calendar
+src/pages/InterviewCalendarPage.tsx    → month/week/day calendar; ScheduleInterviewModal
+src/components/interviews/ScheduleInterviewModal.tsx → create/edit/delete interview (candidate + datetime)
+src/lib/datetime.ts                    → datetime-local helpers
 src/pages/EarningsPage.tsx
 src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
@@ -178,7 +182,7 @@ src/lib/supabase.ts                    → client + isCloudSyncEnabled feature f
 src/lib/cloud-db.ts                    → hosted Supabase CRUD + upload/migrate
 src/lib/local-db.ts                    → accounts, shared-desk CRUD, merge-import, PBKDF2, migrateCandidate, preferred-admin bootstrap
 src/auth/CloudRealtimeSync.tsx         → invalidate queries on postgres_changes
-src/lib/constants.ts                   → APP_NAME, roles, MANAGEABLE_ROLES, ADMIN_VIEW/MANAGE, PIPELINE_ROLES, CANDIDATE_MARKETS, CANDIDATE_GENDERS, marketLabel, genderLabel
+src/lib/constants.ts                   → APP_NAME, roles, NAV_ITEMS (incl. Interview Calendar `/calendar`), MANAGEABLE_ROLES, ADMIN_VIEW/MANAGE, PIPELINE_ROLES, CANDIDATE_MARKETS, CANDIDATE_GENDERS, marketLabel, genderLabel
 src/lib/types.ts
 src/lib/demo-data.ts                   → SPARK_SERIES shapes only (not KPI values)
 src/lib/parse-offer.ts

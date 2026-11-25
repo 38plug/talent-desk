@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Pencil, Plus, Search, Trash2, Users } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { CalendarPlus, Pencil, Plus, Search, Trash2, Users } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -127,7 +128,12 @@ function locationLine(c: Candidate): string | null {
 export function CandidatesPage() {
   const { profile } = useAuth()
   // All signed-in roles (user → owner) share candidates on this device.
+  const navigate = useNavigate()
   const canEdit = canManagePipeline(profile?.role ?? 'user')
+
+  function scheduleInterview(c: Candidate) {
+    navigate(`/calendar?candidate=${encodeURIComponent(c.id)}`)
+  }
   const reduce = useReducedMotion()
   const qc = useQueryClient()
   const { data: candidates = [], isLoading } = useQuery({
@@ -428,6 +434,20 @@ export function CandidatesPage() {
                             variant="secondary"
                             size="sm"
                             className="h-8 w-8 px-0"
+                            aria-label={`Schedule interview for ${c.name}`}
+                            title={`Schedule interview for ${c.name}`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              scheduleInterview(c)
+                            }}
+                          >
+                            <CalendarPlus className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="h-8 w-8 px-0"
                             aria-label={`Edit ${c.name}`}
                             title={`Edit ${c.name}`}
                             onClick={(e) => {
@@ -706,6 +726,14 @@ export function CandidatesPage() {
             </div>
             {canEdit ? (
               <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    scheduleInterview(selected)
+                  }}
+                >
+                  <CalendarPlus className="h-4 w-4" /> Schedule interview
+                </Button>
                 <Button
                   variant="secondary"
                   onClick={() => {
