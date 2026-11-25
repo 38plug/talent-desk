@@ -329,6 +329,7 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 - `stageTone()` maps Hired/Paid/Live → emerald; Accepted/Pending/Interview → cyan; Offer/Estimated → violet; Overdue/Rejected/Closed → rose; Paused/Screening → amber.
 - `marketTone()` maps `forex` → lime (“Forex”); `chinese` → cyan (“Chinese”); null → no chip (dim `—`).
 - `genderTone()` maps `male` → cyan (“Male”); `female` → magenta (“Female”); null → no chip. Magenta here is a chip mapping, not a CTA.
+- Admin role badges (not `stageTone`): owner → magenta, admin → lime, moderator/user → violet. Same pill chrome as pipeline chips.
 - Pill toggle (`.pill-toggle`): surface well; active item is solid lime + glow.
 
 ### Cards / Containers
@@ -355,6 +356,9 @@ Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Ava
 
 ### Signature: stretchy lime pill
 `src/lib/slide-pill.ts`. The pill is a lime rectangle under the nav; clip-path reveals the **hovered or active** row with a stretchy lead/trail. Lead 0.32s `power3.out`, trail 0.52s `power3.inOut`. `gsap.killTweensOf` on both the anim state and the pill node before every move so rapid hover never stacks. Reduced motion snaps via `setPillImmediate`. Do not restore a 3px magenta inset bar as the active treatment.
+
+### Signature: admin seats console
+`AdminPage` is the same lime-glass desk, not a second product look. Four `.card-surface !p-4` KPI tiles (seats used, accounts, pipeline totals, estimated aggregate), then a `!p-0` accounts table with 12px role `Select`, Password, and Delete. Owner row is **Protected** (no actions). Add account is a standard `Modal`. Role badges: owner magenta, admin lime, else violet. Do not introduce a distinct admin theme, a second conversion color, or a cloud-sync banner unless a later rebuild ships that UI.
 
 ### Signature: candidate market + gender chips
 `CandidatesPage` + Overview recent table. Market and gender are optional single-selects on the wide Add/Edit form (`CANDIDATE_MARKETS` / `CANDIDATE_GENDERS`, empty = Unset). Filters: All markets / Forex / Chinese / Unset; All genders / Male / Female / Unset. Table, detail drawer, and dashboard render lime Forex / cyan Chinese and cyan Male / magenta Female pills via `marketTone` / `genderTone`. Unset stays a dim em-dash (or “Unset” in the drawer). Do not invent a third market or a non-binary option the form does not ship.
@@ -395,13 +399,14 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** slide the lime nav pill on hover and active, kill in-flight GSAP tweens, and show a glass tooltip when the rail is collapsed.
 - **Do** open offer cards into a wide `glass` preview modal; keep Edit/Delete `stopPropagation`.
 - **Do** tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge.
+- **Do** keep Admin on `.card-surface` KPI tiles + a `!p-0` accounts table; role badges are owner magenta / admin lime / else violet.
 
 ### Don't:
 - **Don't** restore the violet-conversion Neon Signal Desk (`#080A10` canvas, `#7C3AED` primary CTA, magenta inset nav bar, gradient TD mark).
 - **Don't** introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on `#111111`.
 - **Don't** sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.
 - **Don't** treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.
-- **Don't** add a second product look for Admin — it uses the same cards, tables, and badges.
+- **Don't** add a second product look for Admin — it uses the same cards, tables, and badges. Owner/admin/moderator role chips stay magenta/lime/violet heritage, not a new brand.
 - **Don't** seed demo income or restore a demo-preview bypass on the login screen.
 - **Don't** put CSS `filter` or backdrop-blur on `PageTransition` or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.
 - **Don't** let GSAP pill tweens stack on rapid hover. Don't use a native `title` tooltip for collapsed nav labels.

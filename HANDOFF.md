@@ -1,8 +1,8 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `a72946c9b400d8022959a3691e02323e800b53f1` (full shared desk — no forUser; seat delete keeps pipeline rows; product = Vite SPA + localStorage)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17.
+> **Documented from:** `973e81ebe0c5d1447e55845db4043ba5acbb5d6f` (PRs #19–#21 — admin seats, role select, full shared desk; product = Vite SPA + localStorage)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
 
@@ -18,7 +18,7 @@ After sign-in:
 4. **Interviews** (`/interviews`) — schedule against a candidate / offer.
 5. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
 6. **Settings** (`/settings`) — profile, change password, **JSON import/export**, pipeline copy.
-7. **Admin** (`/admin`) — role-gated seats console (local accounts on this device; owner / admin manage).
+7. **Admin** (`/admin`) — role-gated seats console (every local account on this device). KPI cards: seats used, accounts, pipeline row totals, estimated aggregate. Accounts table with role `Select`, password/delete, and Add account. Owner / admin manage; moderator is view-only.
 
 Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome only.
 
@@ -78,14 +78,15 @@ Do not reintroduce `VITE_*` backend URLs. Do not put service-role keys anywhere.
 | `loginAccount` / `signIn` | Issue session (`LoginPage`) |
 | `registerAccount` | First account or reserved owner mailbox → `owner`; preferred admin mailbox → `admin`; else `user` if under the seat cap |
 | `changePassword` | Re-hash with a new salt after verifying the current password |
-| `AdminRoute` / Admin Accounts | `owner` / `admin` / `moderator` may view; `owner` / `admin` may manage. Actions: change role (`user`/`moderator`/`admin`), password, delete. Owner row stays **Protected** (no demote/delete). |
+| `AdminRoute` / Admin Accounts | `owner` / `admin` / `moderator` may view (`ADMIN_VIEW_ROLES`); `owner` / `admin` may manage (`ADMIN_MANAGE_ROLES`). Actions: `Select` of `MANAGEABLE_ROLES` (`user` / `moderator` / `admin`) saves immediately; Password modal (set, or generate a temp `td-…` string — no email); Delete (confirm by email, not self). Owner row stays **Protected** (no demote/delete/password). Add account modal (name / email / password / role) does not switch the current session. |
 | Preferred admin bootstrap | One-time per browser (`talent-desk.bootstrap.prof-admin.v1`): if `PRIMARY_ADMIN_EMAIL` seat exists and is not owner → set `admin`. Missing seat → Add account / register (still assigns `admin`). No co-owner. |
+| Pipeline CRUD | `canManagePipeline` is every desk role (`PIPELINE_ROLES`). Candidates and Offers Add / Edit / Delete are not owner-only. |
 
 Password rule: **≥ 8 characters**. Passwords are PBKDF2-SHA-256 (100,000 iterations) + 16-byte salt, stored in `localStorage`. Reserved owner email lives in `OWNER_EMAIL` (`src/lib/constants.ts`) — do not document the address here; do not let register mint that mailbox as `user`. Preferred admin email is `PRIMARY_ADMIN_EMAIL` in the same file.
 
 `ProtectedRoute` waits on `AuthProvider.loading`, then `Navigate` to `/login` unless a session exists. After login/register, pages call `notifyAuthChanged()` so the provider re-reads `talent-desk.session.v1`.
 
-Max **4** non-owner seats (`MAX_ACCOUNTS`). The register path in `local-db.ts` is the cap. The full desk is **shared** on this device: `listOffers` / `listCandidates` / `listInterviews` / `listEarnings` / `listActivities` return every row (no `forUser` / `userId` scope). Row `userId` is creator attribution only. Deleting a seat does **not** delete pipeline rows.
+Max **4** non-owner seats (`MAX_ACCOUNTS`). The register and Admin Add-account paths in `local-db.ts` share that cap. The full desk is **shared** on this device: `listOffers` / `listCandidates` / `listInterviews` / `listEarnings` / `listActivities` take no `userId` and return every row (no `forUser` scope). Row `userId` is creator attribution only — Admin per-seat `c/o/i/e` counts still filter on it. Mutations keep the original creator id on edit. Deleting a seat does **not** delete pipeline rows. Smoke: `scripts/smoke-shared-desk.mjs`.
 
 ## Data
 
@@ -113,7 +114,7 @@ Roles: `owner` > `admin` > `moderator` > `user`. Pipeline: Screening → Intervi
 
 Confirming an estimated earning sets status to **Pending** (`confirmEarning`). Pending + Paid + Overdue count as income; Estimated does not until confirmed.
 
-Import **replaces** accounts + data on that device. Settings download exports hashes+salts (`includePasswords: true` currently means hash/salt, not plaintext). Import also accepts a one-time plaintext `"password"` per account.
+Pipeline import **replaces** `talent-desk.data.v1`. Accounts are **merged by email** (incoming credentials win); an export with no `accounts` array leaves local seats untouched. Settings download exports hashes+salts (`includePasswords: true` currently means hash/salt, not plaintext). Import also accepts a one-time plaintext `"password"` per account.
 
 `migrateCandidate` fills missing `country` / `age` / `languages` / `currentLocation` / `market` / `gender` with null on load and import (`normalizeMarket` / `normalizeGender`) — it does not wipe older rows. Unknown market/gender strings become null.
 
@@ -154,14 +155,14 @@ src/pages/OffersPage.tsx              → card grid + glass preview modal; Edit/
 src/pages/InterviewsPage.tsx
 src/pages/EarningsPage.tsx
 src/pages/SettingsPage.tsx              → password + JSON import/export
-src/pages/AdminPage.tsx
+src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
+src/lib/api.ts                         → app façade over local-db; canViewAdmin / canManagePipeline
 src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle
 src/components/motion/*                → PageTransition (springSoft opacity/y, no filter), Motion, AnimatedNumber, SoundToggle
 src/components/ui/*                    → Button, Input, Card (p-6, CardTitle text-xl), Badge (`stageTone` / `marketTone` / `genderTone`), Modal/Drawer (body portal, springSnappy, glass), charts
-src/lib/api.ts                         → app façade over local-db
-src/lib/local-db.ts                    → accounts, CRUD, import/export, PBKDF2, migrateCandidate (market + gender)
-src/lib/constants.ts                   → APP_NAME, roles, stages, nav, CANDIDATE_MARKETS, CANDIDATE_GENDERS, marketLabel, genderLabel
+src/lib/local-db.ts                    → accounts, shared-desk CRUD, merge-import, PBKDF2, migrateCandidate, preferred-admin bootstrap
+src/lib/constants.ts                   → APP_NAME, roles, MANAGEABLE_ROLES, ADMIN_VIEW/MANAGE, PIPELINE_ROLES, CANDIDATE_MARKETS, CANDIDATE_GENDERS, marketLabel, genderLabel
 src/lib/types.ts
 src/lib/demo-data.ts                   → SPARK_SERIES shapes only (not KPI values)
 src/lib/parse-offer.ts
@@ -169,7 +170,8 @@ src/lib/motion.ts                      → springSoft, springSnappy, fadeUp, fad
 src/lib/slide-pill.ts                  → GSAP stretchy lime pill (hover+active, killTweens)
 src/lib/sfx.ts                         → Web Audio, muted by default
 src/lib/utils.ts                       → cn, money, telegram handles
-docs/local-data.md                     → localStorage keys + export JSON + candidate fields
+docs/local-data.md                     → localStorage keys + export JSON + candidate fields + shared-desk note
+scripts/smoke-shared-desk.mjs          → owner→other visibility; seat delete keeps rows
 vercel.json                            → Vite SPA: dist + client rewrites
 README.md                              → local setup + Vercel runbook
 PRODUCT.md                             → users, purpose, capabilities, constraints
@@ -205,11 +207,13 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 - `SPARK_SERIES` in `demo-data.ts` is decorative spark shape, not live income.
 - Drawer still allows inline telegram/sent-by/stage patches; full profile edits (including market and gender) go through the wide Add/Edit modal.
 - Female gender chips use **magenta**; Male and Chinese market chips share **cyan**. Magenta is still not conversion.
+- Admin role badges: owner **magenta**, admin **lime**, moderator/user **violet**. Heritage tones on seats — not conversion.
+- Admin notes card prints the preferred-admin mailbox from `PRIMARY_ADMIN_EMAIL`. Do not copy that address into either docs file.
 
 ## Invariants for the next build
 
 1. **Auth screen first.** Do not put Overview on an anonymous first paint. Do not restore a demo-UI bypass.
-2. **Device-local rows only.** Accounts and pipeline live in `localStorage` on this browser. Do not share earnings across devices without an explicit JSON import.
+2. **Device-local rows only.** Accounts and pipeline live in `localStorage` on this browser. Do not share earnings across devices without an explicit JSON import. On this device, every signed-in seat already shares the same pipeline.
 3. **Four-seat cap.** Non-owner accounts ≤ `MAX_ACCOUNTS`. Owner mailbox stays reserved (`OWNER_EMAIL`).
 4. **Confirm estimated → Pending.** `confirmEarning` must not jump straight to Paid. Estimated is not income.
 5. **Empty desk is zeros.** Never invent `DEMO_METRICS` as live money. The Overview banner must stay while the pipeline is empty.
@@ -224,6 +228,7 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 14. **Nav pill follows hover and active.** Kill in-flight GSAP tweens. Collapsed labels are the glass tooltip, not a native `title`.
 15. **Offer cards open a glass preview.** Edit/Delete on the card must `stopPropagation`. Preview uses `Modal` `wide` + `glass`.
 16. **Candidate market and gender are optional single-selects.** Values are `forex`/`chinese` and `male`/`female` (or null). Chips: lime Forex, cyan Chinese, cyan Male, magenta Female. Unset is a dim dash. Migrate unknown/missing to null; do not wipe older rows. Do not invent extra market or gender options.
+17. **Full desk is shared on this device.** Every signed-in role lists and mutates the same candidates / offers / interviews / earnings / activities. `userId` is creator attribution only (Admin per-seat counts). Do not restore `forUser` scoping. Deleting a seat must not wipe pipeline rows. Owner stays Protected; `MANAGEABLE_ROLES` never includes `owner`.
 
 ## How this documentation stays current
 
