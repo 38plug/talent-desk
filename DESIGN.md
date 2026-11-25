@@ -173,7 +173,7 @@ components:
 
 **Creative North Star: "The Lime Glass Desk"**
 
-Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA (localStorage auth + desk data), not a marketing site and not a Supabase/Next.js app. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay and a sound toggle. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.
+Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel — not a marketing site and not a Next.js app. Persistence is hosted Supabase when `VITE_SUPABASE_*` is set, otherwise device-local `localStorage`; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.
 
 The room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.
 
@@ -189,6 +189,7 @@ Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radi
 - Glass dashboard panels (`.glass-panel`) as the working signature; neon Recharts (lime + peach)
 - Auth glass card on orbs — no rail until session; no demo-preview bypass
 - Offer cards click into a wide glass preview modal; Edit/Delete stay independent
+- Settings Account card shows a Storage row; cloud mode adds a `.card-surface` Cloud sync card with a secondary upload button — same desk chrome, not a second look
 
 ## Colors
 
@@ -358,7 +359,10 @@ Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Ava
 `src/lib/slide-pill.ts`. The pill is a lime rectangle under the nav; clip-path reveals the **hovered or active** row with a stretchy lead/trail. Lead 0.32s `power3.out`, trail 0.52s `power3.inOut`. `gsap.killTweensOf` on both the anim state and the pill node before every move so rapid hover never stacks. Reduced motion snaps via `setPillImmediate`. Do not restore a 3px magenta inset bar as the active treatment.
 
 ### Signature: admin seats console
-`AdminPage` is the same lime-glass desk, not a second product look. Four `.card-surface !p-4` KPI tiles (seats used, accounts, pipeline totals, estimated aggregate), then a `!p-0` accounts table with 12px role `Select`, Password, and Delete. Owner row is **Protected** (no actions). Add account is a standard `Modal`. Role badges: owner magenta, admin lime, else violet. Do not introduce a distinct admin theme, a second conversion color, or a cloud-sync banner unless a later rebuild ships that UI.
+`AdminPage` is the same lime-glass desk, not a second product look. Four `.card-surface !p-4` KPI tiles (seats used, accounts, pipeline totals, estimated aggregate), then a `!p-0` accounts table with 12px role `Select`, Password, and Delete. Owner row is **Protected** (no actions). Add account is a standard `Modal`. Role badges: owner magenta, admin lime, else violet. Do not introduce a distinct admin theme or a second conversion color. Cloud sync chrome lives on Settings, not Admin.
+
+### Signature: Settings cloud storage
+Account card adds a **Storage** definition (`sm:col-span-2`): “Hosted Supabase · shared team desk (realtime + refresh)” when `cloudSync`, else “This browser · localStorage (device-local fallback)”. When cloud is on, a second `.card-surface` titled **Cloud sync** with muted 14px copy and a `variant="secondary"` button “Upload this browser’s local desk to cloud”. Success/error are emerald/rose 14px lines. Login helper copy is `text-xs text-ink-muted` inside the auth card — the lime chip stays `APP_NAME`, not a “CLOUD” badge. Do not add a dashboard sync banner, a lime “Synced” pill in the rail, or a second conversion color for upload.
 
 ### Signature: candidate market + gender chips
 `CandidatesPage` + Overview recent table. Market and gender are optional single-selects on the wide Add/Edit form (`CANDIDATE_MARKETS` / `CANDIDATE_GENDERS`, empty = Unset). Filters: All markets / Forex / Chinese / Unset; All genders / Male / Female / Unset. Table, detail drawer, and dashboard render lime Forex / cyan Chinese and cyan Male / magenta Female pills via `marketTone` / `genderTone`. Unset stays a dim em-dash (or “Unset” in the drawer). Do not invent a third market or a non-binary option the form does not ship.
@@ -373,7 +377,7 @@ Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Ava
 `Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Lime + peach area (estimated series dashed), lime→peach bar gradient, donut palette lime/peach/violet/emerald/amber/rose. Axis ticks `14px` medium `#cbd5e1`. Tooltips: `#1A1A1A`, 12px radius, 14px type. Gauge ring on the live-desk pane is peach→lime with a lime drop-shadow. Sparklines sit on KPI cards; they do not replace the TD mark.
 
 ### Auth card (signature)
-Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`, drifting via Framer). Film grain overlay. Login CTA is primary lime (“Enter Talent Desk”); register is `variant="lime"` (“Join Talent Desk”). Links between them are lime. No “Preview Talent Desk UI”. Sound toggle is top-right on the shell.
+Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`, drifting via Framer). Film grain overlay. Login CTA is primary lime (“Enter Talent Desk”); register is `variant="lime"` (“Join Talent Desk”). A `text-xs text-ink-muted` helper states whether cloud sync is on. Links between them are lime. No “Preview Talent Desk UI”. Sound toggle is top-right on the shell.
 
 ### Motion + SFX
 - **Page:** `springSoft` (stiffness 260 / damping 26 / mass 0.85) opacity + `y: 14` → 0; exit opacity + `y: -8` in 0.2s `[0.4, 0, 1, 1]`. **No CSS `filter` on this wrapper.**
@@ -400,13 +404,15 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** open offer cards into a wide `glass` preview modal; keep Edit/Delete `stopPropagation`.
 - **Do** tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge.
 - **Do** keep Admin on `.card-surface` KPI tiles + a `!p-0` accounts table; role badges are owner magenta / admin lime / else violet.
+- **Do** keep cloud vs local as a Settings fact (Storage row + Cloud sync card + secondary upload). Same lime-glass chrome in both modes.
 
 ### Don't:
 - **Don't** restore the violet-conversion Neon Signal Desk (`#080A10` canvas, `#7C3AED` primary CTA, magenta inset nav bar, gradient TD mark).
 - **Don't** introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on `#111111`.
 - **Don't** sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.
 - **Don't** treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.
-- **Don't** add a second product look for Admin — it uses the same cards, tables, and badges. Owner/admin/moderator role chips stay magenta/lime/violet heritage, not a new brand.
+- **Don't** add a second product look for Admin or for cloud sync — both use the same cards, tables, and badges. Owner/admin/moderator role chips stay magenta/lime/violet heritage, not a new brand. Cloud is not a dashboard banner.
+- **Don't** put project refs, anon keys, or service-role values into design files.
 - **Don't** seed demo income or restore a demo-preview bypass on the login screen.
 - **Don't** put CSS `filter` or backdrop-blur on `PageTransition` or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.
 - **Don't** let GSAP pill tweens stack on rapid hover. Don't use a native `title` tooltip for collapsed nav labels.

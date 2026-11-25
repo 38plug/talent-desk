@@ -1,9 +1,9 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `3ca9bdc42501c2baa04adb432dc6b2ea06a08a80` (PR #22 — hosted Supabase cloud sync + PRs #19–#21 shared desk; product = Vite SPA + optional cloud)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag) from PR #22.
-> **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md)
+> **Documented from:** `4594272aa2137777815265c078e44e7bd13717f1` (PR #22 merge — hosted Supabase cloud sync + PRs #19–#21 shared desk; product = Vite SPA + optional cloud)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag + Settings storage/upload chrome) from PR #22.
+> **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md), [`docs/cloud-sync.md`](./docs/cloud-sync.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
 
 ## What it is
@@ -17,8 +17,8 @@ After sign-in:
 3. **Offers** (`/offers`) — forex + Chinese cards. Click a card (Enter/Space) opens a wide **glass preview** modal (`Modal glass`) with full details. Card Edit/Delete `stopPropagation`. OCR scan + parse, provision wording, Telegram handle.
 4. **Interviews** (`/interviews`) — schedule against a candidate / offer.
 5. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
-6. **Settings** (`/settings`) — profile, change password, **JSON import/export**, pipeline copy.
-7. **Admin** (`/admin`) — role-gated seats console (every local account on this device). KPI cards: seats used, accounts, pipeline row totals, estimated aggregate. Accounts table with role `Select`, password/delete, and Add account. Owner / admin manage; moderator is view-only.
+6. **Settings** (`/settings`) — profile, **Storage** row (cloud vs this-browser), change password, **JSON import/export**. When `cloudSync`: a **Cloud sync** card with “Upload this browser’s local desk to cloud”. Pipeline copy.
+7. **Admin** (`/admin`) — role-gated seats console. KPI cards: seats used, accounts, pipeline row totals, estimated aggregate. Accounts table with role `Select`. Local mode: password/delete + Add account. Cloud mode: role change + delete profile row still work; Add account / set password / reset **throw** (create seats via Register or Dashboard; password via Dashboard). Owner / admin manage; moderator is view-only.
 
 Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome only.
 
@@ -78,33 +78,38 @@ Do not put service-role keys in the browser / `VITE_*`. Hosted Supabase only —
 
 ## Auth
 
-| Route / action | Role |
-| --- | --- |
-| `loginAccount` / `signIn` | Issue session (`LoginPage`) |
-| `registerAccount` | First account or reserved owner mailbox → `owner`; preferred admin mailbox → `admin`; else `user` if under the seat cap |
-| `changePassword` | Re-hash with a new salt after verifying the current password |
-| `AdminRoute` / Admin Accounts | `owner` / `admin` / `moderator` may view (`ADMIN_VIEW_ROLES`); `owner` / `admin` may manage (`ADMIN_MANAGE_ROLES`). Actions: `Select` of `MANAGEABLE_ROLES` (`user` / `moderator` / `admin`) saves immediately; Password modal (set, or generate a temp `td-…` string — no email); Delete (confirm by email, not self). Owner row stays **Protected** (no demote/delete/password). Add account modal (name / email / password / role) does not switch the current session. |
-| Preferred admin bootstrap | One-time per browser (`talent-desk.bootstrap.prof-admin.v1`): if `PRIMARY_ADMIN_EMAIL` seat exists and is not owner → set `admin`. Missing seat → Add account / register (still assigns `admin`). No co-owner. |
-| Pipeline CRUD | `canManagePipeline` is every desk role (`PIPELINE_ROLES`). Candidates and Offers Add / Edit / Delete are not owner-only. |
+`api.ts` routes every auth/data call: cloud when `isCloudSyncEnabled`, else local.
 
-Password rule: **≥ 8 characters**. Passwords are PBKDF2-SHA-256 (100,000 iterations) + 16-byte salt, stored in `localStorage`. Reserved owner email lives in `OWNER_EMAIL` (`src/lib/constants.ts`) — do not document the address here; do not let register mint that mailbox as `user`. Preferred admin email is `PRIMARY_ADMIN_EMAIL` in the same file.
+| Route / action | Local fallback | Cloud (`VITE_SUPABASE_*` set) |
+| --- | --- | --- |
+| `loginAccount` | `local-db.signIn` → `talent-desk.session.v1` | `supabase.auth.signInWithPassword`; then `maybeAutoMigrateLocalToCloud` |
+| `registerAccount` | First account or reserved owner mailbox → `owner`; preferred admin mailbox → `admin`; else `user` if under the seat cap | `supabase.auth.signUp` (PKCE). Profile role assigned by `handle_new_user` trigger (owner mailbox / preferred admin / first profile → owner; else `user`). Throws if confirm-email is on and no session. |
+| `changePassword` | Re-hash PBKDF2 with a new salt after verifying current | `cloudChangePassword` via Supabase Auth |
+| `AdminRoute` / Admin Accounts | Password modal (set, or generate a temp `td-…` string); Add account modal; Delete (confirm by email, not self) | Role `Select` + delete **profile** row still work. Add account / set password / reset **throw** (Register or Dashboard for seats; Dashboard for passwords). Owner row stays **Protected**. |
+| Preferred admin bootstrap | One-time per browser (`talent-desk.bootstrap.prof-admin.v1`) | Trigger assigns preferred-admin mailbox → `admin` on first Auth insert. No co-owner. |
+| Pipeline CRUD | `canManagePipeline` is every desk role | Same. Shared RLS: any authenticated teammate CRUD. |
 
-`ProtectedRoute` waits on `AuthProvider.loading`, then `Navigate` to `/login` unless a session exists. After login/register, pages call `notifyAuthChanged()` so the provider re-reads `talent-desk.session.v1`.
+Password rule: **≥ 8 characters**. Local passwords are PBKDF2-SHA-256 (100,000 iterations) + 16-byte salt in `localStorage`. Cloud passwords live in Supabase Auth — local hashes **do not** transfer. Reserved owner email lives in `OWNER_EMAIL` (`src/lib/constants.ts`) — do not document the address here; do not let register mint that mailbox as `user`. Preferred admin email is `PRIMARY_ADMIN_EMAIL` in the same file (also baked into the SQL trigger — do not copy either address into these docs).
 
-Max **4** non-owner seats (`MAX_ACCOUNTS`). The register and Admin Add-account paths in `local-db.ts` share that cap. The full desk is **shared** on this device: `listOffers` / `listCandidates` / `listInterviews` / `listEarnings` / `listActivities` take no `userId` and return every row (no `forUser` scope). Row `userId` is creator attribution only — Admin per-seat `c/o/i/e` counts still filter on it. Mutations keep the original creator id on edit. Deleting a seat does **not** delete pipeline rows. Smoke: `scripts/smoke-shared-desk.mjs`.
+`ProtectedRoute` waits on `AuthProvider.loading`, then `Navigate` to `/login` unless a session exists. Cloud: session from `supabase.auth.getSession` + `onAuthStateChange`. Local: after login/register, pages call `notifyAuthChanged()` so the provider re-reads `talent-desk.session.v1`. Login helper copy states whether cloud sync is on.
+
+Max **4** non-owner seats (`MAX_ACCOUNTS`). Local: register and Admin Add-account in `local-db.ts` share that cap. Cloud: `enforce_account_limit` + `handle_new_user` triggers. Full desk is **shared** (cloud tables or this-device localStorage): list helpers take no `userId` and return every row (no `forUser` scope). Row `userId` is creator attribution only — Admin per-seat `c/o/i/e` counts still filter on it. Mutations keep the original creator id on edit. Deleting a seat does **not** delete pipeline rows. Smoke: `scripts/smoke-shared-desk.mjs` (local).
 
 ## Data
 
-Store: `src/lib/local-db.ts`. App façade: `src/lib/api.ts`. Schema notes: `docs/local-data.md`.
+App façade: `src/lib/api.ts`. Cloud store: `src/lib/cloud-db.ts` + `supabase/migrations/0001_shared_desk.sql`. Local store: `src/lib/local-db.ts`. Schema notes: `docs/local-data.md`, `docs/cloud-sync.md`.
 
 | Key | Contents |
 | --- | --- |
-| `talent-desk.accounts.v1` | Accounts (email, role, PBKDF2 hash + salt) |
-| `talent-desk.data.v1` | Candidates, offers, interviews, earnings, activities |
-| `talent-desk.session.v1` | `{ userId, email }` |
-| `talent-desk.bootstrap.prof-admin.v1` | `'1'` after preferred-admin → `admin` bootstrap |
-| `talent-desk.sidebar-collapsed` | `'1'` / `'0'` |
-| `talent-desk.sfx-muted` | `'1'` (default) / `'0'` |
+| `talent-desk.accounts.v1` | Local accounts (email, role, PBKDF2 hash + salt) |
+| `talent-desk.data.v1` | Local candidates, offers, interviews, earnings, activities |
+| `talent-desk.session.v1` | Local `{ userId, email }` |
+| `talent-desk.bootstrap.prof-admin.v1` | `'1'` after preferred-admin → `admin` bootstrap (local) |
+| `talent-desk.cloud-auto-migrated.v1` | `'1'` after first-login auto-upload (or empty skip / forced Settings upload) |
+| `talent-desk.sidebar-collapsed` | `'1'` / `'0'` (always local) |
+| `talent-desk.sfx-muted` | `'1'` (default) / `'0'` (always local) |
+
+Cloud tables (hosted Postgres, shared RLS): `profiles`, `offers`, `candidates`, `interviews`, `earnings`, `activities`. Realtime: `CloudRealtimeSync` invalidates TanStack Query on `postgres_changes`; `refetchOnWindowFocus` is on when cloud is enabled.
 
 | Entity | Purpose |
 | --- | --- |
@@ -119,7 +124,9 @@ Roles: `owner` > `admin` > `moderator` > `user`. Pipeline: Screening → Intervi
 
 Confirming an estimated earning sets status to **Pending** (`confirmEarning`). Pending + Paid + Overdue count as income; Estimated does not until confirmed.
 
-Pipeline import **replaces** `talent-desk.data.v1`. Accounts are **merged by email** (incoming credentials win); an export with no `accounts` array leaves local seats untouched. Settings download exports hashes+salts (`includePasswords: true` currently means hash/salt, not plaintext). Import also accepts a one-time plaintext `"password"` per account.
+Local pipeline import **replaces** `talent-desk.data.v1`. Local accounts are **merged by email** (incoming credentials win); an export with no `accounts` array leaves local seats untouched. Settings download in local mode exports hashes+salts (`includePasswords: true` currently means hash/salt, not plaintext). Import also accepts a one-time plaintext `"password"` per account.
+
+Cloud import **upserts pipeline rows only** (`cloudImportDeskJson`); local PBKDF2 hashes do not become Auth users (`accounts: 0`). First cloud login auto-uploads this browser’s local desk when the cloud is empty (`maybeAutoMigrateLocalToCloud`). Settings can force `uploadLocalDeskToCloud`.
 
 `migrateCandidate` fills missing `country` / `age` / `languages` / `currentLocation` / `market` / `gender` with null on load and import (`normalizeMarket` / `normalizeGender`) — it does not wipe older rows. Unknown market/gender strings become null.
 
@@ -138,11 +145,12 @@ Chinese packages use `salary` + `commission` plus boolean visa / flight / accomm
 
 | Store | What | Where |
 | --- | --- | --- |
-| `localStorage` | Accounts, session, pipeline rows | This browser only |
+| Hosted Supabase (when env set) | Auth (GoTrue email/password, PKCE) + Postgres desk tables + realtime | Shared across teammates |
+| `localStorage` fallback | Accounts, session, pipeline rows | This browser only (when env unset) |
+| `localStorage` always | SFX mute, rail collapse, cloud-auto-migrated flag | This browser |
 | Tesseract | OCR WASM | In-browser, ephemeral |
-| SFX / rail | Mute + collapse prefs | `localStorage` |
 
-There is no object storage, no Postgres, no GoTrue. Header search does not query.
+No object storage. Header search does not query. Never put `service_role` in `VITE_*`. Do not copy project refs or anon keys into this file — they live in `.env` / Vercel (see `docs/cloud-sync.md`).
 
 ## File map
 
@@ -150,16 +158,16 @@ There is no object storage, no Postgres, no GoTrue. Header search does not query
 src/index.css                          → @theme tokens + mesh / glass / card / nav / table CSS
 src/main.tsx                           → StrictMode mount
 src/App.tsx                            → QueryClient + AuthProvider + routes
-src/auth/AuthProvider.tsx              → session from localStorage; notifyAuthChanged
+src/auth/AuthProvider.tsx              → cloud: getSession + onAuthStateChange; local: localStorage + notifyAuthChanged
 src/auth/ProtectedRoute.tsx            → session required; AdminRoute
-src/pages/LoginPage.tsx
-src/pages/RegisterPage.tsx
+src/pages/LoginPage.tsx                → helper copy: cloud on vs off; friendlyCloudAuthError when sync on
+src/pages/RegisterPage.tsx             → MAX_ACCOUNTS copy; friendlyCloudAuthError when sync on
 src/pages/DashboardPage.tsx           → recent table: market + gender chips
 src/pages/CandidatesPage.tsx          → add/edit (wide modal), market/gender filters + chips, drawer, named delete confirm
 src/pages/OffersPage.tsx              → card grid + glass preview modal; Edit/Delete stopPropagation
 src/pages/InterviewsPage.tsx
 src/pages/EarningsPage.tsx
-src/pages/SettingsPage.tsx              → password + JSON import/export
+src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
 src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle
@@ -210,7 +218,9 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 
 ## Leftovers (not canon)
 
-- Settings “Visual system” copy and swatches still list violet / cyan / magenta as the brand. Shipped tokens are lime-glass — `DESIGN.md` wins.
+- Settings “Visual system” copy and swatches still list violet / cyan / magenta as the brand, and one swatch is `#FFB5A0` (not peach `#F4B183`). Shipped tokens are lime-glass — `DESIGN.md` wins.
+- Cloud Admin Add account / set password / reset still render, then **throw** (no Edge Function). Do not document those throws as the intended local password UX.
+- Login helper copy is muted 12px, not a conversion chip. Do not promote it into a “CLOUD” badge.
 - `Input` / `Textarea` / `Select` still use a **violet** focus ring; header search and `:focus-visible` are lime. New fields should follow lime.
 - `EmptyState` eyebrow is still `text-violet-glow`; `Spinner` is still violet/cyan. Prefer peach kickers and lime spinners on new work.
 - `button` magenta / cyan variants remain in the API; register is lime, not magenta.
@@ -245,7 +255,7 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 An hourly Cursor automation (“Design and System documentation”) compares `HEAD` on `main` to the **Documented from** SHA above.
 
 - If the SHA matches and `DESIGN.md` / `HANDOFF.md` exist, it reports **No changes**.
-- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, shell, motion/SFX, local-db, or hosting/deploy), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` when visuals moved, and rewrites this handoff from the shipped artifact. Hosting-only commits refresh this file and leave `DESIGN.md` tokens in place.
+- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, shell, motion/SFX, local-db, cloud-db, or hosting/deploy), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` when visuals moved, and rewrites this handoff from the shipped artifact. Hosting-only commits refresh this file and leave `DESIGN.md` tokens in place.
 - Confirmed incumbent decisions stay; the build wins where they diverge.
 - Track `main`. If a rebuild branch diverges, document the branch that holds the live desk until it is merged.
 - Do not commit secrets, env values, identity tokens, or account JSON into either file.
