@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Plus, Search, Trash2 } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { Pencil, Plus, Search, Trash2, Users } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -16,6 +17,7 @@ import {
   marketTone,
   stageTone,
 } from '@/components/ui'
+import { AnimatedNumber } from '@/components/motion/AnimatedNumber'
 import { useAuth } from '@/auth/AuthProvider'
 import {
   canManagePipeline,
@@ -126,12 +128,14 @@ export function CandidatesPage() {
   const { profile } = useAuth()
   // All signed-in roles (user → owner) share candidates on this device.
   const canEdit = canManagePipeline(profile?.role ?? 'user')
+  const reduce = useReducedMotion()
   const qc = useQueryClient()
   const { data: candidates = [], isLoading } = useQuery({
     queryKey: ['candidates'],
     queryFn: fetchCandidates,
   })
   const { data: offers = [] } = useQuery({ queryKey: ['offers'], queryFn: fetchOffers })
+  const totalCandidates = candidates.length
 
   const [q, setQ] = useState('')
   const [stageFilter, setStageFilter] = useState('all')
@@ -266,6 +270,39 @@ export function CandidatesPage() {
 
   return (
     <div className="space-y-5">
+      <div
+        className="glass-panel relative overflow-hidden !p-4 sm:!px-5 sm:!py-4"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-lime/15 text-lime glow-lime">
+            <Users className="h-5 w-5" aria-hidden />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold tracking-[0.18em] text-lime uppercase">
+              Total candidates
+            </p>
+            <p className="mt-0.5 text-3xl font-extrabold tracking-tight text-lime text-glow-lime tabular sm:text-4xl">
+              <AnimatedNumber value={totalCandidates} />
+            </p>
+            <p className="mt-0.5 text-xs text-ink-dim">
+              All desk rows · live shared total
+            </p>
+          </div>
+        </div>
+        <motion.div
+          className="pointer-events-none absolute -right-6 -top-8 h-36 w-36 rounded-full bg-lime/20 blur-3xl"
+          aria-hidden
+          animate={reduce ? undefined : { scale: [1, 1.2, 1], opacity: [0.35, 0.55, 0.35] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <div
+          className="pointer-events-none absolute -bottom-10 left-1/3 h-24 w-40 rounded-full bg-lime/10 blur-2xl"
+          aria-hidden
+        />
+      </div>
+
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative min-w-[220px] flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-ink-dim" />
