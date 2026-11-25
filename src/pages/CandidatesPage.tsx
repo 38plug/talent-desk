@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { CalendarPlus, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import {
   Badge,
@@ -128,6 +128,7 @@ export function CandidatesPage() {
   const { profile } = useAuth()
   // All signed-in roles (user → owner) share candidates on this device.
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const canEdit = canManagePipeline(profile?.role ?? 'user')
 
   function scheduleInterview(c: Candidate) {
@@ -151,6 +152,32 @@ export function CandidatesPage() {
   const [editTg, setEditTg] = useState('')
   const [editSentBy, setEditSentBy] = useState('')
   const [pendingDelete, setPendingDelete] = useState<Candidate | null>(null)
+
+  // Deep-link from Offer preview: /candidates?id=<id>
+  // Keep `?id` until the drawer closes — PageTransition (AnimatePresence mode=wait)
+  // remounts this page after the exit animation, which would drop local `selected`
+  // if we cleared the param on the first (exiting) mount.
+  useEffect(() => {
+    const id = searchParams.get('id')
+    if (!id || isLoading) return
+    const match = candidates.find((c) => c.id === id)
+    if (!match) return
+    setSelected(match)
+    setEditTg(match.telegram ?? '')
+    setEditSentBy(match.sentBy ?? '')
+  }, [searchParams, candidates, isLoading])
+
+  function clearCandidateDeepLink() {
+    if (!searchParams.has('id')) return
+    const next = new URLSearchParams(searchParams)
+    next.delete('id')
+    setSearchParams(next, { replace: true })
+  }
+
+  function closeCandidateDrawer() {
+    setSelected(null)
+    clearCandidateDeepLink()
+  }
 
   function openAdd() {
     setEditingId(null)
@@ -235,7 +262,7 @@ export function CandidatesPage() {
     mutationFn: deleteCandidate,
     onSuccess: async (_data, id) => {
       setPendingDelete(null)
-      if (selected?.id === id) setSelected(null)
+      if (selected?.id === id) closeCandidateDrawer()
       await Promise.all([
         qc.invalidateQueries({ queryKey: ['candidates'] }),
         qc.invalidateQueries({ queryKey: ['interviews'] }),
@@ -345,6 +372,7 @@ export function CandidatesPage() {
                     key={c.id}
                     className="cursor-pointer border-t border-border hover:bg-white/[0.03]"
                     onClick={() => {
+                      clearCandidateDeepLink()
                       setSelected(c)
                       setEditTg(c.telegram ?? '')
                       setEditSentBy(c.sentBy ?? '')
@@ -603,7 +631,7 @@ export function CandidatesPage() {
 
       <Drawer
         open={!!selected}
-        onClose={() => setSelected(null)}
+        onClose={closeCandidateDrawer}
         title={selected?.name ?? 'Candidate'}
       >
         {selected ? (
