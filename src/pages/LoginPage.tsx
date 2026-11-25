@@ -147,7 +147,7 @@ export function LoginPage() {
                 navigate('/')
               }}
             >
-              Preview Talent Desk UI
+              Preview shell only (no fake data)
             </Button>
           ) : null}
         </form>

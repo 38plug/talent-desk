@@ -1,4 +1,3 @@
-import { DEMO_METRICS } from './demo-data'
 import { supabase, supabaseConfigured } from './supabase'
 import type {
   Activity,
@@ -12,6 +11,29 @@ import type {
 } from './types'
 import { ADMIN_VIEW_ROLES, MAX_ACCOUNTS, OWNER_EMAIL, type Role } from './constants'
 import { parseNumericInput, stripAtHandle } from './utils'
+
+/** Honest empty desk — never invents fake income/candidates. */
+const EMPTY_METRICS: DashboardMetrics = {
+  totalIncome: 0,
+  estimated: 0,
+  candidates: 0,
+  liveOffers: 0,
+  interviewsUpcoming: 0,
+  pendingEarnings: 0,
+  paidEarnings: 0,
+  overdueEarnings: 0,
+  stageCounts: {},
+  incomeSeries: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((label) => ({
+    label,
+    income: 0,
+    estimated: 0,
+  })),
+  estimatedList: [],
+  attention: [],
+  recentCandidates: [],
+  activity: [],
+  isDemo: false,
+}
 
 function mapProfile(row: Record<string, unknown>): Profile {
   return {
@@ -189,7 +211,7 @@ export async function getDashboardData(): Promise<DashboardMetrics> {
     earnings.length === 0
 
   if (empty) {
-    return { ...DEMO_METRICS }
+    return { ...EMPTY_METRICS }
   }
 
   const incomeStatuses = new Set(['Pending', 'Paid', 'Overdue'])
