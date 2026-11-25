@@ -18,6 +18,7 @@ import {
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { useAuth } from '@/auth/AuthProvider'
+import { InterviewReminderWatcher } from '@/components/interviews/InterviewReminderWatcher'
 import { HeaderClock } from '@/components/layout/HeaderClock'
 import { PageTransition } from '@/components/motion/PageTransition'
 import { SoundToggle } from '@/components/motion/SoundToggle'
@@ -364,6 +365,7 @@ export function AppShell() {
           <PageTransition />
         </main>
       </div>
+      <InterviewReminderWatcher />
     </div>
   )
 }

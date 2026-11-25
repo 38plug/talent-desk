@@ -15,10 +15,10 @@ After sign-in:
 1. **Overview** (`/`) — KPI heroes, neon charts, estimated list (confirm → Pending), Needs Attention, recent candidates. Empty desk → zeros (no demo seed).
 2. **Candidates** (`/candidates`) — shared **DeskTotalsStrip** at the top (glowing unfiltered **Total candidates / offers / interviews**; lime glow + `AnimatedNumber`; respects `prefers-reduced-motion`; refreshes on add/delete / realtime). Same strip also tops Offers + Interviews. Pipeline table (name, **languages** column, market, gender, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Row actions: Schedule interview (→ `/calendar?candidate=`), Edit, Delete — icon-only (aria-label + title). Drawer also has Schedule interview. Deep-link `?id=<candidateId>` opens the detail drawer (from Offer preview; param kept until drawer close). Profile fields: country, age, languages, current location, **market** (`forex` | `chinese` | null), **gender** (`male` | `female` | null) — migrated on load; older rows stay unset. Filters: stage, market (incl. Unset), gender (incl. Unset). Delete cascades interviews + earnings linked by candidate id; offers stay.
 3. **Offers** (`/offers`) — forex + Chinese cards. Click a card (Enter/Space) opens a wide **glass preview** modal (`Modal glass`) with full details plus a **Candidates** section (rows whose `offerId` matches; name / stage / market / link to `/candidates?id=`; empty copy when none). Card Edit/Delete are icon-only (`stopPropagation`, aria-label + title). OCR scan + parse, provision wording, Telegram handle.
-4. **Interviews** (`/interviews`) — list upcoming / past; schedule against a candidate / offer. Link through to the calendar.
+4. **Interviews** (`/interviews`) — list upcoming / past; schedule against a candidate / offer. Link through to the calendar. **Start alerts:** within ~1 min of `scheduledAt` (grace ~2 min after), `InterviewReminderWatcher` (in `AppShell`) fires an in-app toast + browser `Notification` when permitted; Settings **Interview alerts** toggle + Interviews “Allow alerts” prompt. Pref `talent-desk.interview-reminders.v1`; fired ids in `talent-desk.interview-reminded.v1`. Desk tab must be open/recent — no server push.
 5. **Interview Calendar** (`/calendar`) — month / week / day views of `scheduledAt`. Create or edit via modal (candidate picker + datetime). Deep-link `?candidate=<id>` opens the schedule modal preselected (from Candidates row / drawer).
 6. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
-7. **Settings** (`/settings`) — profile, **Storage** row (cloud vs this-browser), change password, **JSON import/export**. When `cloudSync`: a **Cloud sync** card with “Upload this browser’s local desk to cloud”. Pipeline copy.
+7. **Settings** (`/settings`) — profile, **Storage** row (cloud vs this-browser), **Interview alerts** (reminders + Notification permission), change password, **JSON import/export**. When `cloudSync`: a **Cloud sync** card with “Upload this browser’s local desk to cloud”. Pipeline copy.
 8. **Admin** (`/admin`) — role-gated seats console. KPI cards: seats used, accounts, pipeline row totals, estimated aggregate. Accounts table with role `Select`. Local mode: password/delete + Add account. Cloud mode: role change + delete profile row still work; Add account / set password / reset **throw** (create seats via Register or Dashboard; password via Dashboard). Owner / admin manage; moderator is view-only.
 
 Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome only.
@@ -109,6 +109,8 @@ App façade: `src/lib/api.ts`. Cloud store: `src/lib/cloud-db.ts` + `supabase/mi
 | `talent-desk.cloud-auto-migrated.v1` | `'1'` after first-login auto-upload (or empty skip / forced Settings upload) |
 | `talent-desk.sidebar-collapsed` | `'1'` / `'0'` (always local) |
 | `talent-desk.sfx-muted` | `'1'` (default) / `'0'` (always local) |
+| `talent-desk.interview-reminders.v1` | `'1'` (default when unset) / `'0'` — interview start alerts |
+| `talent-desk.interview-reminded.v1` | JSON `{ [interviewId]: firedAtMs }` dedupe |
 
 Cloud tables (hosted Postgres, shared RLS): `profiles`, `offers`, `candidates`, `interviews`, `earnings`, `activities`. Realtime: `CloudRealtimeSync` invalidates TanStack Query on `postgres_changes`; `refetchOnWindowFocus` is on when cloud is enabled.
 
@@ -170,11 +172,13 @@ src/pages/InterviewsPage.tsx          → DeskTotalsStrip; upcoming/past list + 
 src/components/desk/DeskTotalsStrip.tsx → glowing unfiltered candidates/offers/interviews totals (AnimatedNumber)
 src/pages/InterviewCalendarPage.tsx    → month/week/day calendar; ScheduleInterviewModal
 src/components/interviews/ScheduleInterviewModal.tsx → create/edit/delete interview (candidate + datetime)
+src/components/interviews/InterviewReminderWatcher.tsx → OS Notification + in-app toast ~1 min before start
+src/lib/interview-reminders.ts         → pref / permission / due window helpers
 src/lib/datetime.ts                    → datetime-local helpers
 src/pages/EarningsPage.tsx
 src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
-src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock)
+src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock) + InterviewReminderWatcher
 src/components/layout/HeaderClock.tsx  → header date+time (browser locale / local TZ, 1s tick)
 src/lib/datetime.ts                    → datetime-local helpers + header Intl formatters
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle

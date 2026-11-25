@@ -10,6 +10,13 @@ import {
   uploadLocalDeskToCloud,
 } from '@/lib/api'
 import { APP_NAME, PIPELINE_STAGES } from '@/lib/constants'
+import {
+  areInterviewRemindersEnabled,
+  getNotificationPermission,
+  requestNotificationPermission,
+  setInterviewRemindersEnabled,
+  type NotificationPermissionState,
+} from '@/lib/interview-reminders'
 import { friendlyAuthError } from '@/lib/local-db'
 import { friendlyCloudAuthError } from '@/lib/supabase'
 
@@ -28,6 +35,36 @@ export function SettingsPage() {
   const [syncBusy, setSyncBusy] = useState(false)
   const [syncMsg, setSyncMsg] = useState<string | null>(null)
   const [syncErr, setSyncErr] = useState<string | null>(null)
+  const [remindersOn, setRemindersOn] = useState(() => areInterviewRemindersEnabled())
+  const [notifPerm, setNotifPerm] = useState<NotificationPermissionState>(() =>
+    getNotificationPermission(),
+  )
+  const [remindMsg, setRemindMsg] = useState<string | null>(null)
+
+  async function onToggleReminders(next: boolean) {
+    setRemindMsg(null)
+    setInterviewRemindersEnabled(next)
+    setRemindersOn(next)
+    if (!next) {
+      setRemindMsg('Interview start alerts paused on this device.')
+      return
+    }
+    const perm = await requestNotificationPermission()
+    setNotifPerm(perm)
+    if (perm === 'granted') {
+      setRemindMsg('OS notifications enabled. You’ll also see an in-app toast.')
+    } else if (perm === 'denied') {
+      setRemindMsg(
+        'Browser blocked OS notifications — in-app toast still fires while Talent Desk is open. Check site permissions to allow banners.',
+      )
+    } else if (perm === 'unsupported') {
+      setRemindMsg(
+        'This browser has no Notification API — in-app toast still fires while Talent Desk is open.',
+      )
+    } else {
+      setRemindMsg('Reminders on. Allow notifications when the browser asks for OS banners.')
+    }
+  }
 
   async function onChangePassword(e: React.FormEvent) {
     e.preventDefault()
@@ -125,6 +162,44 @@ export function SettingsPage() {
             </dd>
           </div>
         </dl>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Interview alerts</CardTitle>
+        </CardHeader>
+        <p className="mb-4 text-sm text-ink-muted">
+          When an upcoming interview is about to start (within ~1 minute), Talent Desk shows an
+          in-app toast and — if you allow it — a system notification on this computer or phone
+          browser. Keep the desk open (or recent) so the watcher can fire. On iPhone Safari, Add to
+          Home Screen improves OS banner support.
+        </p>
+        <label className="flex cursor-pointer items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            className="h-4 w-4 accent-[var(--color-lime,#C6F432)]"
+            checked={remindersOn}
+            onChange={(e) => void onToggleReminders(e.target.checked)}
+          />
+          <span className="font-semibold text-ink">Alert me when an interview is about to start</span>
+        </label>
+        <p className="mt-2 text-xs text-ink-dim">
+          Permission:{' '}
+          <span className="font-semibold text-ink-muted">
+            {notifPerm === 'unsupported' ? 'unsupported' : notifPerm}
+          </span>
+        </p>
+        {remindersOn && notifPerm !== 'granted' && notifPerm !== 'unsupported' ? (
+          <Button
+            type="button"
+            variant="secondary"
+            className="mt-3"
+            onClick={() => void onToggleReminders(true)}
+          >
+            Allow system notifications
+          </Button>
+        ) : null}
+        {remindMsg ? <p className="mt-3 text-sm text-emerald">{remindMsg}</p> : null}
       </Card>
 
       <Card>
