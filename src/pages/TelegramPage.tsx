@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { LogOut, MessageCircle, Search, Send, UserPlus } from 'lucide-react'
+import { LogOut, MessageCircle, Search, Send, UserPlus, Users } from 'lucide-react'
 import { Button, EmptyState, Input, Label, PageLoader } from '@/components/ui'
 import { fetchCandidates } from '@/lib/api'
 import { NewMessage } from 'teleproto/events'
 import {
   clearTelegramSession,
   createTelegramClient,
+  formatUnread,
+  messageLimitForKind,
   persistClientSession,
   resolveTelegramApi,
   storeTelegramApi,
+  type TgDialogKind,
   type TgDialogRow,
   type TgMessageRow,
   type TelegramApiCreds,
@@ -20,6 +23,11 @@ import type { Candidate } from '@/lib/types'
 import type { TelegramClient } from 'teleproto'
 
 type AuthStep = 'creds' | 'phone' | 'code' | 'password' | 'ready' | 'connecting'
+type ListSection = 'chats' | 'groups'
+
+const DIALOG_POLL_MS = 5_000
+const MESSAGE_POLL_MS = 1_000
+const DIALOG_FETCH_LIMIT = 120
 
 function mapDialogs(raw: Awaited<ReturnType<TelegramClient['getDialogs']>>): TgDialogRow[] {
   const rows: TgDialogRow[] = []
@@ -34,8 +42,10 @@ function mapDialogs(raw: Awaited<ReturnType<TelegramClient['getDialogs']>>): TgD
     const title =
       d.title ||
       (entity && typeof entity === 'object' && 'firstName' in entity
-        ? [ (entity as { firstName?: string; lastName?: string }).firstName,
-            (entity as { lastName?: string }).lastName ]
+        ? [
+            (entity as { firstName?: string; lastName?: string }).firstName,
+            (entity as { lastName?: string }).lastName,
+          ]
             .filter(Boolean)
             .join(' ')
         : null) ||
@@ -46,16 +56,20 @@ function mapDialogs(raw: Awaited<ReturnType<TelegramClient['getDialogs']>>): TgD
       msg && typeof msg === 'object' && 'message' in msg
         ? String((msg as { message?: string }).message ?? '') || null
         : null
+    // Private DMs → Chats; everything else (basic groups, megagroups, channels) → Groups.
+    const kind: TgDialogKind = d.isUser ? 'chat' : 'group'
     rows.push({
       id,
       title: String(title),
       username: username ? String(username) : null,
       unread: Number(d.unreadCount ?? 0),
+      kind,
       entity,
       lastMessage,
-      date: msg && typeof msg === 'object' && 'date' in msg
-        ? Number((msg as { date?: number }).date ?? 0) || null
-        : null,
+      date:
+        msg && typeof msg === 'object' && 'date' in msg
+          ? Number((msg as { date?: number }).date ?? 0) || null
+          : null,
     })
   }
   return rows
@@ -80,6 +94,11 @@ function mapMessages(raw: Awaited<ReturnType<TelegramClient['getMessages']>>): T
     })
   }
   return rows.sort((a, b) => a.date - b.date)
+}
+
+function messagesEqual(a: TgMessageRow[], b: TgMessageRow[]): boolean {
+  if (a.length !== b.length) return false
+  return a.every((m, i) => m.id === b[i]?.id && m.text === b[i]?.text)
 }
 
 function matchCandidate(
@@ -110,7 +129,11 @@ export function TelegramPage() {
   })
 
   const [step, setStep] = useState<AuthStep>(() =>
-    resolveTelegramApi() ? (localStorage.getItem('talent-desk.telegram-session.v1') ? 'connecting' : 'phone') : 'creds',
+    resolveTelegramApi()
+      ? localStorage.getItem('talent-desk.telegram-session.v1')
+        ? 'connecting'
+        : 'phone'
+      : 'creds',
   )
   const [credsForm, setCredsForm] = useState({ apiId: '', apiHash: '' })
   const [phone, setPhone] = useState('')
@@ -122,6 +145,7 @@ export function TelegramPage() {
 
   const [dialogs, setDialogs] = useState<TgDialogRow[]>([])
   const [dialogQ, setDialogQ] = useState('')
+  const [section, setSection] = useState<ListSection>('chats')
   const [active, setActive] = useState<TgDialogRow | null>(null)
   const [messages, setMessages] = useState<TgMessageRow[]>([])
   const [draft, setDraft] = useState('')
@@ -132,47 +156,70 @@ export function TelegramPage() {
   const codeResolve = useRef<((v: string) => void) | null>(null)
   const passwordResolve = useRef<((v: string) => void) | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const openGen = useRef(0)
+  const activeRef = useRef<TgDialogRow | null>(null)
+
+  useEffect(() => {
+    activeRef.current = active
+  }, [active])
 
   const matched = useMemo(
     () => (active ? matchCandidate(candidates, active.username, active.title) : null),
     [active, candidates],
   )
 
+  const chatCount = useMemo(() => dialogs.filter((d) => d.kind === 'chat').length, [dialogs])
+  const groupCount = useMemo(() => dialogs.filter((d) => d.kind === 'group').length, [dialogs])
+  const chatUnread = useMemo(
+    () => dialogs.filter((d) => d.kind === 'chat').reduce((n, d) => n + d.unread, 0),
+    [dialogs],
+  )
+  const groupUnread = useMemo(
+    () => dialogs.filter((d) => d.kind === 'group').reduce((n, d) => n + d.unread, 0),
+    [dialogs],
+  )
+
   const filteredDialogs = useMemo(() => {
     const q = dialogQ.trim().toLowerCase()
-    if (!q) return dialogs
-    return dialogs.filter(
-      (d) =>
+    return dialogs.filter((d) => {
+      if (d.kind !== (section === 'chats' ? 'chat' : 'group')) return false
+      if (!q) return true
+      return (
         d.title.toLowerCase().includes(q) ||
         (d.username?.toLowerCase().includes(q) ?? false) ||
-        (d.lastMessage?.toLowerCase().includes(q) ?? false),
-    )
-  }, [dialogs, dialogQ])
+        (d.lastMessage?.toLowerCase().includes(q) ?? false)
+      )
+    })
+  }, [dialogs, dialogQ, section])
 
   const refreshDialogs = useCallback(async (client: TelegramClient) => {
-    const list = await client.getDialogs({ limit: 80 })
+    const list = await client.getDialogs({ limit: DIALOG_FETCH_LIMIT })
     setDialogs(mapDialogs(list))
   }, [])
 
-  const openChat = useCallback(
-    async (row: TgDialogRow) => {
-      const client = clientRef.current
-      if (!client || !row.entity) return
-      setActive(row)
-      setLoadingChat(true)
-      setError(null)
-      try {
-        const msgs = await client.getMessages(row.entity as never, { limit: 60 })
-        setMessages(mapMessages(msgs))
-        requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }))
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load messages')
-      } finally {
-        setLoadingChat(false)
-      }
-    },
-    [],
-  )
+  const openChat = useCallback(async (row: TgDialogRow) => {
+    const client = clientRef.current
+    if (!client || !row.entity) return
+    const gen = ++openGen.current
+    setActive(row)
+    setMessages([])
+    setLoadingChat(true)
+    setError(null)
+    setDraft('')
+    try {
+      const limit = messageLimitForKind(row.kind)
+      const msgs = await client.getMessages(row.entity as never, { limit })
+      if (gen !== openGen.current) return
+      setMessages(mapMessages(msgs))
+      requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }))
+    } catch (e) {
+      if (gen !== openGen.current) return
+      setError(e instanceof Error ? e.message : 'Failed to load messages')
+      setMessages([])
+    } finally {
+      if (gen === openGen.current) setLoadingChat(false)
+    }
+  }, [])
 
   const startClient = useCallback(
     async (creds: TelegramApiCreds) => {
@@ -245,70 +292,72 @@ export function TelegramPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only connect
   }, [])
 
-  // Live chat: MTProto NewMessage push + 1s poll of the open thread / dialog list.
+  // Live: NewMessage push + light polls (dialogs slower so heavy groups don't starve DMs).
   useEffect(() => {
     if (step !== 'ready') return
     const client = clientRef.current
     if (!client) return
 
     let cancelled = false
-    let inFlight = false
-    const activeRef = { current: active }
+    let dialogInFlight = false
+    let msgInFlight = false
 
     async function refreshOpenChat(scroll: boolean) {
       const row = activeRef.current
-      if (!row?.entity || cancelled) return
+      if (!row?.entity || cancelled || msgInFlight) return
+      msgInFlight = true
+      const gen = openGen.current
       try {
-        const msgs = await client!.getMessages(row.entity as never, { limit: 60 })
-        if (cancelled) return
-        const next = mapMessages(msgs)
-        setMessages((prev) => {
-          if (
-            prev.length === next.length &&
-            prev.every((m, i) => m.id === next[i]?.id && m.text === next[i]?.text)
-          ) {
-            return prev
-          }
-          return next
+        const msgs = await client!.getMessages(row.entity as never, {
+          limit: messageLimitForKind(row.kind),
         })
+        if (cancelled || gen !== openGen.current) return
+        const next = mapMessages(msgs)
+        setMessages((prev) => (messagesEqual(prev, next) ? prev : next))
         if (scroll) {
           requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }))
         }
       } catch {
         /* keep last frame */
+      } finally {
+        msgInFlight = false
       }
     }
 
-    async function tick() {
-      if (cancelled || inFlight) return
-      inFlight = true
+    async function tickDialogs() {
+      if (cancelled || dialogInFlight) return
+      dialogInFlight = true
       try {
         await refreshDialogs(client!)
-        await refreshOpenChat(false)
+      } catch {
+        /* transient */
       } finally {
-        inFlight = false
+        dialogInFlight = false
       }
     }
 
     const onNew = () => {
-      void refreshDialogs(client)
       void refreshOpenChat(true)
+      void tickDialogs()
     }
     client.addEventHandler(onNew, new NewMessage({}))
 
-    const id = window.setInterval(() => void tick(), 1_000)
-    void tick()
+    const msgId = window.setInterval(() => void refreshOpenChat(false), MESSAGE_POLL_MS)
+    const dialogId = window.setInterval(() => void tickDialogs(), DIALOG_POLL_MS)
+    void tickDialogs()
+    void refreshOpenChat(false)
 
     return () => {
       cancelled = true
-      window.clearInterval(id)
+      window.clearInterval(msgId)
+      window.clearInterval(dialogId)
       try {
         client.removeEventHandler(onNew, new NewMessage({}))
       } catch {
         /* ignore */
       }
     }
-  }, [step, active, refreshDialogs])
+  }, [step, refreshDialogs])
 
   async function onSaveCreds(e: React.FormEvent) {
     e.preventDefault()
@@ -351,14 +400,17 @@ export function TelegramPage() {
     e.preventDefault()
     const client = clientRef.current
     const text = draft.trim()
-    if (!client || !active?.entity || !text) return
+    const row = active
+    if (!client || !row?.entity || !text) return
     setBusy(true)
     setError(null)
     try {
-      await client.sendMessage(active.entity as never, { message: text })
+      await client.sendMessage(row.entity as never, { message: text })
       persistClientSession(client)
       setDraft('')
-      const msgs = await client.getMessages(active.entity as never, { limit: 60 })
+      const msgs = await client.getMessages(row.entity as never, {
+        limit: messageLimitForKind(row.kind),
+      })
       setMessages(mapMessages(msgs))
       requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }))
     } catch (err) {
@@ -369,6 +421,7 @@ export function TelegramPage() {
   }
 
   async function disconnect() {
+    openGen.current += 1
     try {
       await clientRef.current?.disconnect()
     } catch {
@@ -494,22 +547,76 @@ export function TelegramPage() {
           <p className="text-[11px] font-semibold tracking-[0.16em] text-lime uppercase">Telegram</p>
           <p className="truncate text-sm text-ink-muted">{meLabel ?? 'Connected'}</p>
         </div>
-        <Button type="button" variant="secondary" size="sm" className="ml-auto" onClick={() => void disconnect()}>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="ml-auto"
+          onClick={() => void disconnect()}
+        >
           <LogOut className="h-3.5 w-3.5" /> Disconnect
         </Button>
       </div>
 
       {error ? <p className="text-sm text-rose">{error}</p> : null}
 
-      <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[280px_minmax(0,1fr)_240px]">
+      <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[300px_minmax(0,1fr)_240px]">
         {/* Dialogs */}
         <aside className="card-surface flex min-h-0 flex-col !p-0">
-          <div className="border-b border-border p-3">
+          <div className="space-y-2 border-b border-border p-3">
+            <div
+              role="tablist"
+              aria-label="Chat sections"
+              className="grid grid-cols-2 gap-1 rounded-[12px] border border-border bg-canvas/60 p-1"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={section === 'chats'}
+                onClick={() => setSection('chats')}
+                className={cn(
+                  'flex items-center justify-center gap-1.5 rounded-[10px] px-2 py-1.5 text-xs font-semibold transition',
+                  section === 'chats'
+                    ? 'bg-lime/20 text-lime'
+                    : 'text-ink-dim hover:text-ink-muted',
+                )}
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                Chats
+                <span className="tabular-nums text-[10px] opacity-80">{chatCount}</span>
+                {chatUnread > 0 ? (
+                  <span className="rounded-full bg-lime/25 px-1.5 text-[10px] font-bold text-lime">
+                    {formatUnread(chatUnread)}
+                  </span>
+                ) : null}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={section === 'groups'}
+                onClick={() => setSection('groups')}
+                className={cn(
+                  'flex items-center justify-center gap-1.5 rounded-[10px] px-2 py-1.5 text-xs font-semibold transition',
+                  section === 'groups'
+                    ? 'bg-lime/20 text-lime'
+                    : 'text-ink-dim hover:text-ink-muted',
+                )}
+              >
+                <Users className="h-3.5 w-3.5" />
+                Groups
+                <span className="tabular-nums text-[10px] opacity-80">{groupCount}</span>
+                {groupUnread > 0 ? (
+                  <span className="rounded-full bg-lime/25 px-1.5 text-[10px] font-bold text-lime">
+                    {formatUnread(groupUnread)}
+                  </span>
+                ) : null}
+              </button>
+            </div>
             <div className="relative">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-ink-dim" />
               <Input
                 className="h-9 pl-8 text-sm"
-                placeholder="Search chats"
+                placeholder={section === 'chats' ? 'Search chats' : 'Search groups'}
                 value={dialogQ}
                 onChange={(e) => setDialogQ(e.target.value)}
               />
@@ -517,7 +624,11 @@ export function TelegramPage() {
           </div>
           <ul className="min-h-0 flex-1 overflow-y-auto">
             {filteredDialogs.length === 0 ? (
-              <li className="p-4 text-sm text-ink-dim">No chats</li>
+              <li className="p-4 text-sm text-ink-dim">
+                {section === 'chats'
+                  ? 'No private chats in this list yet.'
+                  : 'No groups or channels in this list yet.'}
+              </li>
             ) : (
               filteredDialogs.map((d) => (
                 <li key={d.id}>
@@ -532,8 +643,8 @@ export function TelegramPage() {
                     <span className="flex items-center gap-2">
                       <span className="truncate text-sm font-semibold text-ink">{d.title}</span>
                       {d.unread > 0 ? (
-                        <span className="ml-auto rounded-full bg-lime/20 px-1.5 text-[10px] font-bold text-lime">
-                          {d.unread}
+                        <span className="ml-auto shrink-0 rounded-full bg-lime/20 px-1.5 text-[10px] font-bold text-lime">
+                          {formatUnread(d.unread)}
                         </span>
                       ) : null}
                     </span>
@@ -555,7 +666,13 @@ export function TelegramPage() {
               <header className="border-b border-border px-4 py-3">
                 <p className="font-bold text-ink">{active.title}</p>
                 <p className="text-xs text-ink-dim">
-                  {active.username ? ensureAtHandle(active.username) : 'Private chat'}
+                  {active.kind === 'chat'
+                    ? active.username
+                      ? ensureAtHandle(active.username)
+                      : 'Private chat'
+                    : active.username
+                      ? `Group · ${ensureAtHandle(active.username)}`
+                      : 'Group / channel'}
                 </p>
               </header>
               <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-3">
@@ -610,7 +727,10 @@ export function TelegramPage() {
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
               <MessageCircle className="h-8 w-8 text-ink-dim" />
-              <p className="text-sm text-ink-muted">Select a chat to read and reply.</p>
+              <p className="text-sm text-ink-muted">
+                Pick a chat under <span className="text-lime">Chats</span> (DMs) or a group under{' '}
+                <span className="text-lime">Groups</span>.
+              </p>
             </div>
           )}
         </section>
