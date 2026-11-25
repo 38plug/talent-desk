@@ -1,14 +1,20 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useAuth } from '@/auth/AuthProvider'
+import { AuthShell } from '@/components/auth/AuthShell'
+import { MotionButtonShell } from '@/components/motion/Motion'
 import { Button, Input, Label, Spinner } from '@/components/ui'
 import { registerAccount } from '@/lib/api'
 import { APP_NAME, MAX_ACCOUNTS } from '@/lib/constants'
 import { friendlyAuthError } from '@/lib/local-db'
+import { fadeUp, springSnappy, staggerContainer } from '@/lib/motion'
+import { playSfx } from '@/lib/sfx'
 
 export function RegisterPage() {
   const { session, loading, notifyAuthChanged } = useAuth()
   const navigate = useNavigate()
+  const reduce = useReducedMotion()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -26,8 +32,10 @@ export function RegisterPage() {
     }
 
     setBusy(true)
+    playSfx('tap')
     try {
       await registerAccount(email, password, fullName)
+      playSfx('success')
       notifyAuthChanged()
       navigate('/')
     } catch (err) {
@@ -39,81 +47,91 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="bg-mesh relative flex min-h-screen items-center justify-center overflow-hidden p-4">
-      <div className="auth-orb -top-16 right-0 h-72 w-72 bg-magenta" />
-      <div className="auth-orb -bottom-24 -left-10 h-80 w-80 bg-cyan" />
-
-      <div className="relative z-10 w-full max-w-md">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[18px] bg-gradient-to-br from-magenta via-violet to-cyan text-xl font-black text-white glow-magenta">
-            TD
-          </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-ink">{APP_NAME}</h1>
-          <p className="mt-2 text-sm text-ink-muted">
-            Limited desk — max {MAX_ACCOUNTS} seats (owner excluded)
-          </p>
-        </div>
-        <form
-          onSubmit={onSubmit}
-          className="card-surface card-glow space-y-4 p-7 shadow-[0_0_80px_rgb(236_72_153/0.18)]"
-        >
+    <AuthShell accent="magenta">
+      <motion.form
+        onSubmit={onSubmit}
+        className="space-y-4"
+        variants={reduce ? undefined : staggerContainer}
+        initial={reduce ? false : 'hidden'}
+        animate="show"
+      >
+        <motion.div variants={reduce ? undefined : fadeUp}>
           <h2 className="text-lg font-bold">Create account</h2>
-          <div>
-            <Label htmlFor="name">Full name</Label>
-            <Input
-              id="name"
-              disabled={busy}
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              autoComplete="email"
-              disabled={busy}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              minLength={8}
-              autoComplete="new-password"
-              disabled={busy}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          {error ? (
-            <div className="rounded-[14px] border border-rose/30 bg-rose/10 px-3 py-2.5 text-sm text-rose">
-              <p className="font-semibold">{error}</p>
-            </div>
-          ) : null}
-          <Button type="submit" variant="magenta" className="w-full" disabled={busy}>
-            {busy ? (
-              <>
-                <Spinner className="h-4 w-4" /> Creating account…
-              </>
-            ) : (
-              'Join Talent Desk'
-            )}
-          </Button>
-          <p className="text-center text-sm text-ink-muted">
-            Already have access?{' '}
-            <Link className="font-semibold text-cyan hover:underline" to="/login">
-              Sign in
-            </Link>
+          <p className="mt-1 text-xs text-ink-muted">
+            Limited desk — max {MAX_ACCOUNTS} seats (owner excluded) · {APP_NAME}
           </p>
-        </form>
-      </div>
-    </div>
+        </motion.div>
+        <motion.div variants={reduce ? undefined : fadeUp}>
+          <Label htmlFor="name">Full name</Label>
+          <Input
+            id="name"
+            disabled={busy}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            onFocus={() => playSfx('hover')}
+          />
+        </motion.div>
+        <motion.div variants={reduce ? undefined : fadeUp}>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            required
+            autoComplete="email"
+            disabled={busy}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onFocus={() => playSfx('hover')}
+          />
+        </motion.div>
+        <motion.div variants={reduce ? undefined : fadeUp}>
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            disabled={busy}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onFocus={() => playSfx('hover')}
+          />
+        </motion.div>
+        {error ? (
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-[14px] border border-rose/30 bg-rose/10 px-3 py-2.5 text-sm text-rose"
+          >
+            <p className="font-semibold">{error}</p>
+          </motion.div>
+        ) : null}
+        <motion.div variants={reduce ? undefined : fadeUp} transition={springSnappy}>
+          <MotionButtonShell>
+            <Button type="submit" variant="magenta" className="w-full" disabled={busy}>
+              {busy ? (
+                <>
+                  <Spinner className="h-4 w-4" /> Creating account…
+                </>
+              ) : (
+                'Join Talent Desk'
+              )}
+            </Button>
+          </MotionButtonShell>
+        </motion.div>
+        <motion.p className="text-center text-sm text-ink-muted" variants={reduce ? undefined : fadeUp}>
+          Already have access?{' '}
+          <Link
+            className="font-semibold text-cyan hover:underline"
+            to="/login"
+            onMouseEnter={() => playSfx('hover')}
+            onClick={() => playSfx('whoosh')}
+          >
+            Sign in
+          </Link>
+        </motion.p>
+      </motion.form>
+    </AuthShell>
   )
 }
