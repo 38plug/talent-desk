@@ -117,6 +117,7 @@ export function CandidatesPage() {
   const [selected, setSelected] = useState<Candidate | null>(null)
   const [editTg, setEditTg] = useState('')
   const [editSentBy, setEditSentBy] = useState('')
+  const [pendingDelete, setPendingDelete] = useState<Candidate | null>(null)
 
   function openAdd() {
     setEditingId(null)
@@ -134,6 +135,10 @@ export function CandidatesPage() {
     setModalOpen(false)
     setEditingId(null)
     setForm(emptyForm)
+  }
+
+  function requestDelete(c: Candidate) {
+    setPendingDelete(c)
   }
 
   const save = useMutation({
@@ -193,9 +198,15 @@ export function CandidatesPage() {
 
   const remove = useMutation({
     mutationFn: deleteCandidate,
-    onSuccess: async () => {
-      setSelected(null)
-      await qc.invalidateQueries({ queryKey: ['candidates'] })
+    onSuccess: async (_data, id) => {
+      setPendingDelete(null)
+      if (selected?.id === id) setSelected(null)
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['candidates'] }),
+        qc.invalidateQueries({ queryKey: ['interviews'] }),
+        qc.invalidateQueries({ queryKey: ['earnings'] }),
+        qc.invalidateQueries({ queryKey: ['dashboard'] }),
+      ])
     },
   })
 
@@ -296,18 +307,34 @@ export function CandidatesPage() {
                       {c.updatedAt ? new Date(c.updatedAt).toLocaleDateString() : '—'}
                     </td>
                     <td className="px-4 py-3">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        className="h-8 px-2"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          openEdit(c)
-                        }}
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                        Edit
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          className="h-8 px-2"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openEdit(c)
+                          }}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Edit
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="danger"
+                          size="sm"
+                          className="h-8 px-2"
+                          aria-label={`Delete ${c.name}`}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            requestDelete(c)
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Delete
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -507,13 +534,55 @@ export function CandidatesPage() {
               >
                 <Pencil className="h-4 w-4" /> Edit candidate
               </Button>
-              <Button variant="danger" onClick={() => remove.mutate(selected.id)}>
+              <Button variant="danger" onClick={() => requestDelete(selected)}>
                 <Trash2 className="h-4 w-4" /> Delete candidate
               </Button>
             </div>
           </div>
         ) : null}
       </Drawer>
+
+      <Modal
+        open={!!pendingDelete}
+        onClose={() => {
+          if (!remove.isPending) setPendingDelete(null)
+        }}
+        title="Delete candidate"
+      >
+        {pendingDelete ? (
+          <div className="space-y-4">
+            <p className="text-sm text-ink-muted">
+              Delete{' '}
+              <span className="font-semibold text-ink">{pendingDelete.name}</span>? This removes
+              the candidate and any linked interviews or earnings from this device. Offers stay.
+            </p>
+            {remove.isError ? (
+              <p className="text-sm text-rose">
+                {remove.error instanceof Error ? remove.error.message : 'Delete failed'}
+              </p>
+            ) : null}
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={remove.isPending}
+                onClick={() => setPendingDelete(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="danger"
+                disabled={remove.isPending}
+                onClick={() => remove.mutate(pendingDelete.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+                {remove.isPending ? 'Deleting…' : 'Delete'}
+              </Button>
+            </div>
+          </div>
+        ) : null}
+      </Modal>
     </div>
   )
 }
