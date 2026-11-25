@@ -36,6 +36,7 @@ export function stageTone(stage: string): keyof typeof tones {
     case 'Hired':
     case 'Paid':
     case 'Live':
+    case 'Confirmed':
       return 'emerald'
     case 'Accepted':
     case 'Pending':
@@ -47,6 +48,7 @@ export function stageTone(stage: string): keyof typeof tones {
     case 'Overdue':
     case 'Rejected':
     case 'Closed':
+    case 'Declined by company':
       return 'rose'
     case 'Paused':
     case 'Screening':

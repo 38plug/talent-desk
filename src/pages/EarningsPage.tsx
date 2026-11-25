@@ -32,7 +32,7 @@ export function EarningsPage() {
   const { data: candidates = [] } = useQuery({ queryKey: ['candidates'], queryFn: fetchCandidates })
   const { data: offers = [] } = useQuery({ queryKey: ['offers'], queryFn: fetchOffers })
 
-  const [status, setStatus] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
     candidateId: '',
@@ -70,24 +70,30 @@ export function EarningsPage() {
     },
   })
 
-  const markPaid = useMutation({
-    mutationFn: async (id: string) => {
-      const row = earnings.find((e) => e.id === id)
+  const changeStatus = useMutation({
+    mutationFn: async (payload: { id: string; status: EarningStatus }) => {
+      const row = earnings.find((e) => e.id === payload.id)
       if (!row) return
       await upsertEarning(
         {
           candidateId: row.candidateId,
           offerId: row.offerId,
           amount: row.amount,
-          status: 'Paid',
+          status: payload.status,
           notes: row.notes ?? undefined,
         },
-        id,
+        payload.id,
       )
     },
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ['earnings'] })
       await qc.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+
+  const markPaid = useMutation({
+    mutationFn: async (id: string) => {
+      await changeStatus.mutateAsync({ id, status: 'Paid' })
     },
   })
 
@@ -97,8 +103,8 @@ export function EarningsPage() {
   })
 
   const filtered = useMemo(
-    () => earnings.filter((e) => (status === 'all' ? true : e.status === status)),
-    [earnings, status],
+    () => earnings.filter((e) => (statusFilter === 'all' ? true : e.status === statusFilter)),
+    [earnings, statusFilter],
   )
 
   const totals = useMemo(() => {
@@ -150,7 +156,11 @@ export function EarningsPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Select className="w-44" value={status} onChange={(e) => setStatus(e.target.value)}>
+        <Select
+          className="w-44"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
           <option value="all">All statuses</option>
           {EARNING_STATUSES.map((s) => (
             <option key={s} value={s}>
@@ -200,7 +210,27 @@ export function EarningsPage() {
                     </td>
                     <td className="px-4 py-3 tabular font-semibold">{formatMoney(e.amount)}</td>
                     <td className="px-4 py-3">
-                      <Badge tone={stageTone(e.status)}>{e.status}</Badge>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge tone={stageTone(e.status)}>{e.status}</Badge>
+                        <Select
+                          className="h-8 w-[8.5rem] text-xs"
+                          aria-label={`Payment status for ${candidates.find((c) => c.id === e.candidateId)?.name ?? 'earning'}`}
+                          value={e.status}
+                          disabled={changeStatus.isPending}
+                          onChange={(ev) =>
+                            changeStatus.mutate({
+                              id: e.id,
+                              status: ev.target.value as EarningStatus,
+                            })
+                          }
+                        >
+                          {EARNING_STATUSES.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">
