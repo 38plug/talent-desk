@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { CalendarPlus, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import {
   Badge,
@@ -128,6 +128,7 @@ export function CandidatesPage() {
   const { profile } = useAuth()
   // All signed-in roles (user → owner) share candidates on this device.
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const canEdit = canManagePipeline(profile?.role ?? 'user')
 
   function scheduleInterview(c: Candidate) {
@@ -151,6 +152,21 @@ export function CandidatesPage() {
   const [editTg, setEditTg] = useState('')
   const [editSentBy, setEditSentBy] = useState('')
   const [pendingDelete, setPendingDelete] = useState<Candidate | null>(null)
+
+  // Deep-link from Offer preview: /candidates?id=<id>
+  useEffect(() => {
+    const id = searchParams.get('id')
+    if (!id || isLoading) return
+    const match = candidates.find((c) => c.id === id)
+    if (match) {
+      setSelected(match)
+      setEditTg(match.telegram ?? '')
+      setEditSentBy(match.sentBy ?? '')
+    }
+    const next = new URLSearchParams(searchParams)
+    next.delete('id')
+    setSearchParams(next, { replace: true })
+  }, [searchParams, setSearchParams, candidates, isLoading])
 
   function openAdd() {
     setEditingId(null)

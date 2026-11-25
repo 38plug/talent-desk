@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Plus, ScanLine, Trash2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ArrowUpRight, Pencil, Plus, ScanLine, Trash2 } from 'lucide-react'
 import { createWorker } from 'tesseract.js'
 import {
   Badge,
@@ -12,11 +13,19 @@ import {
   PageLoader,
   Select,
   Textarea,
+  marketTone,
   stageTone,
 } from '@/components/ui'
 import { useAuth } from '@/auth/AuthProvider'
 import { DeskTotalsStrip } from '@/components/desk/DeskTotalsStrip'
-import { canManagePipeline, deleteOffer, fetchOffers, upsertOffer } from '@/lib/api'
+import {
+  canManagePipeline,
+  deleteOffer,
+  fetchCandidates,
+  fetchOffers,
+  upsertOffer,
+} from '@/lib/api'
+import { marketLabel } from '@/lib/constants'
 import { parseOfferText, translateOfferText, type ParsedOfferPreview } from '@/lib/parse-offer'
 import type { Offer, OfferFormValues } from '@/lib/types'
 import { ensureAtHandle, formatMoney } from '@/lib/utils'
@@ -386,6 +395,15 @@ function OfferPreview({
   onEdit: () => void
   onDelete: () => void
 }) {
+  const { data: candidates = [] } = useQuery({
+    queryKey: ['candidates'],
+    queryFn: fetchCandidates,
+  })
+  const linkedCandidates = useMemo(
+    () => candidates.filter((c) => c.offerId === offer.id),
+    [candidates, offer.id],
+  )
+
   const packageFlags = (
     [
       ['accommodation', 'Accommodation', offer.accommodation],
@@ -447,6 +465,46 @@ function OfferPreview({
         <div className="rounded-xl border border-border/80 bg-canvas-raised/80 px-4 py-3 text-sm whitespace-pre-wrap text-ink-muted">
           {offer.description?.trim() ? offer.description : 'No description provided.'}
         </div>
+      </div>
+
+      <div>
+        <p className="mb-2 text-[11px] uppercase tracking-wide text-ink-dim">
+          Candidates{linkedCandidates.length > 0 ? ` · ${linkedCandidates.length}` : ''}
+        </p>
+        {linkedCandidates.length === 0 ? (
+          <div className="rounded-xl border border-border/80 bg-canvas-raised/80 px-4 py-3 text-sm text-ink-muted">
+            No candidates linked to this offer.
+          </div>
+        ) : (
+          <ul className="divide-y divide-border/80 overflow-hidden rounded-xl border border-border/80 bg-canvas-raised/80">
+            {linkedCandidates.map((c) => (
+              <li
+                key={c.id}
+                className="flex flex-wrap items-center gap-2 px-4 py-3 sm:flex-nowrap sm:gap-3"
+              >
+                <Link
+                  to={`/candidates?id=${encodeURIComponent(c.id)}`}
+                  className="min-w-0 flex-1 truncate text-sm font-semibold text-ink hover:text-lime"
+                >
+                  {c.name}
+                </Link>
+                <Badge tone={stageTone(c.stage)}>{c.stage}</Badge>
+                {c.market ? (
+                  <Badge tone={marketTone(c.market)}>{marketLabel(c.market)}</Badge>
+                ) : (
+                  <span className="text-xs text-ink-dim">Unset</span>
+                )}
+                <Link
+                  to={`/candidates?id=${encodeURIComponent(c.id)}`}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-cyan hover:text-lime"
+                  aria-label={`Open ${c.name}`}
+                >
+                  Open <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {canEdit ? (
