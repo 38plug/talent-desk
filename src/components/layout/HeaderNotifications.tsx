@@ -20,8 +20,11 @@ export function HeaderNotifications() {
   const { data: activities = [] } = useQuery({
     queryKey: ['activities'],
     queryFn: () => fetchActivities(40),
-    refetchInterval: 12_000,
+    // Live desk: pull new offer/candidate posts every second (cloud realtime also invalidates).
+    refetchInterval: 1_000,
+    refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
+    staleTime: 0,
   })
 
   const [seenAt, setSeenAt] = useState(() => readNotificationsSeenAt())
