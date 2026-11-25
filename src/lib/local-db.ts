@@ -392,8 +392,18 @@ export function upsertCandidateRow(
 
 export function deleteCandidateRow(userId: string, candidateId: string) {
   const data = loadData()
+  const target = data.candidates.find((c) => c.id === candidateId && c.userId === userId)
+  if (!target) return
+
   data.candidates = data.candidates.filter((c) => !(c.id === candidateId && c.userId === userId))
-  pushActivity(data, userId, 'candidate', candidateId, 'Deleted candidate')
+  // Cascade: interviews require a candidate; earnings may reference one.
+  data.interviews = data.interviews.filter(
+    (i) => !(i.userId === userId && i.candidateId === candidateId),
+  )
+  data.earnings = data.earnings.filter(
+    (e) => !(e.userId === userId && e.candidateId === candidateId),
+  )
+  pushActivity(data, userId, 'candidate', candidateId, `Deleted candidate ${target.name}`)
   saveData(data)
 }
 
