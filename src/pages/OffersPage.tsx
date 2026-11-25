@@ -15,6 +15,7 @@ import {
   stageTone,
 } from '@/components/ui'
 import { useAuth } from '@/auth/AuthProvider'
+import { DeskTotalsStrip } from '@/components/desk/DeskTotalsStrip'
 import { canManagePipeline, deleteOffer, fetchOffers, upsertOffer } from '@/lib/api'
 import { parseOfferText, translateOfferText, type ParsedOfferPreview } from '@/lib/parse-offer'
 import type { Offer, OfferFormValues } from '@/lib/types'
@@ -176,6 +177,8 @@ export function OffersPage() {
 
   return (
     <div className="space-y-5">
+      <DeskTotalsStrip />
+
       <div className="flex flex-wrap items-center gap-3">
         <Select
           className="w-40"
