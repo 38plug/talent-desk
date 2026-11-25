@@ -310,7 +310,7 @@ Header kicker is violet-glow uppercase `APP_NAME`; title is the current nav labe
 `Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Cyan + violet area (estimated series dashed), cyan→violet bar gradient, donut palette cyan/violet/magenta/emerald/amber/rose. Tooltips: `#171C2B`, 12px radius. Sparklines sit on KPI cards; they do not replace the TD mark.
 
 ### Auth card (signature)
-Centered `max-w-md` `.card-surface.card-glow` with three `.auth-orb` blobs (violet, cyan, magenta; `blur(48px)`, 55% opacity). Login CTA is primary violet (“Enter Talent Desk”); register is magenta (“Join Talent Desk”). Links between them are cyan. “Preview Talent Desk UI” (secondary) appears only when Supabase env is missing.
+Centered `max-w-md` `.card-surface.card-glow` with three `.auth-orb` blobs (violet, cyan, magenta; `blur(48px)`, 55% opacity). Login CTA is primary violet (“Enter Talent Desk”); register is magenta (“Join Talent Desk”). Links between them are cyan. Auth chip brands **Talent Desk** (not “Neon desk”).
 
 ## Do's and Don'ts
 

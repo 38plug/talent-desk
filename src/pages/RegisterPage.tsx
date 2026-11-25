@@ -1,37 +1,25 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthProvider'
-import { AuthConnectivityBanner } from '@/components/auth/AuthConnectivityBanner'
 import { Button, Input, Label, Spinner } from '@/components/ui'
 import { registerAccount } from '@/lib/api'
 import { APP_NAME, MAX_ACCOUNTS } from '@/lib/constants'
-import { checkSupabaseHealth, friendlyAuthError, requireSupabaseConfig } from '@/lib/supabase'
+import { friendlyAuthError } from '@/lib/local-db'
 
 export function RegisterPage() {
-  const { session, loading } = useAuth()
+  const { session, loading, notifyAuthChanged } = useAuth()
   const navigate = useNavigate()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [hint, setHint] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const [healthTick, setHealthTick] = useState(0)
 
   if (!loading && session) return <Navigate to="/" replace />
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    setHint(null)
-
-    const cfg = requireSupabaseConfig()
-    if (cfg) {
-      setError('Supabase is not configured.')
-      setHint(cfg)
-      setHealthTick((n) => n + 1)
-      return
-    }
     if (password.length < 8) {
       setError('Password must be at least 8 characters.')
       return
@@ -40,17 +28,11 @@ export function RegisterPage() {
     setBusy(true)
     try {
       await registerAccount(email, password, fullName)
+      notifyAuthChanged()
       navigate('/')
     } catch (err) {
       const friendly = friendlyAuthError(err)
       setError(friendly.message)
-      if (friendly.hint) {
-        setHint(friendly.hint)
-      } else if (/fetch|network|reach|cannot/i.test(friendly.message)) {
-        const health = await checkSupabaseHealth()
-        if (!health.ok) setHint(health.hint)
-      }
-      setHealthTick((n) => n + 1)
     } finally {
       setBusy(false)
     }
@@ -59,7 +41,7 @@ export function RegisterPage() {
   return (
     <div className="bg-mesh relative flex min-h-screen items-center justify-center overflow-hidden p-4">
       <div className="auth-orb -top-16 right-0 h-72 w-72 bg-magenta" />
-      <div className="auth-orb -bottom-24 -left-10 h-80 w-80 bg-violet" />
+      <div className="auth-orb -bottom-24 -left-10 h-80 w-80 bg-cyan" />
 
       <div className="relative z-10 w-full max-w-md">
         <div className="mb-8 text-center">
@@ -76,7 +58,6 @@ export function RegisterPage() {
           className="card-surface card-glow space-y-4 p-7 shadow-[0_0_80px_rgb(236_72_153/0.18)]"
         >
           <h2 className="text-lg font-bold">Create account</h2>
-          <AuthConnectivityBanner forceCheck={healthTick} />
           <div>
             <Label htmlFor="name">Full name</Label>
             <Input
@@ -114,7 +95,6 @@ export function RegisterPage() {
           {error ? (
             <div className="rounded-[14px] border border-rose/30 bg-rose/10 px-3 py-2.5 text-sm text-rose">
               <p className="font-semibold">{error}</p>
-              {hint ? <p className="mt-1 text-xs leading-relaxed text-ink-muted">{hint}</p> : null}
             </div>
           ) : null}
           <Button type="submit" variant="magenta" className="w-full" disabled={busy}>

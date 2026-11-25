@@ -1,57 +1,36 @@
 # Talent Desk
 
-Forex recruiting command center — **Vite + React 19 + TypeScript + Tailwind CSS v4** SPA on Supabase.
+Forex recruiting command center — **Vite + React 19 + TypeScript + Tailwind CSS v4** static SPA.
 
 Neon dark UI (violet / cyan / magenta). Brand name **Talent Desk** everywhere.
 
-**Production:** Vercel SPA + **hosted** Supabase (real data). Local Docker is for development only — Vercel cannot reach `127.0.0.1`.
+**Production:** Vercel static SPA. Auth and desk data live in the browser (`localStorage`) on that device. Empty by default — no demo/seed KPIs. Optional JSON import/export in Settings.
 
 ## Prerequisites
 
 - Node 20+
-- A Supabase project (hosted for Vercel; optional local Docker for dev)
 
 ## Run locally
 
 ```bash
-cp .env.example .env
-# Prefer hosted URL/anon key even in dev once migrated.
-# Or for local Docker: npx supabase start → paste API URL + anon from `npx supabase status`
-
 npm install
 npm run dev
 # → http://127.0.0.1:5173
 ```
 
-Auth health: `{VITE_SUPABASE_URL}/auth/v1/health` → **200**
+No `VITE_SUPABASE_*` or other backend env. Create an account on first visit; data stays in that browser.
 
-Empty tables show **zero** KPIs — Talent Desk does **not** invent demo income/candidates.
+## Deploy on Vercel
 
-## Deploy on Vercel (permanent)
+1. Import `38plug/talent-desk` (Git) under the `leadforge3` team, or `vercel link` + `vercel --prod`.
+2. No env vars required for the SPA.
+3. `vercel.json` sets Vite → `dist` and SPA rewrites.
 
-1. Import `38plug/talent-desk` (or `vercel link` + `vercel --prod`).
-2. Set Production env (then **redeploy** — Vite bakes `VITE_*` at build):
+Production project alias: `https://talent-desk-leadforge3.vercel.app`
 
-| Name | Value |
-|------|--------|
-| `VITE_SUPABASE_URL` | `https://<ref>.supabase.co` |
-| `VITE_SUPABASE_ANON_KEY` | Hosted anon key |
+## Import existing data
 
-3. Migrate **real** data first — see [`docs/migrate-to-hosted-supabase.md`](docs/migrate-to-hosted-supabase.md) and `scripts/export-local-supabase.sh`.
-
-`vercel.json` sets Vite → `dist` and SPA rewrites.
-
-## Migrate existing website data
-
-Do **not** replace live rows with seed/demo data.
-
-```bash
-# On the machine that has the live local Supabase:
-./scripts/export-local-supabase.sh
-# Restore dumps into a new hosted project, then point Vercel at that project.
-```
-
-Details: [`docs/migrate-to-hosted-supabase.md`](docs/migrate-to-hosted-supabase.md).
+Settings → **Import / export desk data**: paste or upload a `talent-desk-export` JSON file. Export from another device with the same format to move accounts + pipeline rows.
 
 ## Scripts
 
@@ -65,27 +44,12 @@ Details: [`docs/migrate-to-hosted-supabase.md`](docs/migrate-to-hosted-supabase.
 ## Stack
 
 - React 19, React Router v7 (`React.lazy` + Suspense)
-- TanStack Query + `@supabase/supabase-js`
-- Tailwind v4 (`@import "tailwindcss"` + `@theme` in `src/index.css` — no `tailwind.config.js`)
+- TanStack Query + browser `localStorage`
+- Tailwind v4 (`@import "tailwindcss"` + `@theme` in `src/index.css`)
 - Recharts, lucide-react, tesseract.js (scan offer)
 
 ## Modules
 
-Overview · Candidates · Offers (forex + Chinese, scan, provision, Telegram) · Interviews · Earnings (Estimated → Pending confirm) · Settings · Admin (role-gated)
+Overview · Candidates · Offers (forex + Chinese, scan, provision, Telegram) · Interviews · Earnings · Settings (import/export) · Admin (role-gated)
 
-Roles: `owner` > `admin` > `moderator` > `user`. Max **4** non-owner seats. Income isolated by RLS.
-
-## Edge Functions (optional)
-
-`register` · `admin-stats` · `admin-account` — service role server-side only. Without them, `signUp` + DB seat trigger still work; Admin falls back to a limited profile list.
-
-## Env
-
-Client (see `.env.example`):
-
-```
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
-```
-
-`SUPABASE_SERVICE_ROLE_KEY` — migrate scripts / Edge Functions only; never `VITE_*`.
+Roles: `owner` > `admin` > `moderator` > `user`. Max **4** non-owner seats. Data is per account on the device.
