@@ -174,7 +174,9 @@ src/lib/datetime.ts                    → datetime-local helpers
 src/pages/EarningsPage.tsx
 src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
-src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header
+src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock)
+src/components/layout/HeaderClock.tsx  → header date+time (browser locale / local TZ, 1s tick)
+src/lib/datetime.ts                    → datetime-local helpers + header Intl formatters
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle
 src/components/motion/*                → PageTransition (springSoft opacity/y, no filter), Motion, AnimatedNumber, SoundToggle
 src/components/ui/*                    → Button, Input, Card (p-6, CardTitle text-xl), Badge (`stageTone` / `marketTone` / `genderTone`), Modal/Drawer (body portal, springSnappy, glass), charts
