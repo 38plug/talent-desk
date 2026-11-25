@@ -7,6 +7,7 @@ import { MotionItem, MotionStagger } from '@/components/motion/Motion'
 import {
   Badge,
   Button,
+  CardEmpty,
   CardHeader,
   CardSubtitle,
   CardTitle,
@@ -239,7 +240,7 @@ export function DashboardPage() {
       </MotionStagger>
 
       <div className="grid gap-4 xl:grid-cols-3">
-        <MotionItem className="glass-panel card-glow xl:col-span-2">
+        <MotionItem className="glass-panel card-glow p-6 sm:p-7 xl:col-span-2">
           <CardHeader>
             <div>
               <CardTitle>Income vs estimated</CardTitle>
@@ -249,48 +250,46 @@ export function DashboardPage() {
           </CardHeader>
           <NeonAreaChart data={data.incomeSeries} />
         </MotionItem>
-        <MotionItem className="glass-panel card-glow">
+        <MotionItem className="glass-panel card-glow flex flex-col p-6 sm:p-7">
           <CardHeader>
             <div>
               <CardTitle>Needs attention</CardTitle>
               <CardSubtitle>Flags that need a decision today</CardSubtitle>
             </div>
           </CardHeader>
-          <ul className="space-y-2.5">
-            {data.attention.length === 0 ? (
-              <li className="rounded-[14px] border border-dashed border-border bg-white/[0.02] px-4 py-8 text-center text-base text-ink-muted">
-                Nothing urgent — desk is clear.
-              </li>
-            ) : (
-              data.attention.map((item, i) => (
+          {data.attention.length === 0 ? (
+            <CardEmpty className="flex-1">Nothing urgent — desk is clear.</CardEmpty>
+          ) : (
+            <ul className="space-y-2.5">
+              {data.attention.map((item, i) => (
                 <motion.li
                   key={item.id}
                   initial={reduce ? false : { opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ ...springSoft, delay: 0.05 * i }}
-                  className="flex items-start justify-between gap-3 rounded-[14px] border border-border bg-canvas-raised/70 px-3 py-2.5"
+                  className="flex items-start justify-between gap-3 rounded-[14px] border border-border bg-canvas-raised/70 px-3.5 py-3"
                   onMouseEnter={() => playSfx('hover')}
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-ink">{item.title}</p>
-                    <p className="truncate text-sm text-ink-muted">{item.subtitle}</p>
+                    <p className="text-[15px] font-semibold text-ink">{item.title}</p>
+                    <p className="truncate text-[15px] text-ink-muted">{item.subtitle}</p>
                   </div>
                   <Link
                     to={item.href}
-                    className="shrink-0 text-sm font-semibold text-lime hover:underline"
+                    className="shrink-0 text-[15px] font-semibold text-lime hover:underline"
                     onClick={() => playSfx('pop')}
                   >
                     Review
                   </Link>
                 </motion.li>
-              ))
-            )}
-          </ul>
+              ))}
+            </ul>
+          )}
         </MotionItem>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <MotionItem className="glass-panel card-glow">
+        <MotionItem className="glass-panel card-glow flex flex-col p-6 sm:p-7">
           <CardHeader>
             <div>
               <CardTitle>Pipeline mix</CardTitle>
@@ -300,12 +299,10 @@ export function DashboardPage() {
           {stageData.length ? (
             <NeonDonut data={stageData} />
           ) : (
-            <p className="rounded-[14px] border border-dashed border-border bg-white/[0.02] px-4 py-10 text-center text-base text-ink-muted">
-              No stage data yet.
-            </p>
+            <CardEmpty className="flex-1">No stage data yet.</CardEmpty>
           )}
         </MotionItem>
-        <MotionItem className="glass-panel card-glow">
+        <MotionItem className="glass-panel card-glow p-6 sm:p-7">
           <CardHeader>
             <div>
               <CardTitle>Daily income</CardTitle>
@@ -314,30 +311,28 @@ export function DashboardPage() {
           </CardHeader>
           <NeonBarChart data={barData} />
         </MotionItem>
-        <MotionItem className="glass-panel card-glow">
+        <MotionItem className="glass-panel card-glow flex flex-col p-6 sm:p-7">
           <CardHeader>
             <div>
               <CardTitle>Awaiting confirmation</CardTitle>
               <CardSubtitle>Estimated → Pending</CardSubtitle>
             </div>
           </CardHeader>
-          <ul className="space-y-2">
-            {data.estimatedList.length === 0 ? (
-              <li className="rounded-[14px] border border-dashed border-border bg-white/[0.02] px-4 py-10 text-center text-base text-ink-muted">
-                No estimated rows waiting.
-              </li>
-            ) : (
-              data.estimatedList.slice(0, 6).map((e, i) => (
+          {data.estimatedList.length === 0 ? (
+            <CardEmpty className="flex-1">No estimated rows waiting.</CardEmpty>
+          ) : (
+            <ul className="space-y-2">
+              {data.estimatedList.slice(0, 6).map((e, i) => (
                 <motion.li
                   key={e.id}
                   initial={reduce ? false : { opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ ...springSoft, delay: 0.04 * i }}
-                  className="flex items-center justify-between gap-2 rounded-[14px] border border-border px-3 py-2"
+                  className="flex items-center justify-between gap-2 rounded-[14px] border border-border px-3.5 py-3"
                 >
                   <div>
-                    <p className="text-sm font-medium">{e.candidateName ?? 'Candidate'}</p>
-                    <p className="tabular text-sm text-ink-muted">{formatMoney(e.amount)}</p>
+                    <p className="text-[15px] font-medium">{e.candidateName ?? 'Candidate'}</p>
+                    <p className="tabular text-[15px] text-ink-muted">{formatMoney(e.amount)}</p>
                   </div>
                   <Button
                     size="sm"
@@ -348,14 +343,14 @@ export function DashboardPage() {
                     Confirmed
                   </Button>
                 </motion.li>
-              ))
-            )}
-          </ul>
+              ))}
+            </ul>
+          )}
         </MotionItem>
       </div>
 
-      <MotionItem className="glass-panel card-glow !p-0 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+      <MotionItem className="glass-panel card-glow overflow-hidden !p-0">
+        <div className="flex items-center justify-between border-b border-border px-6 py-5 sm:px-7">
           <div>
             <CardTitle>Recent candidates</CardTitle>
             <CardSubtitle>Dense register · Telegram under name</CardSubtitle>
