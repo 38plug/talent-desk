@@ -59,7 +59,7 @@ Deleting a candidate removes that row and cascades interviews and earnings that 
 
 Settings → Download JSON export / Upload / paste. Import replaces pipeline data. Accounts are **merged** by email (incoming credentials win); an export with no accounts leaves existing seats untouched.
 
-Offers, candidates, and interviews are **desk-shared** across every account on this device (`listOffers` / `listCandidates` / `listInterviews` ignore `userId`). Earnings stay private per account.
+The full desk is **shared** across every account on this device. `listOffers` / `listCandidates` / `listInterviews` / `listEarnings` / `listActivities` return the whole `talent-desk.data.v1` collection (no per-user filter). Row `userId` is creator attribution only. Deleting an account removes the seat, not pipeline rows.
 
 **Roles:** sole `owner` (reserved mailbox / first seat). Admin → Accounts Actions can set other seats to `user` / `moderator` / `admin` (owner row stays Protected). Preferred admin mailbox (`PRIMARY_ADMIN_EMAIL` in `constants.ts`) is promoted to `admin` once when that seat already exists on the device; if missing, use Admin **Add account** or `/register` (both assign `admin` for that email). There is no co-owner.
 

@@ -156,7 +156,7 @@ export function AdminPage() {
         <Card className="!p-4">
           <p className="text-xs text-ink-muted">Estimated (aggregate)</p>
           <p className="text-2xl font-bold tabular">${data.estimated}</p>
-          <p className="text-xs text-ink-dim">No per-account income exposed</p>
+          <p className="text-xs text-ink-dim">Shared desk aggregate</p>
         </Card>
       </div>
 
@@ -303,10 +303,9 @@ export function AdminPage() {
             account or Register.
           </li>
           <li>
-            Offers and candidates are shared across all accounts on this device; every role may
-            create and edit them.
+            The full desk (candidates, offers, interviews, earnings) is shared across all accounts
+            on this device; every role may create and edit. Deleting a seat keeps pipeline rows.
           </li>
-          <li>Income stays private per account on this device; stats show aggregates only.</li>
           <li>Reset generates a temporary password (no email) — copy it immediately.</li>
         </ul>
       </Card>

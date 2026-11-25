@@ -65,7 +65,7 @@ Settings → **Import / export desk data**: paste or upload a `talent-desk-expor
 | `/settings` | Profile, password, JSON import/export |
 | `/admin` | Role-gated seats console |
 
-Roles: `owner` > `admin` > `moderator` > `user`. Max **4** non-owner seats. Data is per account on the device.
+Roles: `owner` > `admin` > `moderator` > `user`. Max **4** non-owner seats. Desk data is **shared** across every account on this device.
 
 ## Docs
 

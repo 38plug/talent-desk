@@ -69,28 +69,28 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
 }
 
 export async function fetchOffers(): Promise<Offer[]> {
-  const { userId } = requireSession()
-  return listOffers(userId)
+  requireSession()
+  return listOffers()
 }
 
 export async function fetchCandidates(): Promise<Candidate[]> {
-  const { userId } = requireSession()
-  return listCandidates(userId)
+  requireSession()
+  return listCandidates()
 }
 
 export async function fetchInterviews(): Promise<Interview[]> {
-  const { userId } = requireSession()
-  return listInterviews(userId)
+  requireSession()
+  return listInterviews()
 }
 
 export async function fetchEarnings(): Promise<Earning[]> {
-  const { userId } = requireSession()
-  return listEarnings(userId)
+  requireSession()
+  return listEarnings()
 }
 
 export async function fetchActivities(limit = 20): Promise<Activity[]> {
-  const { userId } = requireSession()
-  return listActivities(userId, limit)
+  requireSession()
+  return listActivities(limit)
 }
 
 export async function getDashboardData(): Promise<DashboardMetrics> {

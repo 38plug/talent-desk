@@ -85,7 +85,7 @@ Password rule: **≥ 8 characters**. Passwords are PBKDF2-SHA-256 (100,000 itera
 
 `ProtectedRoute` waits on `AuthProvider.loading`, then `Navigate` to `/login` unless a session exists. After login/register, pages call `notifyAuthChanged()` so the provider re-reads `talent-desk.session.v1`.
 
-Max **4** non-owner seats (`MAX_ACCOUNTS`). The register path in `local-db.ts` is the cap. Offers / candidates / interviews are **desk-shared** (`listOffers` / `listCandidates` / `listInterviews`); earnings stay per-account.
+Max **4** non-owner seats (`MAX_ACCOUNTS`). The register path in `local-db.ts` is the cap. The full desk is **shared** on this device: `listOffers` / `listCandidates` / `listInterviews` / `listEarnings` / `listActivities` return every row (no `forUser` / `userId` scope). Row `userId` is creator attribution only. Deleting a seat does **not** delete pipeline rows.
 
 ## Data
 
@@ -117,7 +117,7 @@ Import **replaces** accounts + data on that device. Settings download exports ha
 
 `migrateCandidate` fills missing `country` / `age` / `languages` / `currentLocation` / `market` / `gender` with null on load and import (`normalizeMarket` / `normalizeGender`) — it does not wipe older rows. Unknown market/gender strings become null.
 
-`deleteCandidateRow` removes the candidate and any interviews/earnings with that `candidateId` for the same user. Linked offers are not deleted. Confirm UI names the candidate before the mutation runs.
+`deleteCandidateRow` removes the candidate and any interviews/earnings with that `candidateId` desk-wide. Linked offers are not deleted. Confirm UI names the candidate before the mutation runs.
 
 ## Offers pipeline
 
