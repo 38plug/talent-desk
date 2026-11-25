@@ -201,9 +201,9 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 - **Peach** (`#F4B183`): `.floating-label` kickers (“Desk”, `APP_NAME`, auth tagline), estimated chart series (dashed), bar-chart end-stop, auth orb, gauge start-stop. Peach is voice, not conversion.
 - **Signal Violet** (`#7C3AED`): Heritage. KPI spark, donut slice, leftover field `:focus` ring. Do not use as the primary CTA.
 - **Violet Glow** (`#A78BFA`): Estimated KPI spark; leftover empty-state eyebrow.
-- **Signal Cyan** (`#22D3EE`): Income spark, cyan button variant, sound-toggle hover. Global `:focus-visible` is **lime**, not cyan.
+- **Signal Cyan** (`#22D3EE`): Income spark, cyan button variant, sound-toggle hover, **Chinese** market chip, **Male** gender chip. Global `:focus-visible` is **lime**, not cyan.
 - **Cyan Glow** (`#67E8F9`): Cyan button hover.
-- **Signal Magenta** (`#EC4899`): Candidates KPI spark; magenta button variant still exists but register is lime, not magenta.
+- **Signal Magenta** (`#EC4899`): Candidates KPI spark; **Female** gender chip. Magenta button variant still exists but register is lime, not magenta — do not promote magenta to conversion.
 - **Magenta Glow** (`#F472B6`): Magenta hover.
 
 ### Tertiary
@@ -227,6 +227,8 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 **The Lime Conversion Rule.** `#C6F432` is the irreversible action: Enter Talent Desk, Join Talent Desk, Confirm, Open candidates, the stretchy nav pill. Peach, violet, cyan, and magenta may light charts and kickers — they do not replace the primary CTA on a working pane.
 
 **The Status-Not-Brand Rule.** Emerald, amber, and rose map pipeline / earning / offer states through `stageTone`. Do not promote them into a four-color brand.
+
+**The Market-Chip Rule.** Candidate market uses the same values as offer categories (`forex` | `chinese`). Forex is lime (`marketTone`); Chinese is cyan. Unset is a dim em-dash, never a muted fake badge.
 
 **The Mesh-Is-Atmosphere Rule.** `.bg-mesh` orbs are ground lighting, not a fill token for cards. Dashboard panes stay on `.glass-panel`; forms stay on `.card-surface`.
 
@@ -263,7 +265,7 @@ The authenticated product is a collapsible rail-plus-canvas command floor.
 - **Main:** `px-4 py-6` → `sm:px-6` → `lg:px-8`. Vertical stack `space-y-5` / `gap-4`. Page content swaps through `PageTransition` (`springSoft` opacity + `y: 14` in; exit opacity + `y: -8` in 0.2s). **No CSS `filter` or scale on this wrapper**, so `position: fixed` overlays are not clipped.
 - **Auth:** Centered `max-w-md` `.glass-panel.card-glow` on `.bg-mesh` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`). Film-grain overlay. Sound toggle top-right. No rail.
 - **Dashboard:** 5-col hero (`3 + 2`) at `lg`; 4 glass KPI cards (`!p-4`); then area + attention, donut + bar + estimated list (`p-6 sm:p-7`), recent table (`!p-0`). Empty desk shows a lime/10 banner and zeros — never seeded demo income.
-- **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover lime-5%. Candidates table is `min-w-[860px]` with Location + actions (Edit / Delete).
+- **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover lime-5%. Candidates table is `min-w-[940px]` with Market, Gender, Location, and actions (Edit / Delete). Overview recent-candidates table shows Name / Market / Gender / Stage / Source / Telegram.
 - **Dialogs:** Modal and Drawer **portal to `document.body`** at `z-[200]`. Overlay is `bg-black/75` (no backdrop-blur) fading 0.2s. Dialog shell is `max-h-[min(90vh,calc(100dvh-2rem))]` with a sticky title bar and a scrollable body; wide forms use `max-w-2xl`. Open uses `springSnappy` on the panel: scale `0.94` → `1`, `blur(8px)` → `0`, `y: 12` → `0`. `glass` variant applies `.glass-panel` + lime/20 seam (offer preview). Drawer is a right `max-w-md` panel at `100dvh` sliding `x: 28` with a 6px blur. Body scroll is locked while either is open. Escape and overlay click close.
 
 Spacing rhythm is 8 / 12 / 16 / 20 / 24 / 32.
@@ -321,8 +323,10 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 - **Motion shell:** `MotionButtonShell` scales 1.015 / 0.985 on hover/tap.
 
 ### Chips / Badges
-- Full pill, 11px semibold, 1px tinted border, 15% fill of the tone. Tones now include **lime** plus violet, cyan, magenta, emerald, amber, rose, muted.
+- Full pill, 11px semibold, 1px tinted border, 15% fill of the tone. Tones: **lime**, violet, cyan, magenta, emerald, amber, rose, muted. Soft rest shadow `0 0 12px rgb(0 0 0 / 0.15)`.
 - `stageTone()` maps Hired/Paid/Live → emerald; Accepted/Pending/Interview → cyan; Offer/Estimated → violet; Overdue/Rejected/Closed → rose; Paused/Screening → amber.
+- `marketTone()` maps `forex` → lime (“Forex”); `chinese` → cyan (“Chinese”); null → no chip (dim `—`).
+- `genderTone()` maps `male` → cyan (“Male”); `female` → magenta (“Female”); null → no chip. Magenta here is a chip mapping, not a CTA.
 - Pill toggle (`.pill-toggle`): surface well; active item is solid lime + glow.
 
 ### Cards / Containers
@@ -349,6 +353,9 @@ Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Ava
 
 ### Signature: stretchy lime pill
 `src/lib/slide-pill.ts`. The pill is a lime rectangle under the nav; clip-path reveals the **hovered or active** row with a stretchy lead/trail. Lead 0.32s `power3.out`, trail 0.52s `power3.inOut`. `gsap.killTweensOf` on both the anim state and the pill node before every move so rapid hover never stacks. Reduced motion snaps via `setPillImmediate`. Do not restore a 3px magenta inset bar as the active treatment.
+
+### Signature: candidate market + gender chips
+`CandidatesPage` + Overview recent table. Market and gender are optional single-selects on the wide Add/Edit form (`CANDIDATE_MARKETS` / `CANDIDATE_GENDERS`, empty = Unset). Filters: All markets / Forex / Chinese / Unset; All genders / Male / Female / Unset. Table, detail drawer, and dashboard render lime Forex / cyan Chinese and cyan Male / magenta Female pills via `marketTone` / `genderTone`. Unset stays a dim em-dash (or “Unset” in the drawer). Do not invent a third market or a non-binary option the form does not ship.
 
 ### Signature: offer glass preview
 `OffersPage` cards are `.card-surface !p-4` in a 2/3-col grid. Click / Enter / Space opens a wide `Modal glass` titled “Offer preview”: title `text-xl`, provision/salary tiles, package lime badges, description well, Edit offer / Delete. Card Edit and Delete `stopPropagation` so they do not open the preview. Hover: lime/25 border + 12% lime ring. Do not make the card itself a modal.
@@ -385,12 +392,13 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers.
 - **Do** slide the lime nav pill on hover and active, kill in-flight GSAP tweens, and show a glass tooltip when the rail is collapsed.
 - **Do** open offer cards into a wide `glass` preview modal; keep Edit/Delete `stopPropagation`.
+- **Do** tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge.
 
 ### Don't:
 - **Don't** restore the violet-conversion Neon Signal Desk (`#080A10` canvas, `#7C3AED` primary CTA, magenta inset nav bar, gradient TD mark).
 - **Don't** introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on `#111111`.
 - **Don't** sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.
-- **Don't** treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill.
+- **Don't** treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.
 - **Don't** add a second product look for Admin — it uses the same cards, tables, and badges.
 - **Don't** seed demo income or restore a demo-preview bypass on the login screen.
 - **Don't** put CSS `filter` or backdrop-blur on `PageTransition` or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.

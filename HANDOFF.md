@@ -1,8 +1,8 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `fdaebab8cb202243a71cf22c65047673b81e2db2` (2026-11-25, “Improve sidebar hover pill and page transition motion (#15)” on `main`)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass at `a0ef48c`). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15.
+> **Documented from:** `a672efcad173c0de100e204e13e5dafd1f8514ca` (2026-11-25, “Merge pull request #17 from 38plug/cursor/candidate-gender-98a7” on `main`)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass at `a0ef48c`). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17.
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from**, leave both docs untouched.
 
 ## What it is
@@ -12,7 +12,7 @@ Operate-mode **forex recruiting command center**: track candidates, scan offers 
 After sign-in:
 
 1. **Overview** (`/`) — KPI heroes, neon charts, estimated list (confirm → Pending), Needs Attention, recent candidates. Empty desk → zeros (no demo seed).
-2. **Candidates** (`/candidates`) — pipeline table (name, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Profile fields: country, age, languages, current location (migrated on load; older rows stay). Delete cascades interviews + earnings linked by candidate id; offers stay.
+2. **Candidates** (`/candidates`) — pipeline table (name, market, gender, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Profile fields: country, age, languages, current location, **market** (`forex` | `chinese` | null), **gender** (`male` | `female` | null) — migrated on load; older rows stay unset. Filters: stage, market (incl. Unset), gender (incl. Unset). Delete cascades interviews + earnings linked by candidate id; offers stay.
 3. **Offers** (`/offers`) — forex + Chinese cards. Click a card (Enter/Space) opens a wide **glass preview** modal (`Modal glass`) with full details. Card Edit/Delete `stopPropagation`. OCR scan + parse, provision wording, Telegram handle.
 4. **Interviews** (`/interviews`) — schedule against a candidate / offer.
 5. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
@@ -101,18 +101,18 @@ Store: `src/lib/local-db.ts`. App façade: `src/lib/api.ts`. Schema notes: `docs
 | --- | --- |
 | profiles (derived) | From the account row: role `owner \| admin \| moderator \| user` |
 | offers | Forex or Chinese package, commission/salary, telegram, visa/flight flags |
-| candidates | Pipeline stage, offer FK, telegram, sent_by, country, age, languages, currentLocation, expected salary |
+| candidates | Pipeline stage, offer FK, telegram, sent_by, country, age, languages, currentLocation, market (`forex` \| `chinese` \| null), gender (`male` \| `female` \| null), expected salary |
 | interviews | Candidate + optional offer, `scheduled_at`, outcome |
 | earnings | Amount + `Estimated \| Pending \| Paid \| Overdue` |
 | activities | Feed rows (`entity_type`, `message`) |
 
-Roles: `owner` > `admin` > `moderator` > `user`. Pipeline: Screening → Interview → Offer → Accepted → Hired / Rejected. Offer status: Live / Paused / Closed. Offer category: `forex` | `chinese`.
+Roles: `owner` > `admin` > `moderator` > `user`. Pipeline: Screening → Interview → Offer → Accepted → Hired / Rejected. Offer status: Live / Paused / Closed. Offer category: `forex` | `chinese`. Candidate market uses the same two values (`CANDIDATE_MARKETS`). Candidate gender: `male` | `female` (`CANDIDATE_GENDERS`).
 
 Confirming an estimated earning sets status to **Pending** (`confirmEarning`). Pending + Paid + Overdue count as income; Estimated does not until confirmed.
 
 Import **replaces** accounts + data on that device. Settings download exports hashes+salts (`includePasswords: true` currently means hash/salt, not plaintext). Import also accepts a one-time plaintext `"password"` per account.
 
-`migrateCandidate` fills missing `country` / `age` / `languages` / `currentLocation` with null on load and import — it does not wipe older rows.
+`migrateCandidate` fills missing `country` / `age` / `languages` / `currentLocation` / `market` / `gender` with null on load and import (`normalizeMarket` / `normalizeGender`) — it does not wipe older rows. Unknown market/gender strings become null.
 
 `deleteCandidateRow` removes the candidate and any interviews/earnings with that `candidateId` for the same user. Linked offers are not deleted. Confirm UI names the candidate before the mutation runs.
 
@@ -145,8 +145,8 @@ src/auth/AuthProvider.tsx              → session from localStorage; notifyAuth
 src/auth/ProtectedRoute.tsx            → session required; AdminRoute
 src/pages/LoginPage.tsx
 src/pages/RegisterPage.tsx
-src/pages/DashboardPage.tsx
-src/pages/CandidatesPage.tsx          → add/edit (wide modal), drawer, named delete confirm
+src/pages/DashboardPage.tsx           → recent table: market + gender chips
+src/pages/CandidatesPage.tsx          → add/edit (wide modal), market/gender filters + chips, drawer, named delete confirm
 src/pages/OffersPage.tsx              → card grid + glass preview modal; Edit/Delete stopPropagation
 src/pages/InterviewsPage.tsx
 src/pages/EarningsPage.tsx
@@ -155,10 +155,10 @@ src/pages/AdminPage.tsx
 src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle
 src/components/motion/*                → PageTransition (springSoft opacity/y, no filter), Motion, AnimatedNumber, SoundToggle
-src/components/ui/*                    → Button, Input, Card (p-6, CardTitle text-xl), Badge, Modal/Drawer (body portal, springSnappy, glass), charts
+src/components/ui/*                    → Button, Input, Card (p-6, CardTitle text-xl), Badge (`stageTone` / `marketTone` / `genderTone`), Modal/Drawer (body portal, springSnappy, glass), charts
 src/lib/api.ts                         → app façade over local-db
-src/lib/local-db.ts                    → accounts, CRUD, import/export, PBKDF2
-src/lib/constants.ts                   → APP_NAME, roles, stages, nav
+src/lib/local-db.ts                    → accounts, CRUD, import/export, PBKDF2, migrateCandidate (market + gender)
+src/lib/constants.ts                   → APP_NAME, roles, stages, nav, CANDIDATE_MARKETS, CANDIDATE_GENDERS, marketLabel, genderLabel
 src/lib/types.ts
 src/lib/demo-data.ts                   → SPARK_SERIES shapes only (not KPI values)
 src/lib/parse-offer.ts
@@ -198,7 +198,8 @@ README.md                              → local setup + Vercel runbook
 - `EmptyState` eyebrow is still `text-violet-glow`; `Spinner` is still violet/cyan. Prefer peach kickers and lime spinners on new work.
 - `button` magenta / cyan variants remain in the API; register is lime, not magenta.
 - `SPARK_SERIES` in `demo-data.ts` is decorative spark shape, not live income.
-- Drawer still allows inline telegram/sent-by/stage patches; full profile edits go through the wide Add/Edit modal.
+- Drawer still allows inline telegram/sent-by/stage patches; full profile edits (including market and gender) go through the wide Add/Edit modal.
+- Female gender chips use **magenta**; Male and Chinese market chips share **cyan**. Magenta is still not conversion.
 
 ## Invariants for the next build
 
@@ -217,6 +218,7 @@ README.md                              → local setup + Vercel runbook
 13. **Candidate delete is named + cascading.** Confirm modal must show the name. Cascade interviews and earnings; never delete the linked offer. Profile fields migrate; do not wipe older rows.
 14. **Nav pill follows hover and active.** Kill in-flight GSAP tweens. Collapsed labels are the glass tooltip, not a native `title`.
 15. **Offer cards open a glass preview.** Edit/Delete on the card must `stopPropagation`. Preview uses `Modal` `wide` + `glass`.
+16. **Candidate market and gender are optional single-selects.** Values are `forex`/`chinese` and `male`/`female` (or null). Chips: lime Forex, cyan Chinese, cyan Male, magenta Female. Unset is a dim dash. Migrate unknown/missing to null; do not wipe older rows. Do not invent extra market or gender options.
 
 ## How this documentation stays current
 

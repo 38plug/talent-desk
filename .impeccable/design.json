@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-25T11:56:00Z",
+  "generatedAt": "2026-11-25T12:58:00Z",
   "title": "Design System: Talent Desk",
   "extensions": {
     "colorMeta": {
@@ -225,9 +225,9 @@
       "name": "Status Badge",
       "kind": "chip",
       "refersTo": "chip-pill",
-      "description": "Pipeline / earning / offer pills via stageTone. Lime tone added for desk chrome.",
-      "html": "<div><span class=\"ds-badge ds-badge-lime\">7 days</span><span class=\"ds-badge ds-badge-cyan\">Interview</span><span class=\"ds-badge ds-badge-emerald\">Hired</span></div>",
-      "css": ".ds-badge { display: inline-flex; align-items: center; margin-right: 6px; border-radius: 9999px; border: 1px solid; padding: 2px 10px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; box-shadow: 0 0 12px rgb(0 0 0 / 0.15); } .ds-badge-lime { background: rgb(198 244 50 / 0.15); color: #C6F432; border-color: rgb(198 244 50 / 0.30); } .ds-badge-cyan { background: rgb(34 211 238 / 0.15); color: #22D3EE; border-color: rgb(34 211 238 / 0.30); } .ds-badge-emerald { background: rgb(16 185 129 / 0.15); color: #10B981; border-color: rgb(16 185 129 / 0.30); }"
+      "description": "stageTone for pipeline. marketTone: lime Forex / cyan Chinese. genderTone: cyan Male / magenta Female. Unset is a dim dash, not a muted chip.",
+      "html": "<div><span class=\"ds-badge ds-badge-lime\">Forex</span><span class=\"ds-badge ds-badge-cyan\">Chinese</span><span class=\"ds-badge ds-badge-cyan\">Male</span><span class=\"ds-badge ds-badge-magenta\">Female</span><span class=\"ds-badge ds-badge-emerald\">Hired</span></div>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; margin-right: 6px; border-radius: 9999px; border: 1px solid; padding: 2px 10px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; box-shadow: 0 0 12px rgb(0 0 0 / 0.15); } .ds-badge-lime { background: rgb(198 244 50 / 0.15); color: #C6F432; border-color: rgb(198 244 50 / 0.30); } .ds-badge-cyan { background: rgb(34 211 238 / 0.15); color: #22D3EE; border-color: rgb(34 211 238 / 0.30); } .ds-badge-magenta { background: rgb(236 72 153 / 0.15); color: #F472B6; border-color: rgb(236 72 153 / 0.30); } .ds-badge-emerald { background: rgb(16 185 129 / 0.15); color: #10B981; border-color: rgb(16 185 129 / 0.30); }"
     },
     {
       "name": "Glass Panel",
@@ -280,7 +280,7 @@
   ],
   "narrative": {
     "northStar": "The Lime Glass Desk",
-    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA, not a marketing site. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay and a sound toggle. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.\n\nDensity is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
+    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA, not a marketing site. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay and a sound toggle. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, leftover field-focus, and candidate chips (cyan Chinese/Male, magenta Female) — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only. Candidate market uses the same forex/chinese values as offers, shown as lime/cyan pills.\n\nDensity is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
     "keyCharacteristics": [
       "Charcoal canvas (#111111) with a lime / violet / peach mesh and optional film grain on auth",
       "Lime (#C6F432) as conversion; peach (#F4B183) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only",
@@ -290,11 +290,13 @@
       "GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips",
       "Glass dashboard panels (.glass-panel) as the working signature; neon Recharts (lime + peach)",
       "Auth glass card on orbs — no rail until session; no demo-preview bypass",
-      "Offer cards click into a wide glass preview modal; Edit/Delete stay independent"
+      "Offer cards click into a wide glass preview modal; Edit/Delete stay independent",
+      "Candidate market chips: lime Forex / cyan Chinese; gender chips: cyan Male / magenta Female; unset is a dim dash"
     ],
     "rules": [
       { "name": "The Lime Conversion Rule", "body": "#C6F432 is the irreversible action: Enter Talent Desk, Join Talent Desk, Confirm, Open candidates, the stretchy nav pill. Peach, violet, cyan, and magenta may light charts and kickers — they do not replace the primary CTA on a working pane.", "section": "colors" },
       { "name": "The Status-Not-Brand Rule", "body": "Emerald, amber, and rose map pipeline / earning / offer states through stageTone. Do not promote them into a four-color brand.", "section": "colors" },
+      { "name": "The Market-Chip Rule", "body": "Candidate market uses the same values as offer categories (forex | chinese). Forex is lime (marketTone); Chinese is cyan. Unset is a dim em-dash, never a muted fake badge.", "section": "colors" },
       { "name": "The Mesh-Is-Atmosphere Rule", "body": ".bg-mesh orbs are ground lighting, not a fill token for cards. Dashboard panes stay on .glass-panel; forms stay on .card-surface.", "section": "colors" },
       { "name": "The One-Sans Rule", "body": "Plus Jakarta Sans is the product face. Do not introduce Inter, Geist, Syne, or a serif masthead. JetBrains Mono does not set sentences.", "section": "typography" },
       { "name": "The Tracked Kicker Rule", "body": "Eyebrows are 10px uppercase with 0.18–0.22em tracking in peach (.floating-label). Do not restore a magenta kicker or a lime square badge as the system eyebrow.", "section": "typography" },
@@ -315,13 +317,14 @@
       "Do portal Modal/Drawer to document.body. Keep glass pane padding at p-6 / sm:p-7 and CardTitle at text-xl.",
       "Do confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers.",
       "Do slide the lime nav pill on hover and active, kill in-flight GSAP tweens, and show a glass tooltip when the rail is collapsed.",
-      "Do open offer cards into a wide glass preview modal; keep Edit/Delete stopPropagation."
+      "Do open offer cards into a wide glass preview modal; keep Edit/Delete stopPropagation.",
+      "Do tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge."
     ],
     "donts": [
       "Don't restore the violet-conversion Neon Signal Desk (#080A10 canvas, #7C3AED primary CTA, magenta inset nav bar, gradient TD mark).",
       "Don't introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on #111111.",
       "Don't sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.",
-      "Don't treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill.",
+      "Don't treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.",
       "Don't add a second product look for Admin — it uses the same cards, tables, and badges.",
       "Don't seed demo income or restore a demo-preview bypass on the login screen.",
       "Don't put CSS filter or backdrop-blur on PageTransition or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.",
