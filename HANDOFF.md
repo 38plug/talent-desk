@@ -1,7 +1,7 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `bc3e4db18f3378ff55c325fb482972b827cf5260` (PR #36 merge — interview stage auto-sync + PRs #34–#35; product = Vite SPA + optional cloud)
+> **Documented from:** `89aa673239e1afe1f9bc0fe1a8264b0a1576b62a` (docs refresh after PR #36 — interview stage sync, Confirmed/Declined, Telegram tabs, header bell; product = Vite SPA + optional cloud)
 > **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag + Settings storage/upload chrome) from PR #22. Languages column + icon-only row actions from PR #23. Glowing DeskTotalsStrip from PRs #24 + #28. Interview Calendar (`/calendar`) from PR #25. HeaderClock from PR #27. Offer-preview linked candidates + `?id=` drawer hold from PR #26. Interview start toast + OS Notification from PR #29. Personal Telegram (`/telegram`, teleproto) from PR #31. Header activity bell from PR #32. 1s live poll of bell + open Telegram thread from PR #33. Telegram Chats vs Groups + unread cap from PR #34. Past-interview Confirmed/Declined + Estimated commission from PR #35. Candidate stage auto-sync from interviews from PR #36. Tokens unchanged.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md), [`docs/cloud-sync.md`](./docs/cloud-sync.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
@@ -127,8 +127,8 @@ Cloud tables (hosted Postgres, shared RLS): `profiles`, `offers`, `candidates`, 
 | profiles (derived) | From the account row: role `owner \| admin \| moderator \| user` |
 | offers | Forex or Chinese package, commission/salary, telegram, visa/flight flags |
 | candidates | Pipeline stage, offer FK, telegram, sent_by, country, age, languages, currentLocation, market (`forex` \| `chinese` \| null), gender (`male` \| `female` \| null), expected salary |
-| interviews | Candidate + optional offer, `scheduled_at`, outcome |
-| earnings | Amount + `Estimated \| Pending \| Paid \| Overdue` |
+| interviews | Candidate + optional offer, `scheduled_at`, outcome (`Confirmed` / `Declined by company` / free text) |
+| earnings | Amount + `Estimated \| Pending \| Paid \| Overdue` (Confirmed interview seeds Estimated) |
 | activities | Feed rows (`entity_type`, `message`) |
 
 Roles: `owner` > `admin` > `moderator` > `user`. Pipeline: Screening → Interview → Offer → Accepted → Hired / Rejected. Offer status: Live / Paused / Closed. Offer category: `forex` | `chinese`. Candidate market uses the same two values (`CANDIDATE_MARKETS`). Candidate gender: `male` | `female` (`CANDIDATE_GENDERS`).
@@ -290,7 +290,7 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 An hourly Cursor automation (“Design and System documentation”) compares `HEAD` on `main` to the **Documented from** SHA above.
 
 - If the SHA matches and `DESIGN.md` / `HANDOFF.md` exist, it reports **No changes**.
-- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, shell, motion/SFX, local-db, cloud-db, calendar, Telegram, notifications, or hosting/deploy), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` when visuals moved, and rewrites this handoff from the shipped artifact. Hosting-only commits refresh this file and leave `DESIGN.md` tokens in place.
+- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, shell, motion/SFX, local-db, cloud-db, calendar, Telegram, notifications, interviews/earnings, or hosting/deploy), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` when visuals moved, and rewrites this handoff (plus `PRODUCT.md` / `README.md` / `AGENTS.md` / `docs/*` when product surface moved) from the shipped artifact. Hosting-only commits refresh this file and leave `DESIGN.md` tokens in place.
 - Confirmed incumbent decisions stay; the build wins where they diverge.
 - Track `main`. If a rebuild branch diverges, document the branch that holds the live desk until it is merged.
 - Do not commit secrets, env values, identity tokens, or account JSON into either file.

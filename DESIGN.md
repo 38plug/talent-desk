@@ -445,6 +445,7 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** portal the interview-start toast to `document.body` at `z-[220]` (lime glass, 14s dismiss). Keep alerts as a Settings card + Interviews permission banner.
 - **Do** keep Telegram as lime-glass three-pane chat on `/telegram` (nav `07`) with a lime **Chats / Groups** tab strip; login stays `.card-surface`, not a second product look.
 - **Do** keep past-interview **Confirmed** as lime `size="sm"` (emerald badge) and **Declined** as rose danger; map those outcomes through `stageTone`.
+- **Do** keep candidate STAGE chips honest with interview lifecycle (schedule → Interview cyan; Confirmed → Accepted cyan; Declined → Rejected rose) — do not invent a second stage vocabulary on the table.
 - **Do** keep table/card row actions icon-only (`h-8 w-8`) with aria-label + title; Schedule interview goes to `/calendar?candidate=`.
 - **Do** list linked candidates inside the offer glass preview and deep-link with `/candidates?id=` (hold the param until the drawer closes).
 
