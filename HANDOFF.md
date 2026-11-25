@@ -13,7 +13,7 @@ Operate-mode **forex recruiting command center**: track candidates, scan offers 
 After sign-in:
 
 1. **Overview** (`/`) — KPI heroes, neon charts, estimated list (confirm → Pending), Needs Attention, recent candidates. Empty desk → zeros (no demo seed).
-2. **Candidates** (`/candidates`) — glowing **Total candidates** counter at the top (`candidates.length`, unfiltered by stage/search; lime glow + `AnimatedNumber` ticker; respects `prefers-reduced-motion`; refreshes on add/delete / realtime). Pipeline table (name, **languages** column, market, gender, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Row actions: Schedule interview (→ `/calendar?candidate=`), Edit, Delete — icon-only (aria-label + title). Drawer also has Schedule interview. Profile fields: country, age, languages, current location, **market** (`forex` | `chinese` | null), **gender** (`male` | `female` | null) — migrated on load; older rows stay unset. Filters: stage, market (incl. Unset), gender (incl. Unset). Delete cascades interviews + earnings linked by candidate id; offers stay.
+2. **Candidates** (`/candidates`) — shared **DeskTotalsStrip** at the top (glowing unfiltered **Total candidates / offers / interviews**; lime glow + `AnimatedNumber`; respects `prefers-reduced-motion`; refreshes on add/delete / realtime). Same strip also tops Offers + Interviews. Pipeline table (name, **languages** column, market, gender, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Row actions: Schedule interview (→ `/calendar?candidate=`), Edit, Delete — icon-only (aria-label + title). Drawer also has Schedule interview. Profile fields: country, age, languages, current location, **market** (`forex` | `chinese` | null), **gender** (`male` | `female` | null) — migrated on load; older rows stay unset. Filters: stage, market (incl. Unset), gender (incl. Unset). Delete cascades interviews + earnings linked by candidate id; offers stay.
 3. **Offers** (`/offers`) — forex + Chinese cards. Click a card (Enter/Space) opens a wide **glass preview** modal (`Modal glass`) with full details. Card Edit/Delete are icon-only (`stopPropagation`, aria-label + title). OCR scan + parse, provision wording, Telegram handle.
 4. **Interviews** (`/interviews`) — list upcoming / past; schedule against a candidate / offer. Link through to the calendar.
 5. **Interview Calendar** (`/calendar`) — month / week / day views of `scheduledAt`. Create or edit via modal (candidate picker + datetime). Deep-link `?candidate=<id>` opens the schedule modal preselected (from Candidates row / drawer).
@@ -164,9 +164,10 @@ src/auth/ProtectedRoute.tsx            → session required; AdminRoute
 src/pages/LoginPage.tsx                → helper copy: cloud on vs off; friendlyCloudAuthError when sync on
 src/pages/RegisterPage.tsx             → MAX_ACCOUNTS copy; friendlyCloudAuthError when sync on
 src/pages/DashboardPage.tsx           → recent table: market + gender chips
-src/pages/CandidatesPage.tsx          → glowing unfiltered total counter (AnimatedNumber), schedule→calendar deep-link, add/edit (wide modal), market/gender filters + chips, drawer, named delete confirm
-src/pages/OffersPage.tsx              → card grid + glass preview modal; Edit/Delete stopPropagation
-src/pages/InterviewsPage.tsx           → upcoming/past list + link to calendar
+src/pages/CandidatesPage.tsx          → DeskTotalsStrip, schedule→calendar deep-link, add/edit (wide modal), market/gender filters + chips, drawer, named delete confirm
+src/pages/OffersPage.tsx              → DeskTotalsStrip; card grid + glass preview modal; Edit/Delete stopPropagation
+src/pages/InterviewsPage.tsx          → DeskTotalsStrip; upcoming/past list + Schedule
+src/components/desk/DeskTotalsStrip.tsx → glowing unfiltered candidates/offers/interviews totals (AnimatedNumber)
 src/pages/InterviewCalendarPage.tsx    → month/week/day calendar; ScheduleInterviewModal
 src/components/interviews/ScheduleInterviewModal.tsx → create/edit/delete interview (candidate + datetime)
 src/lib/datetime.ts                    → datetime-local helpers

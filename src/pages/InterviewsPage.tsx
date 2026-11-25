@@ -13,6 +13,7 @@ import {
   Select,
   Textarea,
 } from '@/components/ui'
+import { DeskTotalsStrip } from '@/components/desk/DeskTotalsStrip'
 import {
   deleteInterview,
   fetchCandidates,
@@ -74,6 +75,8 @@ export function InterviewsPage() {
 
   return (
     <div className="space-y-5">
+      <DeskTotalsStrip />
+
       <div className="flex flex-wrap items-center gap-3">
         <div className="pill-toggle inline-flex">
           {(['upcoming', 'past'] as const).map((t) => (
