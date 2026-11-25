@@ -1,7 +1,7 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `71e8044ab471c305f288e122e2dee02d52e046c8` (2026-11-25, Admin role Actions + preferred-admin bootstrap; product = Vite SPA + localStorage)
+> **Documented from:** `a72946c9b400d8022959a3691e02323e800b53f1` (full shared desk — no forUser; seat delete keeps pipeline rows; product = Vite SPA + localStorage)
 > **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
