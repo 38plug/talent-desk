@@ -379,33 +379,29 @@ export function getProfile(userId: string): Profile | null {
   return a ? accountToProfile(a) : null
 }
 
-function forUser<T extends { userId: string }>(rows: T[], userId: string): T[] {
-  return rows.filter((r) => r.userId === userId)
-}
-
 /**
- * Offers / candidates / interviews are desk-shared on this device:
- * every signed-in role (user → owner) can see and mutate the same pipeline.
- * Earnings + activity stay private per account (income privacy).
+ * Full desk share on this device: every signed-in account sees and mutates the
+ * same candidates, offers, interviews, earnings, and activity feed.
+ * `userId` on each row is creator attribution only — never a list/mutate scope.
  */
-export function listOffers(_userId?: string): Offer[] {
+export function listOffers(): Offer[] {
   return [...loadData().offers].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
-export function listCandidates(_userId?: string): Candidate[] {
+export function listCandidates(): Candidate[] {
   return [...loadData().candidates].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
-export function listInterviews(_userId?: string): Interview[] {
+export function listInterviews(): Interview[] {
   return [...loadData().interviews].sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))
 }
 
-export function listEarnings(userId: string): Earning[] {
-  return forUser(loadData().earnings, userId).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+export function listEarnings(): Earning[] {
+  return [...loadData().earnings].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
-export function listActivities(userId: string, limit = 20): Activity[] {
-  return forUser(loadData().activities, userId)
+export function listActivities(limit = 20): Activity[] {
+  return [...loadData().activities]
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .slice(0, limit)
 }
@@ -612,7 +608,7 @@ export function upsertEarningRow(
   const data = loadData()
   const now = new Date().toISOString()
   if (existingId) {
-    const idx = data.earnings.findIndex((e) => e.id === existingId && e.userId === userId)
+    const idx = data.earnings.findIndex((e) => e.id === existingId)
     if (idx < 0) throw new Error('Earning not found')
     const prev = data.earnings[idx]!
     data.earnings[idx] = {
@@ -622,6 +618,8 @@ export function upsertEarningRow(
       amount: payload.amount,
       status: payload.status,
       notes: payload.notes ?? null,
+      // Preserve creator attribution; any role may edit desk-shared rows.
+      userId: prev.userId,
       updatedAt: now,
     }
     pushActivity(data, userId, 'earning', existingId, `Updated earning $${payload.amount}`)
@@ -645,14 +643,16 @@ export function upsertEarningRow(
 
 export function deleteEarningRow(userId: string, earningId: string) {
   const data = loadData()
-  data.earnings = data.earnings.filter((e) => !(e.id === earningId && e.userId === userId))
+  const existed = data.earnings.some((e) => e.id === earningId)
+  if (!existed) return
+  data.earnings = data.earnings.filter((e) => e.id !== earningId)
   pushActivity(data, userId, 'earning', earningId, 'Deleted earning')
   saveData(data)
 }
 
 export function confirmEarningRow(userId: string, earningId: string) {
   const data = loadData()
-  const idx = data.earnings.findIndex((e) => e.id === earningId && e.userId === userId)
+  const idx = data.earnings.findIndex((e) => e.id === earningId)
   if (idx < 0) throw new Error('Earning not found')
   data.earnings[idx] = {
     ...data.earnings[idx]!,
@@ -767,14 +767,8 @@ export function adminDeleteAccountRow(id: string) {
   if (a.role === 'owner' || a.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
     throw new Error('Owner cannot be deleted')
   }
+  // Seat only — desk rows stay shared. `userId` remains creator attribution.
   saveAccounts(accounts.filter((x) => x.id !== id))
-  const data = loadData()
-  data.candidates = data.candidates.filter((c) => c.userId !== id)
-  data.offers = data.offers.filter((o) => o.userId !== id)
-  data.interviews = data.interviews.filter((i) => i.userId !== id)
-  data.earnings = data.earnings.filter((e) => e.userId !== id)
-  data.activities = data.activities.filter((x) => x.userId !== id)
-  saveData(data)
 }
 
 export async function adminSetPasswordRow(id: string, password: string) {

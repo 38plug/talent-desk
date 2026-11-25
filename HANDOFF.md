@@ -1,7 +1,7 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `71e8044ab471c305f288e122e2dee02d52e046c8` (2026-11-25, Admin role Actions + preferred-admin bootstrap; product = Vite SPA + localStorage)
+> **Documented from:** `a72946c9b400d8022959a3691e02323e800b53f1` (full shared desk — no forUser; seat delete keeps pipeline rows; product = Vite SPA + localStorage)
 > **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
@@ -85,7 +85,7 @@ Password rule: **≥ 8 characters**. Passwords are PBKDF2-SHA-256 (100,000 itera
 
 `ProtectedRoute` waits on `AuthProvider.loading`, then `Navigate` to `/login` unless a session exists. After login/register, pages call `notifyAuthChanged()` so the provider re-reads `talent-desk.session.v1`.
 
-Max **4** non-owner seats (`MAX_ACCOUNTS`). The register path in `local-db.ts` is the cap. Offers / candidates / interviews are **desk-shared** (`listOffers` / `listCandidates` / `listInterviews`); earnings stay per-account.
+Max **4** non-owner seats (`MAX_ACCOUNTS`). The register path in `local-db.ts` is the cap. The full desk is **shared** on this device: `listOffers` / `listCandidates` / `listInterviews` / `listEarnings` / `listActivities` return every row (no `forUser` / `userId` scope). Row `userId` is creator attribution only. Deleting a seat does **not** delete pipeline rows.
 
 ## Data
 
@@ -117,7 +117,7 @@ Import **replaces** accounts + data on that device. Settings download exports ha
 
 `migrateCandidate` fills missing `country` / `age` / `languages` / `currentLocation` / `market` / `gender` with null on load and import (`normalizeMarket` / `normalizeGender`) — it does not wipe older rows. Unknown market/gender strings become null.
 
-`deleteCandidateRow` removes the candidate and any interviews/earnings with that `candidateId` for the same user. Linked offers are not deleted. Confirm UI names the candidate before the mutation runs.
+`deleteCandidateRow` removes the candidate and any interviews/earnings with that `candidateId` desk-wide. Linked offers are not deleted. Confirm UI names the candidate before the mutation runs.
 
 ## Offers pipeline
 
