@@ -12,6 +12,8 @@ Fallback store when cloud sync is off (`VITE_SUPABASE_*` unset). Nothing is seed
 | `talent-desk.bootstrap.prof-admin.v1` | `'1'` after one-time promote of preferred admin email → `admin` |
 | `talent-desk.sidebar-collapsed` | `'1'` / `'0'` — rail collapsed |
 | `talent-desk.sfx-muted` | `'1'` (default) / `'0'` — Web Audio mute |
+| `talent-desk.interview-reminders.v1` | `'1'` (default when unset) / `'0'` — interview start alerts |
+| `talent-desk.interview-reminded.v1` | JSON map of interview id → fired-at ms (dedupe) |
 | `talent-desk.cloud-auto-migrated.v1` | `'1'` after one-time local → cloud upload attempt |
 
 ## Candidate row shape (in `data.candidates`)

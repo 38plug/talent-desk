@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { CalendarDays, Plus, Trash2 } from 'lucide-react'
+import { Bell, CalendarDays, Plus, Trash2 } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -21,6 +21,11 @@ import {
   fetchOffers,
   upsertInterview,
 } from '@/lib/api'
+import {
+  areInterviewRemindersEnabled,
+  getNotificationPermission,
+  requestNotificationPermission,
+} from '@/lib/interview-reminders'
 
 export function InterviewsPage() {
   const qc = useQueryClient()
@@ -40,6 +45,9 @@ export function InterviewsPage() {
     outcome: '',
     notes: '',
   })
+  const [showNotifPrompt, setShowNotifPrompt] = useState(
+    () => areInterviewRemindersEnabled() && getNotificationPermission() === 'default',
+  )
 
   const save = useMutation({
     mutationFn: () =>
@@ -76,6 +84,29 @@ export function InterviewsPage() {
   return (
     <div className="space-y-5">
       <DeskTotalsStrip />
+
+      {showNotifPrompt ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-[16px] border border-lime/30 bg-lime/10 px-4 py-3 text-sm text-ink">
+          <Bell className="h-4 w-4 shrink-0 text-lime" aria-hidden />
+          <p className="min-w-0 flex-1 text-ink-muted">
+            Allow system notifications so computer and phone browsers can alert you when an interview
+            is about to start. In-app toast still works while the desk is open.
+          </p>
+          <Button
+            type="button"
+            size="sm"
+            onClick={async () => {
+              await requestNotificationPermission()
+              setShowNotifPrompt(getNotificationPermission() === 'default')
+            }}
+          >
+            Allow alerts
+          </Button>
+          <Button type="button" size="sm" variant="ghost" onClick={() => setShowNotifPrompt(false)}>
+            Not now
+          </Button>
+        </div>
+      ) : null}
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="pill-toggle inline-flex">
