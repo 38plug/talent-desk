@@ -45,7 +45,9 @@ export function Sparkline({
             strokeWidth={2.75}
             dot={false}
             filter={`url(#${filterId})`}
-            isAnimationActive={false}
+            isAnimationActive
+            animationDuration={900}
+            animationEasing="ease-out"
           />
         </LineChart>
       </ResponsiveContainer>
@@ -92,6 +94,9 @@ export function NeonAreaChart({
             stroke="#22D3EE"
             fill="url(#gCyan)"
             strokeWidth={3}
+            isAnimationActive
+            animationDuration={1100}
+            animationEasing="ease-out"
             style={{ filter: 'drop-shadow(0 0 6px rgba(34,211,238,0.65))' }}
           />
           <Area
@@ -101,6 +106,9 @@ export function NeonAreaChart({
             fill="url(#gViolet)"
             strokeWidth={2.5}
             strokeDasharray="5 5"
+            isAnimationActive
+            animationDuration={1300}
+            animationEasing="ease-out"
             style={{ filter: 'drop-shadow(0 0 6px rgba(124,58,237,0.55))' }}
           />
         </AreaChart>
@@ -136,7 +144,14 @@ export function NeonBarChart({
               borderRadius: 12,
             }}
           />
-          <Bar dataKey={dataKey} fill="url(#barGrad)" radius={[8, 8, 4, 4]} />
+          <Bar
+            dataKey={dataKey}
+            fill="url(#barGrad)"
+            radius={[8, 8, 4, 4]}
+            isAnimationActive
+            animationDuration={1000}
+            animationEasing="ease-out"
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -163,6 +178,9 @@ export function NeonDonut({
               outerRadius="82%"
               paddingAngle={3}
               stroke="none"
+              isAnimationActive
+              animationDuration={1000}
+              animationEasing="ease-out"
             >
               {data.map((_, i) => (
                 <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />

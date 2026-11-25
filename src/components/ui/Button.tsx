@@ -1,4 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes } from 'react'
+import { playSfx } from '@/lib/sfx'
 import { cn } from '@/lib/utils'
 
 const variants = {
@@ -22,10 +23,24 @@ const sizes = {
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: keyof typeof variants
   size?: keyof typeof sizes
+  sfx?: boolean
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', type = 'button', disabled, ...props }, ref) => (
+  (
+    {
+      className,
+      variant = 'primary',
+      size = 'md',
+      type = 'button',
+      disabled,
+      sfx = true,
+      onClick,
+      onMouseEnter,
+      ...props
+    },
+    ref,
+  ) => (
     <button
       ref={ref}
       type={type}
@@ -37,6 +52,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         sizes[size],
         className,
       )}
+      onMouseEnter={(e) => {
+        if (sfx && !disabled) playSfx('hover')
+        onMouseEnter?.(e)
+      }}
+      onClick={(e) => {
+        if (sfx && !disabled) playSfx('tap')
+        onClick?.(e)
+      }}
       {...props}
     />
   ),

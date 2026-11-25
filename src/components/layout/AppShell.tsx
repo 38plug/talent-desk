@@ -17,7 +17,9 @@ import { useAuth } from '@/auth/AuthProvider'
 import { canViewAdmin } from '@/lib/api'
 import { ADMIN_NAV, APP_NAME, APP_TAGLINE, NAV_ITEMS } from '@/lib/constants'
 import { cn, initials } from '@/lib/utils'
+import { SoundToggle } from '@/components/motion/SoundToggle'
 import { Button } from '@/components/ui'
+import { playSfx } from '@/lib/sfx'
 
 const ICONS = {
   LayoutDashboard,
@@ -107,7 +109,14 @@ export function AppShell() {
               <p className="truncate text-[11px] capitalize text-ink-dim">{profile?.role ?? 'user'}</p>
             </div>
           </div>
-          <Button variant="ghost" className="w-full justify-start" onClick={() => void signOut()}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => {
+              playSfx('whoosh')
+              void signOut()
+            }}
+          >
             <LogOut className="h-4 w-4" />
             Sign out
           </Button>
@@ -148,6 +157,7 @@ export function AppShell() {
                 aria-label="Search"
               />
             </div>
+            <SoundToggle />
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet/40 to-cyan/30 text-xs font-bold text-violet-glow ring-1 ring-violet/30">
               {initials(profile?.fullName || user?.email || 'TD')}
             </div>
