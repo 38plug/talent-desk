@@ -86,6 +86,13 @@ export function InterviewReminderWatcher() {
     return () => window.clearInterval(id)
   }, [interviews, candidates, offers])
 
+  // Auto-dismiss toast after a short read window
+  useEffect(() => {
+    if (!toast) return
+    const id = window.setTimeout(() => setToast(null), 14_000)
+    return () => window.clearTimeout(id)
+  }, [toast])
+
   if (!toast || typeof document === 'undefined') return null
 
   const whenLabel = new Date(toast.scheduledAt).toLocaleString(undefined, {
