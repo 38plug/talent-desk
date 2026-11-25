@@ -6,6 +6,24 @@ export function toDatetimeLocalValue(value: string | Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
+/** Header clock date — browser locale + local timezone. */
+export function formatHeaderDate(value: Date = new Date()): string {
+  return new Intl.DateTimeFormat(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(value)
+}
+
+/** Header clock time — browser locale + local timezone (seconds for live tick). */
+export function formatHeaderTime(value: Date = new Date()): string {
+  return new Intl.DateTimeFormat(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+  }).format(value)
+}
+
 /** Local midnight ISO for a calendar day (used as schedule seed). */
 export function localDayAtHour(day: Date, hour = 10, minute = 0): string {
   const d = new Date(day)

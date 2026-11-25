@@ -18,6 +18,7 @@ import {
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { useAuth } from '@/auth/AuthProvider'
+import { HeaderClock } from '@/components/layout/HeaderClock'
 import { PageTransition } from '@/components/motion/PageTransition'
 import { SoundToggle } from '@/components/motion/SoundToggle'
 import { Button } from '@/components/ui'
@@ -342,7 +343,8 @@ export function AppShell() {
             <p className="floating-label text-[10px] tracking-[0.2em] uppercase">{APP_NAME}</p>
             <h1 className="text-lg font-extrabold tracking-tight text-ink sm:text-xl">{pageTitle}</h1>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
+            <HeaderClock className="mr-1 shrink-0" />
             <div className="relative hidden md:block">
               <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-ink-dim" />
               <input
@@ -353,7 +355,7 @@ export function AppShell() {
               />
             </div>
             <SoundToggle />
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-lime/20 text-xs font-bold text-lime ring-1 ring-lime/35">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime/20 text-xs font-bold text-lime ring-1 ring-lime/35">
               {initials(profile?.fullName || user?.email || 'TD')}
             </div>
           </div>
