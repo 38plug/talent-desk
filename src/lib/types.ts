@@ -1,4 +1,5 @@
 import type {
+  CandidateGender,
   EarningStatus,
   OfferCategory,
   OfferStatus,
@@ -50,6 +51,8 @@ export type Candidate = {
   stage: PipelineStage
   /** Desk market tag — Forex or Chinese (null = unset / legacy rows). */
   market: OfferCategory | null
+  /** Candidate gender — male | female (null = unset / legacy rows). */
+  gender: CandidateGender | null
   offerId: string | null
   telegram: string | null
   sentBy: string | null

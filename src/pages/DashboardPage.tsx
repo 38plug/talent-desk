@@ -17,12 +17,13 @@ import {
   NeonDonut,
   PageLoader,
   Sparkline,
+  genderTone,
   marketTone,
   stageTone,
 } from '@/components/ui'
 import { confirmEarning, getDashboardData } from '@/lib/api'
 import { SPARK_SERIES } from '@/lib/demo-data'
-import { APP_NAME, marketLabel } from '@/lib/constants'
+import { APP_NAME, genderLabel, marketLabel } from '@/lib/constants'
 import { springSoft } from '@/lib/motion'
 import { playSfx } from '@/lib/sfx'
 import { formatMoney } from '@/lib/utils'
@@ -365,11 +366,12 @@ export function DashboardPage() {
           </Link>
         </div>
         <div className="overflow-x-auto">
-          <table className="data-table min-w-[640px]">
+          <table className="data-table min-w-[720px]">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Market</th>
+                <th>Gender</th>
                 <th>Stage</th>
                 <th>Source</th>
                 <th>Telegram</th>
@@ -378,7 +380,7 @@ export function DashboardPage() {
             <tbody>
               {data.recentCandidates.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="!py-10 text-center text-base text-ink-muted">
+                  <td colSpan={6} className="!py-10 text-center text-base text-ink-muted">
                     No candidates yet for this account.
                   </td>
                 </tr>
@@ -395,6 +397,13 @@ export function DashboardPage() {
                     <td>
                       {c.market ? (
                         <Badge tone={marketTone(c.market)}>{marketLabel(c.market)}</Badge>
+                      ) : (
+                        <span className="text-ink-dim">—</span>
+                      )}
+                    </td>
+                    <td>
+                      {c.gender ? (
+                        <Badge tone={genderTone(c.gender)}>{genderLabel(c.gender)}</Badge>
                       ) : (
                         <span className="text-ink-dim">—</span>
                       )}
