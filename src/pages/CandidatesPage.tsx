@@ -12,6 +12,7 @@ import {
   PageLoader,
   Select,
   Textarea,
+  genderTone,
   marketTone,
   stageTone,
 } from '@/components/ui'
@@ -22,9 +23,12 @@ import {
   upsertCandidate,
 } from '@/lib/api'
 import {
+  CANDIDATE_GENDERS,
   CANDIDATE_MARKETS,
+  genderLabel,
   marketLabel,
   PIPELINE_STAGES,
+  type CandidateGender,
   type CandidateMarket,
   type PipelineStage,
 } from '@/lib/constants'
@@ -38,6 +42,7 @@ type CandidateForm = {
   source: string
   stage: PipelineStage
   market: CandidateMarket | ''
+  gender: CandidateGender | ''
   offerId: string
   telegram: string
   sentBy: string
@@ -56,6 +61,7 @@ const emptyForm: CandidateForm = {
   source: '',
   stage: 'Screening',
   market: '',
+  gender: '',
   offerId: '',
   telegram: '',
   sentBy: '',
@@ -75,6 +81,7 @@ function candidateToForm(c: Candidate): CandidateForm {
     source: c.source ?? '',
     stage: c.stage,
     market: c.market ?? '',
+    gender: c.gender ?? '',
     offerId: c.offerId ?? '',
     telegram: c.telegram ?? '',
     sentBy: c.sentBy ?? '',
@@ -95,6 +102,7 @@ function formToPayload(form: CandidateForm) {
     source: form.source || null,
     stage: form.stage,
     market: form.market || null,
+    gender: form.gender || null,
     offerId: form.offerId || null,
     telegram: form.telegram || null,
     sentBy: form.sentBy || null,
@@ -123,6 +131,7 @@ export function CandidatesPage() {
   const [q, setQ] = useState('')
   const [stageFilter, setStageFilter] = useState('all')
   const [marketFilter, setMarketFilter] = useState('all')
+  const [genderFilter, setGenderFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<CandidateForm>(emptyForm)
@@ -190,6 +199,7 @@ export function CandidatesPage() {
           source: c.source,
           stage: payload.stage ?? c.stage,
           market: c.market,
+          gender: c.gender,
           offerId: c.offerId,
           telegram: payload.telegram !== undefined ? payload.telegram : c.telegram,
           sentBy: payload.sentBy !== undefined ? payload.sentBy : c.sentBy,
@@ -233,12 +243,19 @@ export function CandidatesPage() {
           return false
         }
       }
+      if (genderFilter !== 'all') {
+        if (genderFilter === 'unset') {
+          if (c.gender) return false
+        } else if (c.gender !== genderFilter) {
+          return false
+        }
+      }
       if (!q.trim()) return true
       const hay =
-        `${c.name} ${c.telegram ?? ''} ${c.sentBy ?? ''} ${c.source ?? ''} ${c.country ?? ''} ${c.languages ?? ''} ${c.currentLocation ?? ''} ${c.market ?? ''}`.toLowerCase()
+        `${c.name} ${c.telegram ?? ''} ${c.sentBy ?? ''} ${c.source ?? ''} ${c.country ?? ''} ${c.languages ?? ''} ${c.currentLocation ?? ''} ${c.market ?? ''} ${c.gender ?? ''}`.toLowerCase()
       return hay.includes(q.toLowerCase())
     })
-  }, [candidates, q, stageFilter, marketFilter])
+  }, [candidates, q, stageFilter, marketFilter, genderFilter])
 
   if (isLoading) return <PageLoader />
 
@@ -263,6 +280,12 @@ export function CandidatesPage() {
           <option value="chinese">Chinese</option>
           <option value="unset">Unset</option>
         </Select>
+        <Select value={genderFilter} onChange={(e) => setGenderFilter(e.target.value)} className="w-40">
+          <option value="all">All genders</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="unset">Unset</option>
+        </Select>
         <Button onClick={openAdd}>
           <Plus className="h-4 w-4" /> Add candidate
         </Button>
@@ -281,11 +304,12 @@ export function CandidatesPage() {
       ) : (
         <div className="card-surface overflow-hidden !p-0">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] text-left text-sm">
+            <table className="w-full min-w-[940px] text-left text-sm">
               <thead className="bg-white/[0.02] text-xs uppercase tracking-wide text-ink-dim">
                 <tr>
                   <th className="px-4 py-3">Candidate</th>
                   <th className="px-4 py-3">Market</th>
+                  <th className="px-4 py-3">Gender</th>
                   <th className="px-4 py-3">Location</th>
                   <th className="px-4 py-3">Stage</th>
                   <th className="px-4 py-3">Source</th>
@@ -318,6 +342,13 @@ export function CandidatesPage() {
                     <td className="px-4 py-3">
                       {c.market ? (
                         <Badge tone={marketTone(c.market)}>{marketLabel(c.market)}</Badge>
+                      ) : (
+                        <span className="text-ink-dim">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {c.gender ? (
+                        <Badge tone={genderTone(c.gender)}>{genderLabel(c.gender)}</Badge>
                       ) : (
                         <span className="text-ink-dim">—</span>
                       )}
@@ -419,6 +450,22 @@ export function CandidatesPage() {
               {CANDIDATE_MARKETS.map((m) => (
                 <option key={m} value={m}>
                   {marketLabel(m)}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Label>Gender</Label>
+            <Select
+              value={form.gender}
+              onChange={(e) =>
+                setForm({ ...form, gender: e.target.value as CandidateGender | '' })
+              }
+            >
+              <option value="">Unset</option>
+              {CANDIDATE_GENDERS.map((g) => (
+                <option key={g} value={g}>
+                  {genderLabel(g)}
                 </option>
               ))}
             </Select>
@@ -567,13 +614,23 @@ export function CandidatesPage() {
                 </Button>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-ink-muted">Market</span>
-              {selected.market ? (
-                <Badge tone={marketTone(selected.market)}>{marketLabel(selected.market)}</Badge>
-              ) : (
-                <span className="text-sm text-ink-dim">Unset</span>
-              )}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-ink-muted">Market</span>
+                {selected.market ? (
+                  <Badge tone={marketTone(selected.market)}>{marketLabel(selected.market)}</Badge>
+                ) : (
+                  <span className="text-sm text-ink-dim">Unset</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-ink-muted">Gender</span>
+                {selected.gender ? (
+                  <Badge tone={genderTone(selected.gender)}>{genderLabel(selected.gender)}</Badge>
+                ) : (
+                  <span className="text-sm text-ink-dim">Unset</span>
+                )}
+              </div>
             </div>
             <div className="rounded-xl border border-border bg-canvas-raised p-3 text-sm text-ink-muted">
               <p>Source: {selected.source ?? '—'}</p>

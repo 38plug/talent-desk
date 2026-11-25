@@ -4,9 +4,11 @@
  */
 
 import {
+  CANDIDATE_GENDERS,
   MAX_ACCOUNTS,
   OFFER_CATEGORIES,
   OWNER_EMAIL,
+  type CandidateGender,
   type OfferCategory,
   type Role,
 } from './constants'
@@ -140,6 +142,12 @@ function normalizeMarket(value: unknown): OfferCategory | null {
   return (OFFER_CATEGORIES as readonly string[]).includes(s) ? (s as OfferCategory) : null
 }
 
+function normalizeGender(value: unknown): CandidateGender | null {
+  if (value === null || value === undefined || value === '') return null
+  const s = String(value).toLowerCase()
+  return (CANDIDATE_GENDERS as readonly string[]).includes(s) ? (s as CandidateGender) : null
+}
+
 /** Fill missing profile fields on older candidate rows without wiping data. */
 export function migrateCandidate(raw: Partial<Candidate> & Record<string, unknown>): Candidate {
   return {
@@ -151,6 +159,7 @@ export function migrateCandidate(raw: Partial<Candidate> & Record<string, unknow
     source: (raw.source as string) ?? null,
     stage: (raw.stage as Candidate['stage']) ?? 'Screening',
     market: normalizeMarket(raw.market),
+    gender: normalizeGender(raw.gender),
     offerId: (raw.offerId as string) ?? null,
     telegram: (raw.telegram as string) ?? null,
     sentBy: (raw.sentBy as string) ?? null,
@@ -365,6 +374,7 @@ export function upsertCandidateRow(
       source: payload.source ?? null,
       stage: payload.stage ?? prev.stage,
       market: payload.market !== undefined ? payload.market : prev.market,
+      gender: payload.gender !== undefined ? payload.gender : prev.gender,
       offerId: payload.offerId ?? null,
       telegram: payload.telegram ?? null,
       sentBy: payload.sentBy ?? null,
@@ -387,6 +397,7 @@ export function upsertCandidateRow(
       source: payload.source ?? null,
       stage: payload.stage ?? 'Screening',
       market: payload.market ?? null,
+      gender: payload.gender ?? null,
       offerId: payload.offerId ?? null,
       telegram: payload.telegram ?? null,
       sentBy: payload.sentBy ?? null,

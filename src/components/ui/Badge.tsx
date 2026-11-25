@@ -61,3 +61,9 @@ export function marketTone(market: string | null | undefined): keyof typeof tone
   if (market === 'chinese') return 'cyan'
   return 'muted'
 }
+
+export function genderTone(gender: string | null | undefined): keyof typeof tones {
+  if (gender === 'male') return 'cyan'
+  if (gender === 'female') return 'magenta'
+  return 'muted'
+}

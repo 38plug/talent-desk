@@ -36,6 +36,16 @@ export function marketLabel(market: CandidateMarket | null | undefined): string 
   return '—'
 }
 
+/** Single-select gender on candidates (null = unset / legacy rows). */
+export const CANDIDATE_GENDERS = ['male', 'female'] as const
+export type CandidateGender = (typeof CANDIDATE_GENDERS)[number]
+
+export function genderLabel(gender: CandidateGender | null | undefined): string {
+  if (gender === 'male') return 'Male'
+  if (gender === 'female') return 'Female'
+  return '—'
+}
+
 export const OFFER_STATUSES = ['Live', 'Paused', 'Closed'] as const
 export type OfferStatus = (typeof OFFER_STATUSES)[number]
 
