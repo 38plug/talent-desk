@@ -55,3 +55,9 @@ export function stageTone(stage: string): keyof typeof tones {
       return 'muted'
   }
 }
+
+export function marketTone(market: string | null | undefined): keyof typeof tones {
+  if (market === 'forex') return 'lime'
+  if (market === 'chinese') return 'cyan'
+  return 'muted'
+}

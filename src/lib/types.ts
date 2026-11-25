@@ -48,6 +48,8 @@ export type Candidate = {
   phone: string | null
   source: string | null
   stage: PipelineStage
+  /** Desk market tag — Forex or Chinese (null = unset / legacy rows). */
+  market: OfferCategory | null
   offerId: string | null
   telegram: string | null
   sentBy: string | null
