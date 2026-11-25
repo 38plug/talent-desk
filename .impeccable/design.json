@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-25T10:56:00Z",
+  "generatedAt": "2026-11-25T11:56:00Z",
   "title": "Design System: Talent Desk",
   "extensions": {
     "colorMeta": {
@@ -140,7 +140,7 @@
     "typographyMeta": {
       "display": { "displayName": "Display", "purpose": "Extra-bold Plus Jakarta Sans for login wordmark and dashboard heroes." },
       "headline": { "displayName": "Headline", "purpose": "Sticky header page titles (Overview, Candidates, …)." },
-      "title": { "displayName": "Title", "purpose": "CardTitle at text-lg so glass panes read as occupied." },
+      "title": { "displayName": "Title", "purpose": "CardTitle at text-xl so glass panes read as occupied. Offer preview title is also text-xl." },
       "body": { "displayName": "Body", "purpose": "Forms, descriptions, table cells." },
       "subtitle": { "displayName": "Subtitle", "purpose": "CardSubtitle — text-sm supporting line under titles." },
       "label": { "displayName": "Label", "purpose": "Uppercase 10px peach kickers: Desk, APP_NAME, table thead." },
@@ -162,11 +162,14 @@
     "motion": [
       { "name": "ease-chrome", "value": "0.2s ease", "purpose": "Button, nav, pill-toggle, and field transitions." },
       { "name": "rail-width", "value": "400ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Sidebar expand/collapse width." },
-      { "name": "slide-pill-lead", "value": "0.36s power3.out", "purpose": "GSAP stretchy nav pill lead edge." },
-      { "name": "slide-pill-trail", "value": "0.55s power3.inOut", "purpose": "GSAP stretchy nav pill trail edge." },
-      { "name": "page-in", "value": "0.35s cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "PageTransition opacity + y:10 in. No CSS filter." },
-      { "name": "page-out", "value": "0.18s cubic-bezier(0.7, 0, 0.84, 0)", "purpose": "PageTransition opacity + y:-6 out. No CSS filter." },
-      { "name": "spring-soft", "value": "stiffness 260 / damping 26 / mass 0.85", "purpose": "fadeUp, list items, gauge." },
+      { "name": "slide-pill-lead", "value": "0.32s power3.out", "purpose": "GSAP stretchy nav pill lead edge. Kill in-flight tweens before each move." },
+      { "name": "slide-pill-trail", "value": "0.52s power3.inOut", "purpose": "GSAP stretchy nav pill trail edge." },
+      { "name": "page-in", "value": "springSoft y:14", "purpose": "PageTransition opacity + y in. No CSS filter on the wrapper." },
+      { "name": "page-out", "value": "0.2s cubic-bezier(0.4, 0, 1, 1) y:-8", "purpose": "PageTransition opacity + y out. No CSS filter on the wrapper." },
+      { "name": "spring-soft", "value": "stiffness 260 / damping 26 / mass 0.85", "purpose": "Page enter, fadeUp, list items, gauge." },
+      { "name": "spring-snappy", "value": "stiffness 380 / damping 28 / mass 0.7", "purpose": "Modal/Drawer panel open: scale 0.94, blur(8px), y:12." },
+      { "name": "nav-icon", "value": "scale 1.08 focused / 1.06 active, opacity 0.72 rest", "purpose": "Rail icon micro-motion." },
+      { "name": "nav-tooltip", "value": "70ms show / 180ms hide, translateX(-4px) scale(0.96)", "purpose": "Collapsed rail glass tooltip." },
       { "name": "stagger", "value": "0.07 children / 0.08 delay", "purpose": "Dashboard and auth form entrance." },
       { "name": "table-hover", "value": "0.15s ease", "purpose": "Data-table row background." },
       { "name": "reduced-motion", "value": "0.01ms", "purpose": "Global prefers-reduced-motion override; also silences SFX." }
@@ -238,7 +241,7 @@
       "name": "Rail Nav",
       "kind": "nav",
       "refersTo": "nav-link-active",
-      "description": "Collapsible 17rem rail. Active row sits on a stretchy lime pill; text is #111.",
+      "description": "Collapsible 17rem rail. Lime pill follows hover or active; icons scale; collapsed labels are a glass tooltip.",
       "html": "<aside class=\"ds-rail\"><div class=\"ds-mark\">TD</div><p class=\"ds-kicker\">Desk</p><a class=\"ds-nav-link\" href=\"#\">01 Overview</a><a class=\"ds-nav-link ds-nav-link-active\" href=\"#\">02 Candidates</a></aside>",
       "css": ".ds-rail { width: 17rem; padding: 16px 8px; background: rgb(22 22 22 / 0.95); border-right: 1px solid rgb(255 255 255 / 0.08); font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; } .ds-mark { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: 0 12px 16px; border-radius: 14px; background: #C6F432; color: #111111; font-size: 14px; font-weight: 900; box-shadow: 0 0 28px rgb(198 244 50 / 0.35); } .ds-kicker { margin: 0 12px 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #F4B183; } .ds-nav-link { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; padding: 10px 12px; border-radius: 14px; color: #94A3B8; font-size: 14px; font-weight: 500; text-decoration: none; } .ds-nav-link:hover { color: #F8FAFC; } .ds-nav-link-active { color: #111111; background: #C6F432; box-shadow: 0 0 28px rgb(198 244 50 / 0.35); }"
     },
@@ -246,9 +249,25 @@
       "name": "Confirm Dialog",
       "kind": "custom",
       "refersTo": "panel-card",
-      "description": "Body-portaled modal — sticky title, scrollable body, max-h min(90vh, 100dvh-2rem), overlay bg-black/75 with no backdrop-blur.",
+      "description": "Body-portaled modal — springSnappy blur-scale on the panel, overlay fade 0.2s bg-black/75 with no backdrop-blur. glass variant for offer preview.",
       "html": "<div class=\"ds-overlay\"><div class=\"ds-dialog\"><header><h2>Delete candidate</h2><button type=\"button\" aria-label=\"Close\">×</button></header><div class=\"ds-dialog-body\"><p>Delete <strong>Ana K.</strong>? This removes the candidate and any linked interviews or earnings from this device. Offers stay.</p><div class=\"ds-dialog-actions\"><button class=\"ds-btn-cancel\" type=\"button\">Cancel</button><button class=\"ds-btn-danger\" type=\"button\">Delete</button></div></div></div></div>",
       "css": ".ds-overlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; overflow-y: auto; background: rgb(0 0 0 / 0.75); padding: 24px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; } .ds-dialog { width: 100%; max-width: 32rem; max-height: min(90vh, calc(100dvh - 2rem)); display: flex; flex-direction: column; border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.08); background: #1A1A1A; color: #F8FAFC; box-shadow: 0 25px 50px rgb(0 0 0 / 0.55); } .ds-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; border-bottom: 1px solid rgb(255 255 255 / 0.08); } .ds-dialog h2 { margin: 0; font-size: 20px; font-weight: 700; } .ds-dialog header button { border: 0; background: transparent; color: #94A3B8; font-size: 22px; cursor: pointer; } .ds-dialog-body { padding: 20px 24px 24px; overflow-y: auto; } .ds-dialog-body p { margin: 0; font-size: 14px; color: #94A3B8; line-height: 1.5; } .ds-dialog-body strong { color: #F8FAFC; } .ds-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; } .ds-btn-cancel { height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid rgb(255 255 255 / 0.08); background: #1F1F1F; color: #F8FAFC; font-weight: 600; cursor: pointer; } .ds-btn-danger { height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid rgb(244 63 94 / 0.30); background: rgb(244 63 94 / 0.15); color: #F43F5E; font-weight: 600; cursor: pointer; } .ds-btn-danger:hover { background: rgb(244 63 94 / 0.25); } .ds-btn-cancel:focus-visible, .ds-btn-danger:focus-visible { outline: 2px solid #C6F432; outline-offset: 2px; }"
+    },
+    {
+      "name": "Offer Glass Preview",
+      "kind": "custom",
+      "refersTo": "glass-panel",
+      "description": "Wide glass modal opened by clicking an offer card. Edit/Delete on the card stopPropagation.",
+      "html": "<article class=\"ds-offer-card\"><p class=\"ds-kicker\">forex</p><h3>Senior closer</h3><p>Apex Desk</p><div class=\"ds-tiles\"><div><span>Provision</span><strong>$1,600</strong></div><div><span>Salary</span><strong>$4,200</strong></div></div></article>",
+      "css": ".ds-offer-card { padding: 16px; border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.08); background: linear-gradient(165deg, rgb(32 32 32 / 0.95), rgb(22 22 22 / 0.98) 55%), linear-gradient(135deg, rgb(198 244 50 / 0.04), transparent 40%); color: #F8FAFC; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; cursor: pointer; transition: border-color 0.2s ease, box-shadow 0.2s ease; } .ds-offer-card:hover { border-color: rgb(198 244 50 / 0.25); box-shadow: 0 0 0 1px rgb(198 244 50 / 0.12); } .ds-offer-card:focus-visible { outline: 2px solid #C6F432; outline-offset: 2px; } .ds-kicker { margin: 0; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748B; } .ds-offer-card h3 { margin: 4px 0 0; font-size: 16px; font-weight: 700; } .ds-offer-card p { margin: 4px 0 0; font-size: 14px; color: #94A3B8; } .ds-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; } .ds-tiles div { border-radius: 12px; background: #161616; padding: 8px 12px; } .ds-tiles span { display: block; font-size: 11px; color: #64748B; } .ds-tiles strong { font-family: \"JetBrains Mono\", ui-monospace, monospace; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Collapsed Nav Tooltip",
+      "kind": "custom",
+      "refersTo": "nav-link",
+      "description": "Glass chip 10px right of a collapsed rail row. 70ms show / 180ms hide. Not a native title attribute.",
+      "html": "<span class=\"ds-nav-tooltip\">Candidates</span>",
+      "css": ".ds-nav-tooltip { display: inline-flex; align-items: center; border-radius: 10px; border: 1px solid rgb(255 255 255 / 0.12); background: linear-gradient(160deg, rgb(255 255 255 / 0.07), rgb(17 17 17 / 0.92) 55%), rgb(17 17 17 / 0.94); padding: 0.4rem 0.7rem; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.01em; color: #F8FAFC; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 10px 28px rgb(0 0 0 / 0.45); }"
     },
     {
       "name": "Auth Card",
@@ -261,16 +280,17 @@
   ],
   "narrative": {
     "northStar": "The Lime Glass Desk",
-    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA, not a marketing site. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay and a sound toggle. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.\n\nDensity is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill, Framer **opacity + translate** page transitions (no CSS `filter`, so overlays are not trapped), spring stagger on the dashboard. Modals and drawers portal to `document.body`. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
+    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode SPA, not a marketing site. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay and a sound toggle. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.\n\nDensity is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
     "keyCharacteristics": [
       "Charcoal canvas (#111111) with a lime / violet / peach mesh and optional film grain on auth",
       "Lime (#C6F432) as conversion; peach (#F4B183) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only",
       "Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips",
       "Plus Jakarta Sans for all UI; JetBrains Mono only for money and counts (.tabular)",
       "Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)",
-      "GSAP stretchy lime nav pill + collapsible 17rem → 4.75rem rail",
+      "GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips",
       "Glass dashboard panels (.glass-panel) as the working signature; neon Recharts (lime + peach)",
-      "Auth glass card on orbs — no rail until session; no demo-preview bypass"
+      "Auth glass card on orbs — no rail until session; no demo-preview bypass",
+      "Offer cards click into a wide glass preview modal; Edit/Delete stay independent"
     ],
     "rules": [
       { "name": "The Lime Conversion Rule", "body": "#C6F432 is the irreversible action: Enter Talent Desk, Join Talent Desk, Confirm, Open candidates, the stretchy nav pill. Peach, violet, cyan, and magenta may light charts and kickers — they do not replace the primary CTA on a working pane.", "section": "colors" },
@@ -281,7 +301,7 @@
       { "name": "The Occupied Glass Rule", "body": "Card titles are text-xl; subtitles 15–16px; empty-state copy 16–18px; chart ticks 14px #cbd5e1. Inner padding on glass panes is p-6 / sm:p-7. Do not drop supporting copy back to 11px gray on glass.", "section": "typography" },
       { "name": "The Glow-Is-Signal Rule", "body": "Bloom belongs on conversion, brand mark, the stretchy pill, and charts. Rest forms use .card-surface only (inset highlight, no outer bloom). Dashboard KPIs may take .card-glow on glass.", "section": "elevation" },
       { "name": "The Glass Desk Rule", "body": "Overview panes are .glass-panel (backdrop-filter: blur(20px) saturate(1.25)). Do not flatten them back to opaque navy steel (#121622) or a single un-blurred #111 slab.", "section": "elevation" },
-      { "name": "The Overlay-On-Body Rule", "body": "Modal and Drawer always createPortal to document.body at z-[200]. Page shells must not use CSS filter or a transform containing block. Overlay fill is bg-black/75 without backdrop-blur (blur on the overlay was cutting the viewport in half).", "section": "elevation" }
+      { "name": "The Overlay-On-Body Rule", "body": "Modal and Drawer always createPortal to document.body at z-[200]. Page shells must not use CSS filter or a transform containing block. Overlay fill is bg-black/75 without backdrop-blur (blur on the overlay was cutting the viewport in half). Framer filter: blur on the dialog panel during open/exit is the preview motion — keep it off the overlay and off PageTransition.", "section": "elevation" }
     ],
     "dos": [
       "Do keep canvas / canvas-raised / surface as the charcoal ground family and #C6F432 as the primary conversion color.",
@@ -293,7 +313,9 @@
       "Do keep auth as a centered glass card with orbs; do not put the rail on /login or /register.",
       "Do keep SFX muted by default; never auto-unmute.",
       "Do portal Modal/Drawer to document.body. Keep glass pane padding at p-6 / sm:p-7 and CardTitle at text-xl.",
-      "Do confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers."
+      "Do confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers.",
+      "Do slide the lime nav pill on hover and active, kill in-flight GSAP tweens, and show a glass tooltip when the rail is collapsed.",
+      "Do open offer cards into a wide glass preview modal; keep Edit/Delete stopPropagation."
     ],
     "donts": [
       "Don't restore the violet-conversion Neon Signal Desk (#080A10 canvas, #7C3AED primary CTA, magenta inset nav bar, gradient TD mark).",
@@ -302,7 +324,8 @@
       "Don't treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill.",
       "Don't add a second product look for Admin — it uses the same cards, tables, and badges.",
       "Don't seed demo income or restore a demo-preview bypass on the login screen.",
-      "Don't put CSS filter or backdrop-blur on PageTransition or the modal overlay — that was the half-viewport black cut.",
+      "Don't put CSS filter or backdrop-blur on PageTransition or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.",
+      "Don't let GSAP pill tweens stack on rapid hover. Don't use a native title tooltip for collapsed nav labels.",
       "Don't commit secrets, password hashes, or live account JSON into either design file."
     ]
   }

@@ -1,8 +1,8 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `ed508ae6012e38a8b09ac3659d70c58c9196ed69` (2026-11-25, “Merge pull request #13 from 38plug/cursor/delete-candidates-6eba” on `main`)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass at `a0ef48c`). Occupied-glass type/padding from PRs #8–#9 (`788ca10`, `bcb2dad`). Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13.
+> **Documented from:** `fdaebab8cb202243a71cf22c65047673b81e2db2` (2026-11-25, “Improve sidebar hover pill and page transition motion (#15)” on `main`)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass at `a0ef48c`). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15.
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from**, leave both docs untouched.
 
 ## What it is
@@ -13,7 +13,7 @@ After sign-in:
 
 1. **Overview** (`/`) — KPI heroes, neon charts, estimated list (confirm → Pending), Needs Attention, recent candidates. Empty desk → zeros (no demo seed).
 2. **Candidates** (`/candidates`) — pipeline table (name, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Profile fields: country, age, languages, current location (migrated on load; older rows stay). Delete cascades interviews + earnings linked by candidate id; offers stay.
-3. **Offers** (`/offers`) — forex + Chinese, OCR scan + parse, provision wording, Telegram handle.
+3. **Offers** (`/offers`) — forex + Chinese cards. Click a card (Enter/Space) opens a wide **glass preview** modal (`Modal glass`) with full details. Card Edit/Delete `stopPropagation`. OCR scan + parse, provision wording, Telegram handle.
 4. **Interviews** (`/interviews`) — schedule against a candidate / offer.
 5. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
 6. **Settings** (`/settings`) — profile, change password, **JSON import/export**, pipeline copy.
@@ -28,9 +28,9 @@ Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome o
 | Login | No session | `src/pages/LoginPage.tsx` + `AuthShell` |
 | Register | No session | `src/pages/RegisterPage.tsx` + `AuthShell` |
 | Boot | Session pending | `ProtectedRoute` + `PageLoader` |
-| Desk shell | Session required | `AppShell` |
-| Overview … Settings | Same | lazy pages under `AppShell` + `PageTransition` (opacity/y only; no CSS filter) |
-| Overlays | Any desk page | `Modal` / `Drawer` portal to `document.body` (`z-[200]`) |
+| Desk shell | Session required | `AppShell` (hover pill, collapsed glass tooltip) |
+| Overview … Settings | Same | lazy pages under `AppShell` + `PageTransition` (`springSoft` opacity/y; no CSS filter on wrapper) |
+| Overlays | Any desk page | `Modal` / `Drawer` portal to `document.body` (`z-[200]`, `springSnappy` on the panel). Offer preview uses `glass`. |
 | Admin | `canViewAdmin(role)` | `AdminRoute` + `AdminPage` |
 
 Unsigned visitors always go to `/login`. There is no `talent-desk-demo-ui` flag.
@@ -147,23 +147,23 @@ src/pages/LoginPage.tsx
 src/pages/RegisterPage.tsx
 src/pages/DashboardPage.tsx
 src/pages/CandidatesPage.tsx          → add/edit (wide modal), drawer, named delete confirm
-src/pages/OffersPage.tsx
+src/pages/OffersPage.tsx              → card grid + glass preview modal; Edit/Delete stopPropagation
 src/pages/InterviewsPage.tsx
 src/pages/EarningsPage.tsx
 src/pages/SettingsPage.tsx              → password + JSON import/export
 src/pages/AdminPage.tsx
-src/components/layout/AppShell.tsx     → collapsible rail + header + slide-pill
+src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle
-src/components/motion/*                → PageTransition (opacity/y, no filter), Motion, AnimatedNumber, SoundToggle
-src/components/ui/*                    → Button, Input, Card (p-6, CardTitle text-xl), Badge, Modal/Drawer (body portal), charts
+src/components/motion/*                → PageTransition (springSoft opacity/y, no filter), Motion, AnimatedNumber, SoundToggle
+src/components/ui/*                    → Button, Input, Card (p-6, CardTitle text-xl), Badge, Modal/Drawer (body portal, springSnappy, glass), charts
 src/lib/api.ts                         → app façade over local-db
 src/lib/local-db.ts                    → accounts, CRUD, import/export, PBKDF2
 src/lib/constants.ts                   → APP_NAME, roles, stages, nav
 src/lib/types.ts
 src/lib/demo-data.ts                   → SPARK_SERIES shapes only (not KPI values)
 src/lib/parse-offer.ts
-src/lib/motion.ts                      → Framer springs / fadeUp / stagger
-src/lib/slide-pill.ts                  → GSAP stretchy lime pill
+src/lib/motion.ts                      → springSoft, springSnappy, fadeUp, fadeScale, stagger
+src/lib/slide-pill.ts                  → GSAP stretchy lime pill (hover+active, killTweens)
 src/lib/sfx.ts                         → Web Audio, muted by default
 src/lib/utils.ts                       → cn, money, telegram handles
 docs/local-data.md                     → localStorage keys + export JSON
@@ -175,17 +175,21 @@ README.md                              → local setup + Vercel runbook
 
 | Token | Where |
 | --- | --- |
-| GSAP slide-pill (lead 0.36s `power3.out`, trail 0.55s `power3.inOut`) | Rail active item |
-| Page opacity + y 0.35s in / 0.18s out (no CSS filter) | `PageTransition` |
+| GSAP slide-pill (lead 0.32s `power3.out`, trail 0.52s `power3.inOut`, killTweens) | Rail hovered or active item |
+| `.nav-item-icon` scale 1.08 / 1.06 | Focused / active nav icon |
+| `.nav-tooltip` 70ms in / 180ms out | Collapsed rail labels |
+| Page `springSoft` y:14 in / y:-8 0.2s out (no CSS filter on wrapper) | `PageTransition` |
+| Overlay fade 0.2s; panel `springSnappy` blur-scale | `Modal` / `Drawer` |
+| `Modal glass` | Offer preview |
 | `fadeUp` + stagger 0.07 | Dashboard, auth form |
 | `AnimatedNumber` | KPIs, gauge, live-desk money |
 | `thud` | Collapse, mobile menu |
 | `bass` | Nav click, Open candidates |
-| `pop` / `hover` / `tap` | Focus, hover, buttons |
+| `pop` / `hover` / `tap` | Focus, hover (skip pop on already-active nav), buttons |
 | `success` | Login, register, confirm earning |
 | `whoosh` | Sign out, auth link |
 
-`prefers-reduced-motion`: snap the pill, skip page transition, skip SFX, collapse CSS animations to 0.01ms.
+`prefers-reduced-motion`: snap the pill, skip page transition, opacity-only overlays at 0.01s, skip SFX, collapse CSS animations to 0.01ms.
 
 ## Leftovers (not canon)
 
@@ -209,8 +213,10 @@ README.md                              → local setup + Vercel runbook
 9. **No backend env.** Do not reintroduce `@supabase/*`, Edge Functions, or `VITE_SUPABASE_*` unless a later rebuild explicitly adds a server.
 10. **Do not commit secrets.** Password hashes, salts, and export JSON with credentials stay out of git. Do not print `OWNER_EMAIL` in docs.
 11. **Vercel is a SPA, not an SSR host.** Keep `vercel.json` rewrites to `index.html`.
-12. **Overlays live on `document.body`.** Do not put CSS `filter` on `PageTransition`. Do not put `backdrop-blur` on the modal overlay.
+12. **Overlays live on `document.body`.** Do not put CSS `filter` on `PageTransition`. Do not put `backdrop-blur` on the modal overlay. Framer blur on the **dialog panel** during open is the preview motion.
 13. **Candidate delete is named + cascading.** Confirm modal must show the name. Cascade interviews and earnings; never delete the linked offer. Profile fields migrate; do not wipe older rows.
+14. **Nav pill follows hover and active.** Kill in-flight GSAP tweens. Collapsed labels are the glass tooltip, not a native `title`.
+15. **Offer cards open a glass preview.** Edit/Delete on the card must `stopPropagation`. Preview uses `Modal` `wide` + `glass`.
 
 ## How this documentation stays current
 
