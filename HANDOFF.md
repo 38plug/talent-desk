@@ -180,13 +180,12 @@ src/components/interviews/InterviewReminderWatcher.tsx → OS Notification + in-
 src/lib/interview-reminders.ts         → pref / permission / due window helpers
 src/lib/datetime.ts                    → datetime-local helpers
 src/pages/EarningsPage.tsx
-src/pages/TelegramPage.tsx             → personal MTProto chat (teleproto); dialogs + messages + candidate match
+src/pages/TelegramPage.tsx             → personal MTProto chat (teleproto); NewMessage + 1s dialog/open-thread poll
 src/lib/telegram-mtproto.ts            → api creds / session helpers for Telegram user client
 src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
 src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock, notification bell) + InterviewReminderWatcher
 src/components/layout/HeaderNotifications.tsx → bell badge for Added candidate/offer activity (1s poll + cloud realtime)
-src/pages/TelegramPage.tsx                 → personal MTProto chat; NewMessage + 1s open-thread poll
 src/lib/desk-notifications.ts          → seen watermark + add-activity filter
 src/components/layout/HeaderClock.tsx  → header date+time (browser locale / local TZ, 1s tick)
 src/lib/datetime.ts                    → datetime-local helpers + header Intl formatters
