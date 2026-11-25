@@ -87,3 +87,65 @@ VITE_SUPABASE_ANON_KEY=
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` stays in Edge Function / server env only.
+
+## Deploy on Vercel
+
+SPA config lives in `vercel.json` (Vite build → `dist`, client-side rewrites to `index.html`).
+
+### One-time claim (if an agent left a temporary deploy)
+
+1. Open the claim link from the agent report (expires ~60 minutes).
+2. Sign in to Vercel and claim the deployment into your team/project.
+3. Or from your machine:
+
+```bash
+npm i -g vercel
+vercel login
+vercel link   # link to the claimed project, or:
+vercel        # import https://github.com/38plug/talent-desk
+```
+
+### Production import from GitHub (recommended)
+
+```bash
+# In the repo root
+vercel login
+vercel link          # create/link project "talent-desk"
+vercel env add VITE_SUPABASE_URL production
+vercel env add VITE_SUPABASE_ANON_KEY production
+vercel --prod
+```
+
+Or in the Vercel dashboard: **Add New Project** → import `38plug/talent-desk` → Framework **Vite** → Root `.` → Build `npm run build` → Output `dist`.
+
+### Env vars (required for real login)
+
+| Name | Value |
+|------|--------|
+| `VITE_SUPABASE_URL` | Hosted project URL `https://<ref>.supabase.co` **or** Cloudflared tunnel to local `:54321` |
+| `VITE_SUPABASE_ANON_KEY` | Project anon/public key |
+
+`VITE_*` are baked in at **build** time — change them → **Redeploy**.
+
+Local Docker (`http://127.0.0.1:54321`) is **not** reachable from Vercel.
+
+#### Path A — Hosted Supabase (preferred)
+
+1. Create a project at https://supabase.com/dashboard
+2. SQL editor: run `supabase/migrations/0001_init.sql`
+3. (Optional) Deploy Edge Functions `register`, `admin-stats`, `admin-account`
+4. Copy Project URL + anon key into Vercel env → Redeploy
+
+#### Path B — Cloudflared tunnel to local Supabase
+
+On the machine running Docker Supabase:
+
+```bash
+npx supabase start
+cloudflared tunnel --url http://127.0.0.1:54321
+# Confirm https://<tunnel>/auth/v1/health → 200
+```
+
+Set Vercel `VITE_SUPABASE_URL` to that **54321** tunnel URL (not the app), paste the same local anon key, redeploy. Tunnel hostnames change on restart — update env + redeploy each time.
+
+Without these env vars the public site still loads; login shows the connectivity banner and **Preview Talent Desk UI** works for browsing.
