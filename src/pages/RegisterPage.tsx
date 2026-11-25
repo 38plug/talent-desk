@@ -57,18 +57,24 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="bg-mesh flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="bg-mesh relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+      <div className="auth-orb -top-16 right-0 h-72 w-72 bg-magenta" />
+      <div className="auth-orb -bottom-24 -left-10 h-80 w-80 bg-violet" />
+
+      <div className="relative z-10 w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-magenta to-violet text-lg font-black text-white glow-magenta">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[18px] bg-gradient-to-br from-magenta via-violet to-cyan text-xl font-black text-white glow-magenta">
             TD
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-ink">{APP_NAME}</h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <h1 className="text-4xl font-extrabold tracking-tight text-ink">{APP_NAME}</h1>
+          <p className="mt-2 text-sm text-ink-muted">
             Limited desk — max {MAX_ACCOUNTS} seats (owner excluded)
           </p>
         </div>
-        <form onSubmit={onSubmit} className="card-surface space-y-4 p-6">
+        <form
+          onSubmit={onSubmit}
+          className="card-surface card-glow space-y-4 p-7 shadow-[0_0_80px_rgb(236_72_153/0.18)]"
+        >
           <h2 className="text-lg font-bold">Create account</h2>
           <AuthConnectivityBanner forceCheck={healthTick} />
           <div>
@@ -106,7 +112,7 @@ export function RegisterPage() {
             />
           </div>
           {error ? (
-            <div className="rounded-xl border border-rose/30 bg-rose/10 px-3 py-2 text-sm text-rose">
+            <div className="rounded-[14px] border border-rose/30 bg-rose/10 px-3 py-2.5 text-sm text-rose">
               <p className="font-semibold">{error}</p>
               {hint ? <p className="mt-1 text-xs leading-relaxed text-ink-muted">{hint}</p> : null}
             </div>

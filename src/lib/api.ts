@@ -470,24 +470,29 @@ export async function registerAccount(email: string, password: string, fullName?
     throw new Error('This email is reserved.')
   }
 
-  const { data: fnData, error: fnError } = await supabase.functions.invoke('register', {
-    body: { email, password, fullName },
-  })
-
-  if (!fnError && fnData?.ok) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
-    return
+  let fnData: { ok?: boolean; error?: string } | null = null
+  try {
+    const invoked = await supabase.functions.invoke('register', {
+      body: { email, password, fullName },
+    })
+    fnData = invoked.data as { ok?: boolean; error?: string } | null
+    // Business errors from the function (seat cap, reserved) should surface.
+    if (fnData?.error && !invoked.error) {
+      throw new Error(String(fnData.error))
+    }
+    if (!invoked.error && fnData?.ok) {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+      return
+    }
+  } catch (err) {
+    // Only rethrow explicit business errors; network / missing-fn falls through to signUp.
+    if (err instanceof Error && /maximum|reserved|4 accounts/i.test(err.message)) {
+      throw err
+    }
   }
 
   // Fallback: client signUp (DB trigger still enforces seat cap)
-  if (fnError && !String(fnError.message).includes('Failed to send')) {
-    // continue to fallback only when function unavailable
-  }
-  if (fnData?.error) {
-    throw new Error(String(fnData.error))
-  }
-
   const { data, error } = await supabase.auth.signUp({
     email,
     password,

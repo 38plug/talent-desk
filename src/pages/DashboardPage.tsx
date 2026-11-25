@@ -59,7 +59,7 @@ export function DashboardPage() {
       value: formatMoney(data.estimated),
       delta: 'Confirm to move into income',
       spark: SPARK_SERIES.candidates,
-      color: '#7C3AED',
+      color: '#A78BFA',
       icon: Bell,
     },
     {
@@ -81,65 +81,78 @@ export function DashboardPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {data.isDemo ? (
-        <div className="rounded-2xl border border-cyan/25 bg-cyan/10 px-4 py-3 text-sm text-cyan">
-          {APP_NAME} is showing demo metrics — your tables are empty. Add candidates, offers, or earnings to replace this preview.
+        <div className="rounded-[16px] border border-cyan/30 bg-cyan/10 px-4 py-3 text-sm text-cyan shadow-[0_0_24px_rgb(34_211_238/0.12)]">
+          <span className="font-semibold">{APP_NAME}</span> is showing demo metrics — your tables are
+          empty. Add candidates, offers, or earnings to replace this preview.
         </div>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="hero-gradient-violet relative overflow-hidden rounded-[20px] p-6 text-white shadow-[0_0_40px_rgb(124_58_237/0.35)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">{APP_NAME}</p>
-          <h2 className="mt-2 text-2xl font-extrabold sm:text-3xl">Pipeline command center</h2>
-          <p className="mt-2 max-w-md text-sm text-white/80">
+      <div className="grid gap-4 lg:grid-cols-5">
+        <div className="hero-gradient-violet relative overflow-hidden rounded-[20px] p-6 text-white shadow-[0_0_48px_rgb(124_58_237/0.4)] lg:col-span-3">
+          <p className="text-[11px] font-semibold tracking-[0.22em] text-white/75 uppercase">
+            {APP_NAME}
+          </p>
+          <h2 className="mt-2 max-w-lg text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Pipeline command center
+          </h2>
+          <p className="mt-2 max-w-md text-sm text-white/85">
             Scan income, confirm estimates, and clear what needs attention today.
           </p>
           <Link
             to="/candidates"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-black/25 px-4 py-2 text-sm font-semibold backdrop-blur hover:bg-black/35"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-black/30 px-4 py-2.5 text-sm font-semibold backdrop-blur hover:bg-black/40"
           >
             Open candidates <ArrowUpRight className="h-4 w-4" />
           </Link>
-          <div className="pointer-events-none absolute -right-6 -bottom-10 h-40 w-40 rounded-full bg-cyan/30 blur-3xl" />
+          <div className="pointer-events-none absolute -right-8 -bottom-12 h-48 w-48 rounded-full bg-cyan/35 blur-3xl" />
+          <div className="pointer-events-none absolute top-6 right-10 h-20 w-20 rounded-full bg-white/15 blur-2xl" />
         </div>
-        <div className="hero-gradient-cyan relative overflow-hidden rounded-[20px] p-6 text-canvas shadow-[0_0_40px_rgb(34_211_238/0.25)]">
+        <div className="hero-gradient-cyan relative overflow-hidden rounded-[20px] p-5 text-canvas shadow-[0_0_40px_rgb(34_211_238/0.3)] lg:col-span-2">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-canvas/60">Live desk</p>
+              <p className="text-[11px] font-semibold tracking-[0.16em] text-canvas/60 uppercase">
+                Live desk
+              </p>
               <p className="mt-2 text-3xl font-extrabold tabular">{formatMoney(data.paidEarnings)}</p>
-              <p className="text-sm text-canvas/70">Paid provision to date</p>
+              <p className="text-sm text-canvas/70">Paid provision</p>
             </div>
-            <Briefcase className="h-8 w-8 opacity-70" />
+            <Briefcase className="h-7 w-7 opacity-70" />
           </div>
-          <div className="mt-6 grid grid-cols-3 gap-3 text-sm">
-            <div>
-              <p className="tabular text-lg font-bold">{formatMoney(data.pendingEarnings)}</p>
-              <p className="text-xs text-canvas/65">Pending</p>
+          <div className="mt-5 grid grid-cols-3 gap-2 text-sm">
+            <div className="rounded-[12px] bg-black/10 px-2 py-2">
+              <p className="tabular text-base font-bold">{formatMoney(data.pendingEarnings)}</p>
+              <p className="text-[10px] text-canvas/65">Pending</p>
             </div>
-            <div>
-              <p className="tabular text-lg font-bold">{formatMoney(data.overdueEarnings)}</p>
-              <p className="text-xs text-canvas/65">Overdue</p>
+            <div className="rounded-[12px] bg-black/10 px-2 py-2">
+              <p className="tabular text-base font-bold">{formatMoney(data.overdueEarnings)}</p>
+              <p className="text-[10px] text-canvas/65">Overdue</p>
             </div>
-            <div>
-              <p className="tabular text-lg font-bold">{data.liveOffers}</p>
-              <p className="text-xs text-canvas/65">Live offers</p>
+            <div className="rounded-[12px] bg-black/10 px-2 py-2">
+              <p className="tabular text-base font-bold">{data.liveOffers}</p>
+              <p className="text-[10px] text-canvas/65">Live</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((k) => (
-          <Card key={k.label} className="!p-4">
+          <Card key={k.label} className="card-glow !p-4">
             <div className="flex items-start justify-between gap-2">
-              <div>
-                <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-white/5">
+              <div className="min-w-0">
+                <div
+                  className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-[12px]"
+                  style={{ background: `${k.color}22`, boxShadow: `0 0 18px ${k.color}33` }}
+                >
                   <k.icon className="h-4 w-4" style={{ color: k.color }} />
                 </div>
                 <p className="text-xs text-ink-muted">{k.label}</p>
-                <p className="mt-1 text-2xl font-bold tabular text-ink">{k.value}</p>
-                <p className="mt-1 text-[11px] text-ink-dim">{k.delta}</p>
+                <p className="mt-1 text-2xl font-extrabold tracking-tight tabular text-ink">
+                  {k.value}
+                </p>
+                <p className="mt-1 truncate text-[11px] text-ink-dim">{k.delta}</p>
               </div>
               <Sparkline data={k.spark} color={k.color} />
             </div>
@@ -148,31 +161,37 @@ export function DashboardPage() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">
-        <Card className="xl:col-span-2">
+        <Card className="card-glow xl:col-span-2">
           <CardHeader>
-            <CardTitle>Income vs estimated</CardTitle>
+            <div>
+              <CardTitle>Income vs estimated</CardTitle>
+              <p className="mt-0.5 text-xs text-ink-dim">Glowing neon series · last 7 days</p>
+            </div>
             <Badge tone="cyan">7 days</Badge>
           </CardHeader>
           <NeonAreaChart data={data.incomeSeries} />
         </Card>
-        <Card>
+        <Card className="card-glow">
           <CardHeader>
             <CardTitle>Needs attention</CardTitle>
           </CardHeader>
-          <ul className="space-y-3">
+          <ul className="space-y-2.5">
             {data.attention.length === 0 ? (
               <li className="text-sm text-ink-muted">Nothing urgent — desk is clear.</li>
             ) : (
               data.attention.map((item) => (
                 <li
                   key={item.id}
-                  className="flex items-start justify-between gap-3 rounded-xl border border-border bg-canvas-raised/60 px-3 py-2.5"
+                  className="flex items-start justify-between gap-3 rounded-[14px] border border-border bg-canvas-raised/70 px-3 py-2.5"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-semibold text-ink">{item.title}</p>
-                    <p className="text-xs text-ink-muted">{item.subtitle}</p>
+                    <p className="truncate text-xs text-ink-muted">{item.subtitle}</p>
                   </div>
-                  <Link to={item.href} className="text-xs font-semibold text-cyan hover:underline">
+                  <Link
+                    to={item.href}
+                    className="shrink-0 text-xs font-semibold text-cyan hover:underline"
+                  >
                     Review
                   </Link>
                 </li>
@@ -183,7 +202,7 @@ export function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card>
+        <Card className="card-glow">
           <CardHeader>
             <CardTitle>Pipeline mix</CardTitle>
           </CardHeader>
@@ -193,13 +212,13 @@ export function DashboardPage() {
             <p className="text-sm text-ink-muted">No stage data yet.</p>
           )}
         </Card>
-        <Card>
+        <Card className="card-glow">
           <CardHeader>
             <CardTitle>Daily income</CardTitle>
           </CardHeader>
           <NeonBarChart data={barData} />
         </Card>
-        <Card>
+        <Card className="card-glow">
           <CardHeader>
             <CardTitle>Awaiting confirmation</CardTitle>
           </CardHeader>
@@ -210,7 +229,7 @@ export function DashboardPage() {
               data.estimatedList.slice(0, 6).map((e) => (
                 <li
                   key={e.id}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-border px-3 py-2"
+                  className="flex items-center justify-between gap-2 rounded-[14px] border border-border px-3 py-2"
                 >
                   <div>
                     <p className="text-sm font-medium">{e.candidateName ?? 'Candidate'}</p>
@@ -222,7 +241,7 @@ export function DashboardPage() {
                     disabled={confirm.isPending}
                     onClick={() => confirm.mutate(e.id)}
                   >
-                    Candidate confirmed
+                    Confirmed
                   </Button>
                 </li>
               ))
@@ -231,39 +250,42 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      <Card className="!p-0 overflow-hidden">
+      <Card className="card-glow !p-0 overflow-hidden">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <CardTitle>Recent candidates</CardTitle>
+          <div>
+            <CardTitle>Recent candidates</CardTitle>
+            <p className="mt-0.5 text-xs text-ink-dim">Dense register · Telegram under name</p>
+          </div>
           <Link to="/candidates" className="text-sm font-semibold text-cyan hover:underline">
             View all
           </Link>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="bg-white/[0.02] text-xs uppercase tracking-wide text-ink-dim">
+          <table className="data-table min-w-[640px]">
+            <thead>
               <tr>
-                <th className="px-5 py-3 font-semibold">Name</th>
-                <th className="px-5 py-3 font-semibold">Stage</th>
-                <th className="px-5 py-3 font-semibold">Source</th>
-                <th className="px-5 py-3 font-semibold">Telegram</th>
+                <th>Name</th>
+                <th>Stage</th>
+                <th>Source</th>
+                <th>Telegram</th>
               </tr>
             </thead>
             <tbody>
               {data.recentCandidates.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-8 text-center text-ink-muted">
+                  <td colSpan={4} className="!py-10 text-center text-ink-muted">
                     No candidates yet — demo KPIs above stay until you add pipeline data.
                   </td>
                 </tr>
               ) : (
                 data.recentCandidates.map((c) => (
-                  <tr key={c.id} className="border-t border-border hover:bg-white/[0.02]">
-                    <td className="px-5 py-3 font-medium">{c.name}</td>
-                    <td className="px-5 py-3">
+                  <tr key={c.id}>
+                    <td className="font-semibold">{c.name}</td>
+                    <td>
                       <Badge tone={stageTone(c.stage)}>{c.stage}</Badge>
                     </td>
-                    <td className="px-5 py-3 text-ink-muted">{c.source ?? '—'}</td>
-                    <td className="px-5 py-3 text-ink-muted">
+                    <td className="text-ink-muted">{c.source ?? '—'}</td>
+                    <td className="text-ink-muted">
                       {c.telegram ? `@${c.telegram.replace(/^@/, '')}` : '—'}
                     </td>
                   </tr>
