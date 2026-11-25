@@ -8,10 +8,11 @@ type Stat = {
   key: string
   label: string
   value: number
+  meta: string
   icon: LucideIcon
 }
 
-function StatCell({ label, value, icon: Icon }: Omit<Stat, 'key'>) {
+function StatCell({ label, value, meta, icon: Icon }: Omit<Stat, 'key'>) {
   return (
     <div className="relative z-10 flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-lime/15 text-lime glow-lime">
@@ -22,7 +23,7 @@ function StatCell({ label, value, icon: Icon }: Omit<Stat, 'key'>) {
         <p className="mt-0.5 text-3xl font-extrabold tracking-tight text-lime text-glow-lime tabular sm:text-4xl">
           <AnimatedNumber value={value} />
         </p>
-        <p className="mt-0.5 text-xs text-ink-dim">All desk rows · live shared total</p>
+        <p className="mt-0.5 text-xs text-ink-dim">{meta}</p>
       </div>
     </div>
   )
@@ -45,9 +46,27 @@ export function DeskTotalsStrip() {
   })
 
   const stats: Stat[] = [
-    { key: 'candidates', label: 'Total candidates', value: candidates.length, icon: Users },
-    { key: 'offers', label: 'Total offers', value: offers.length, icon: Briefcase },
-    { key: 'interviews', label: 'Total interviews', value: interviews.length, icon: Calendar },
+    {
+      key: 'candidates',
+      label: 'Total candidates',
+      value: candidates.length,
+      meta: 'All desk candidates · live shared total',
+      icon: Users,
+    },
+    {
+      key: 'offers',
+      label: 'Total offers',
+      value: offers.length,
+      meta: 'All desk offers · live shared total',
+      icon: Briefcase,
+    },
+    {
+      key: 'interviews',
+      label: 'Total interviews',
+      value: interviews.length,
+      meta: 'All desk interviews · live shared total',
+      icon: Calendar,
+    },
   ]
 
   return (
@@ -59,7 +78,7 @@ export function DeskTotalsStrip() {
       <div className="relative z-10 grid gap-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border">
         {stats.map((stat) => (
           <div key={stat.key} className="sm:px-5 first:sm:pl-0 last:sm:pr-0">
-            <StatCell label={stat.label} value={stat.value} icon={stat.icon} />
+            <StatCell label={stat.label} value={stat.value} meta={stat.meta} icon={stat.icon} />
           </div>
         ))}
       </div>
