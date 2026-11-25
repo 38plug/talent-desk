@@ -214,7 +214,14 @@ export function EarningsPage() {
                             Mark paid
                           </Button>
                         ) : null}
-                        <Button size="sm" variant="danger" onClick={() => remove.mutate(e.id)}>
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          className="h-8 w-8 px-0"
+                          aria-label="Delete earning"
+                          title="Delete earning"
+                          onClick={() => remove.mutate(e.id)}
+                        >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>

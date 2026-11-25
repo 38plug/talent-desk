@@ -117,8 +117,15 @@ export function InterviewsPage() {
                   </p>
                 </div>
                 {i.outcome ? <Badge tone="cyan">{i.outcome}</Badge> : <Badge>Scheduled</Badge>}
-                <Button size="sm" variant="danger" onClick={() => remove.mutate(i.id)}>
-                  <Trash2 className="h-4 w-4" />
+                <Button
+                  size="sm"
+                  variant="danger"
+                  className="h-8 w-8 px-0"
+                  aria-label={`Delete interview for ${cand?.name ?? 'candidate'}`}
+                  title={`Delete interview for ${cand?.name ?? 'candidate'}`}
+                  onClick={() => remove.mutate(i.id)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </li>
             )
