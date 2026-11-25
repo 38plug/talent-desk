@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -24,17 +24,81 @@ import { PIPELINE_STAGES, type PipelineStage } from '@/lib/constants'
 import { ensureAtHandle } from '@/lib/utils'
 import type { Candidate } from '@/lib/types'
 
-const emptyForm = {
+type CandidateForm = {
+  name: string
+  email: string
+  phone: string
+  source: string
+  stage: PipelineStage
+  offerId: string
+  telegram: string
+  sentBy: string
+  country: string
+  age: string
+  languages: string
+  currentLocation: string
+  notes: string
+  expectedSalary: string
+}
+
+const emptyForm: CandidateForm = {
   name: '',
   email: '',
   phone: '',
   source: '',
-  stage: 'Screening' as PipelineStage,
+  stage: 'Screening',
   offerId: '',
   telegram: '',
   sentBy: '',
+  country: '',
+  age: '',
+  languages: '',
+  currentLocation: '',
   notes: '',
   expectedSalary: '',
+}
+
+function candidateToForm(c: Candidate): CandidateForm {
+  return {
+    name: c.name,
+    email: c.email ?? '',
+    phone: c.phone ?? '',
+    source: c.source ?? '',
+    stage: c.stage,
+    offerId: c.offerId ?? '',
+    telegram: c.telegram ?? '',
+    sentBy: c.sentBy ?? '',
+    country: c.country ?? '',
+    age: c.age != null ? String(c.age) : '',
+    languages: c.languages ?? '',
+    currentLocation: c.currentLocation ?? '',
+    notes: c.notes ?? '',
+    expectedSalary: c.expectedSalary != null ? String(c.expectedSalary) : '',
+  }
+}
+
+function formToPayload(form: CandidateForm) {
+  return {
+    name: form.name,
+    email: form.email || null,
+    phone: form.phone || null,
+    source: form.source || null,
+    stage: form.stage,
+    offerId: form.offerId || null,
+    telegram: form.telegram || null,
+    sentBy: form.sentBy || null,
+    country: form.country || null,
+    age: form.age ? Number(form.age) : null,
+    languages: form.languages || null,
+    currentLocation: form.currentLocation || null,
+    notes: form.notes || null,
+    expectedSalary: form.expectedSalary ? Number(form.expectedSalary) : null,
+  }
+}
+
+function locationLine(c: Candidate): string | null {
+  const bits = [c.currentLocation, c.country].filter(Boolean)
+  return bits.length ? bits.join(' · ') : null
 }
 
 export function CandidatesPage() {
@@ -48,36 +112,57 @@ export function CandidatesPage() {
   const [q, setQ] = useState('')
   const [stageFilter, setStageFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
-  const [form, setForm] = useState(emptyForm)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [form, setForm] = useState<CandidateForm>(emptyForm)
   const [selected, setSelected] = useState<Candidate | null>(null)
   const [editTg, setEditTg] = useState('')
   const [editSentBy, setEditSentBy] = useState('')
 
+  function openAdd() {
+    setEditingId(null)
+    setForm(emptyForm)
+    setModalOpen(true)
+  }
+
+  function openEdit(c: Candidate) {
+    setEditingId(c.id)
+    setForm(candidateToForm(c))
+    setModalOpen(true)
+  }
+
+  function closeModal() {
+    setModalOpen(false)
+    setEditingId(null)
+    setForm(emptyForm)
+  }
+
   const save = useMutation({
     mutationFn: async () => {
-      await upsertCandidate({
-        name: form.name,
-        email: form.email || null,
-        phone: form.phone || null,
-        source: form.source || null,
-        stage: form.stage,
-        offerId: form.offerId || null,
-        telegram: form.telegram || null,
-        sentBy: form.sentBy || null,
-        notes: form.notes || null,
-        expectedSalary: form.expectedSalary ? Number(form.expectedSalary) : null,
-      })
+      await upsertCandidate(formToPayload(form), editingId ?? undefined)
     },
     onSuccess: async () => {
-      setModalOpen(false)
-      setForm(emptyForm)
+      const savedId = editingId
+      closeModal()
       await qc.invalidateQueries({ queryKey: ['candidates'] })
       await qc.invalidateQueries({ queryKey: ['dashboard'] })
+      if (savedId) {
+        const next = (await fetchCandidates()).find((c) => c.id === savedId)
+        if (next) {
+          setSelected(next)
+          setEditTg(next.telegram ?? '')
+          setEditSentBy(next.sentBy ?? '')
+        }
+      }
     },
   })
 
   const patchField = useMutation({
-    mutationFn: async (payload: { id: string; telegram?: string; sentBy?: string; stage?: PipelineStage }) => {
+    mutationFn: async (payload: {
+      id: string
+      telegram?: string
+      sentBy?: string
+      stage?: PipelineStage
+    }) => {
       const c = candidates.find((x) => x.id === payload.id)
       if (!c) return
       await upsertCandidate(
@@ -90,6 +175,10 @@ export function CandidatesPage() {
           offerId: c.offerId,
           telegram: payload.telegram !== undefined ? payload.telegram : c.telegram,
           sentBy: payload.sentBy !== undefined ? payload.sentBy : c.sentBy,
+          country: c.country,
+          age: c.age,
+          languages: c.languages,
+          currentLocation: c.currentLocation,
           notes: c.notes,
           expectedSalary: c.expectedSalary,
         },
@@ -114,7 +203,8 @@ export function CandidatesPage() {
     return candidates.filter((c) => {
       if (stageFilter !== 'all' && c.stage !== stageFilter) return false
       if (!q.trim()) return true
-      const hay = `${c.name} ${c.telegram ?? ''} ${c.sentBy ?? ''} ${c.source ?? ''}`.toLowerCase()
+      const hay =
+        `${c.name} ${c.telegram ?? ''} ${c.sentBy ?? ''} ${c.source ?? ''} ${c.country ?? ''} ${c.languages ?? ''} ${c.currentLocation ?? ''}`.toLowerCase()
       return hay.includes(q.toLowerCase())
     })
   }, [candidates, q, stageFilter])
@@ -136,12 +226,7 @@ export function CandidatesPage() {
             </option>
           ))}
         </Select>
-        <Button
-          onClick={() => {
-            setForm(emptyForm)
-            setModalOpen(true)
-          }}
-        >
+        <Button onClick={openAdd}>
           <Plus className="h-4 w-4" /> Add candidate
         </Button>
       </div>
@@ -151,7 +236,7 @@ export function CandidatesPage() {
           title="No candidates on the desk"
           description="Add your first candidate to start the pipeline. Talent Desk keeps Telegram handles and sender attribution with every row."
           action={
-            <Button onClick={() => setModalOpen(true)}>
+            <Button onClick={openAdd}>
               <Plus className="h-4 w-4" /> Add candidate
             </Button>
           }
@@ -159,14 +244,18 @@ export function CandidatesPage() {
       ) : (
         <div className="card-surface overflow-hidden !p-0">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left text-sm">
+            <table className="w-full min-w-[860px] text-left text-sm">
               <thead className="bg-white/[0.02] text-xs uppercase tracking-wide text-ink-dim">
                 <tr>
                   <th className="px-4 py-3">Candidate</th>
+                  <th className="px-4 py-3">Location</th>
                   <th className="px-4 py-3">Stage</th>
                   <th className="px-4 py-3">Source</th>
                   <th className="px-4 py-3">Offer</th>
                   <th className="px-4 py-3">Updated</th>
+                  <th className="px-4 py-3">
+                    <span className="sr-only">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -184,7 +273,12 @@ export function CandidatesPage() {
                       <p className="font-semibold">{c.name}</p>
                       <p className="text-xs text-ink-dim">
                         {c.telegram ? ensureAtHandle(c.telegram) : 'No Telegram'}
+                        {c.age != null ? ` · ${c.age}` : ''}
+                        {c.languages ? ` · ${c.languages}` : ''}
                       </p>
+                    </td>
+                    <td className="px-4 py-3 text-ink-muted">
+                      {locationLine(c) ?? '—'}
                     </td>
                     <td className="px-4 py-3">
                       <Badge tone={stageTone(c.stage)}>{c.stage}</Badge>
@@ -201,6 +295,20 @@ export function CandidatesPage() {
                     <td className="px-4 py-3 text-ink-dim">
                       {c.updatedAt ? new Date(c.updatedAt).toLocaleDateString() : '—'}
                     </td>
+                    <td className="px-4 py-3">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="h-8 px-2"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openEdit(c)
+                        }}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                        Edit
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -209,7 +317,12 @@ export function CandidatesPage() {
         </div>
       )}
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Add candidate" wide>
+      <Modal
+        open={modalOpen}
+        onClose={closeModal}
+        title={editingId ? 'Edit candidate' : 'Add candidate'}
+        wide
+      >
         <form
           className="grid gap-3 sm:grid-cols-2"
           onSubmit={(e) => {
@@ -262,12 +375,47 @@ export function CandidatesPage() {
               onChange={(e) => setForm({ ...form, telegram: e.target.value })}
             />
           </div>
-          <div>
+          <div className="sm:col-span-2">
             <Label>Sent by (Telegram @username)</Label>
             <Input
               placeholder="@sender"
               value={form.sentBy}
               onChange={(e) => setForm({ ...form, sentBy: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label>Country</Label>
+            <Input
+              value={form.country}
+              onChange={(e) => setForm({ ...form, country: e.target.value })}
+              placeholder="e.g. Albania"
+            />
+          </div>
+          <div>
+            <Label>Age</Label>
+            <Input
+              type="number"
+              min={0}
+              inputMode="numeric"
+              value={form.age}
+              onChange={(e) => setForm({ ...form, age: e.target.value })}
+              placeholder="e.g. 27"
+            />
+          </div>
+          <div>
+            <Label>Languages</Label>
+            <Input
+              value={form.languages}
+              onChange={(e) => setForm({ ...form, languages: e.target.value })}
+              placeholder="e.g. English, Russian"
+            />
+          </div>
+          <div>
+            <Label>Current location</Label>
+            <Input
+              value={form.currentLocation}
+              onChange={(e) => setForm({ ...form, currentLocation: e.target.value })}
+              placeholder="e.g. Tbilisi, Georgia"
             />
           </div>
           <div className="sm:col-span-2">
@@ -280,11 +428,11 @@ export function CandidatesPage() {
             </p>
           ) : null}
           <div className="sm:col-span-2 flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
+            <Button type="button" variant="secondary" onClick={closeModal}>
               Cancel
             </Button>
             <Button type="submit" disabled={save.isPending}>
-              Save candidate
+              {editingId ? 'Save changes' : 'Save candidate'}
             </Button>
           </div>
         </form>
@@ -344,11 +492,25 @@ export function CandidatesPage() {
             </div>
             <div className="rounded-xl border border-border bg-canvas-raised p-3 text-sm text-ink-muted">
               <p>Source: {selected.source ?? '—'}</p>
+              <p className="mt-1">Country: {selected.country || '—'}</p>
+              <p className="mt-1">Age: {selected.age != null ? selected.age : '—'}</p>
+              <p className="mt-1">Languages: {selected.languages || '—'}</p>
+              <p className="mt-1">Current location: {selected.currentLocation || '—'}</p>
               <p className="mt-1">Notes: {selected.notes || '—'}</p>
             </div>
-            <Button variant="danger" onClick={() => remove.mutate(selected.id)}>
-              <Trash2 className="h-4 w-4" /> Delete candidate
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  openEdit(selected)
+                }}
+              >
+                <Pencil className="h-4 w-4" /> Edit candidate
+              </Button>
+              <Button variant="danger" onClick={() => remove.mutate(selected.id)}>
+                <Trash2 className="h-4 w-4" /> Delete candidate
+              </Button>
+            </div>
           </div>
         ) : null}
       </Drawer>

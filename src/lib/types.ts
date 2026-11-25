@@ -51,6 +51,10 @@ export type Candidate = {
   offerId: string | null
   telegram: string | null
   sentBy: string | null
+  country: string | null
+  age: number | null
+  languages: string | null
+  currentLocation: string | null
   notes: string | null
   expectedSalary: number | null
   createdAt: string
