@@ -173,11 +173,11 @@ components:
 
 **Creative North Star: "The Lime Glass Desk"**
 
-Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel — not a marketing site and not a Next.js app. Persistence is hosted Supabase when `VITE_SUPABASE_*` is set, otherwise device-local `localStorage`; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.
+Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel — not a marketing site and not a Next.js app. Persistence is hosted Supabase when `VITE_SUPABASE_*` is set, otherwise device-local `localStorage`; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on `sm+`) hold the desk; the working canvas is glass KPI heroes, a glowing **DeskTotalsStrip** on Candidates / Offers / Interviews, an Interview Calendar at `/calendar`, glowing Recharts, and data tables — never a photo-led landing.
 
 The room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.
 
-Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.
+Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard, a slow lime orb pulse on the totals strip. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview that lists linked candidates. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms, silences SFX, and stills the totals-strip orb. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.
 
 **Key Characteristics:**
 - Charcoal canvas (`#111111`) with a lime / violet / peach mesh and optional film grain on auth
@@ -188,7 +188,10 @@ Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radi
 - GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips
 - Glass dashboard panels (`.glass-panel`) as the working signature; neon Recharts (lime + peach)
 - Auth glass card on orbs — no rail until session; no demo-preview bypass
-- Offer cards click into a wide glass preview modal; Edit/Delete stay independent
+- Offer cards click into a wide glass preview modal with a linked-candidates list; Edit/Delete stay independent
+- Candidates / Offers / Interviews open with a lime **DeskTotalsStrip** (unfiltered shared counts, `AnimatedNumber`)
+- Interview Calendar (`/calendar`, nav `05`) is month / week / day on `.card-surface`; today is a lime disc
+- Sticky header clock: peach `.floating-label` date + JetBrains Mono live time (`sm+` only)
 - Settings Account card shows a Storage row; cloud mode adds a `.card-surface` Cloud sync card with a secondary upload button — same desk chrome, not a second look
 
 ## Colors
@@ -241,7 +244,7 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 **Body Font:** Plus Jakarta Sans
 **Label/Mono Font:** JetBrains Mono (with ui-monospace) via `--font-mono` and `.tabular`
 
-**Character:** One geometric sans does the room — extra-bold tracking-tight titles, semibold controls, medium labels. Mono is reserved for money, KPI numerals, and nav indexes (`01`–`07`). There is no serif editorial voice. Dashboard card titles are `text-xl` (`CardTitle`); subtitles are `15px` / `text-base` (`CardSubtitle`); empty panes use `CardEmpty` at `16–18px` so glass does not look empty.
+**Character:** One geometric sans does the room — extra-bold tracking-tight titles, semibold controls, medium labels. Mono is reserved for money, KPI numerals, the header clock, DeskTotalsStrip counts, and nav indexes (`01`–`07` plus Admin `08`). There is no serif editorial voice. Dashboard card titles are `text-xl` (`CardTitle`); subtitles are `15px` / `text-base` (`CardSubtitle`); empty panes use `CardEmpty` at `16–18px` so glass does not look empty.
 
 ### Hierarchy
 - **Display** (800, `text-3xl`–`text-4xl`, tracking tight, lime text-glow on auth): Login wordmark, dashboard “Pipeline command center”, live-desk paid figure.
@@ -249,8 +252,8 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 - **Title** (600, `text-xl` / `CardTitle`): Card titles, operator name, table names. Sized up so glass panes read as occupied.
 - **Subtitle** (400, `15px` / `sm:text-base` leading-snug muted / `CardSubtitle`): Supporting line under a card title.
 - **Body** (400–500, `14px`): Forms, descriptions, table cells. `CardEmpty` is `text-base` / `sm:text-lg`. Chart axis ticks are `14px` medium `#cbd5e1`, not 11px gray dust.
-- **Label** (700, `10–11px`, tracking `0.16–0.22em`, uppercase, peach via `.floating-label`): “Desk”, `APP_NAME` kicker, table thead (`0.06em` on thead).
-- **Mono** (500, tabular-nums): `formatMoney`, spark KPI values, nav index digits, `AnimatedNumber`.
+- **Label** (700, `10–11px`, tracking `0.16–0.22em`, uppercase, peach via `.floating-label`): “Desk”, `APP_NAME` kicker, header clock date, table thead (`0.06em` on thead). DeskTotalsStrip labels are the same size/tracking but **lime**, not peach — live counts, not kickers.
+- **Mono** (500, tabular-nums): `formatMoney`, spark KPI values, nav index digits, `AnimatedNumber`, header clock time (`text-sm`).
 
 ### Named Rules
 **The One-Sans Rule.** Plus Jakarta Sans is the product face. Do not introduce Inter, Geist, Syne, or a serif masthead. JetBrains Mono does not set sentences.
@@ -264,11 +267,12 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 The authenticated product is a collapsible rail-plus-canvas command floor.
 
 - **Rail:** Fixed `17rem` expanded / `4.75rem` collapsed (`talent-desk.sidebar-collapsed`). `bg-canvas-raised/95` + `backdrop-blur-xl`, 1px right seam. Width transition `400ms` `cubic-bezier(0.16, 1, 0.3, 1)`. Brand lockup, peach “Desk” kicker, indexed nav with a GSAP lime slide-pill that tracks **hover or active** (`focusKey = hoveredKey ?? activeKey`). Icons scale `1.08` focused / `1.06` active. Collapsed rail shows a fixed glass tooltip 10px right of the row. Operator chip (lime/10 wash), ghost Sign out, collapse control. Below `lg` it slides off-canvas (`-translate-x-full`) behind a `bg-black/55` scrim.
-- **Header:** Sticky, `bg-canvas/80` + blur, 12px vertical padding. Page title left; search (md+), sound toggle, lime-ring initials avatar right. Mobile hamburger is a 12px-radius bordered square.
+- **Header:** Sticky, `bg-canvas/80` + blur, 12px vertical padding. Page title left; **HeaderClock** (peach date + mono time, `hidden sm:flex`), search (md+), sound toggle, lime-ring initials avatar right. Mobile hamburger is a 12px-radius bordered square. Do not crowd the clock next to the search well.
 - **Main:** `px-4 py-6` → `sm:px-6` → `lg:px-8`. Vertical stack `space-y-5` / `gap-4`. Page content swaps through `PageTransition` (`springSoft` opacity + `y: 14` in; exit opacity + `y: -8` in 0.2s). **No CSS `filter` or scale on this wrapper**, so `position: fixed` overlays are not clipped.
 - **Auth:** Centered `max-w-md` `.glass-panel.card-glow` on `.bg-mesh` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`). Film-grain overlay. Sound toggle top-right. No rail.
 - **Dashboard:** 5-col hero (`3 + 2`) at `lg`; 4 glass KPI cards (`!p-4`); then area + attention, donut + bar + estimated list (`p-6 sm:p-7`), recent table (`!p-0`). Empty desk shows a lime/10 banner and zeros — never seeded demo income.
-- **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover lime-5%. Candidates table is `min-w-[940px]` with Market, Gender, Location, and actions (Edit / Delete). Overview recent-candidates table shows Name / Market / Gender / Stage / Source / Telegram.
+- **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover lime-5%. Candidates table is `min-w-[1040px]` with Languages, Market, Gender, Location, and **icon-only** actions (Schedule / Edit / Delete — `h-8 w-8`, aria-label + title). Overview recent-candidates table shows Name / Market / Gender / Stage / Source / Telegram.
+- **Interview Calendar:** `/calendar` (nav index `05`). Toolbar is a `.pill-toggle` (month / week / day) + secondary prev/Today/next + extrabold heading + lime **Schedule**. Month grid is `.card-surface !p-0`, Monday-start, today a lime disc with glow; event chips are 8px lime/10 wells. Week/day is a 08–20 hour grid (`min-w-[640px]`). Empty hour cells schedule at that slot.
 - **Dialogs:** Modal and Drawer **portal to `document.body`** at `z-[200]`. Overlay is `bg-black/75` (no backdrop-blur) fading 0.2s. Dialog shell is `max-h-[min(90vh,calc(100dvh-2rem))]` with a sticky title bar and a scrollable body; wide forms use `max-w-2xl`. Open uses `springSnappy` on the panel: scale `0.94` → `1`, `blur(8px)` → `0`, `y: 12` → `0`. `glass` variant applies `.glass-panel` + lime/20 seam (offer preview). Drawer is a right `max-w-md` panel at `100dvh` sliding `x: 28` with a 6px blur. Body scroll is locked while either is open. Escape and overlay click close.
 
 Spacing rhythm is 8 / 12 / 16 / 20 / 24 / 32.
@@ -350,7 +354,7 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 ### Navigation
 Rail: collapsible 17rem / 4.75rem, solid lime TD mark, “Talent Desk” 15px extrabold + 10px dim tagline. “Desk” kicker in peach. Rows are 14px radius; inactive muted; hover ink. The GSAP `.nav-pill` follows the **focused** row (hovered, else active). Active+focused text is canvas (`#111`); hover-only is ink. Lead 0.32s `power3.out`, trail 0.52s `power3.inOut`; other edges 0.38s. Rapid hover kills in-flight tweens. Icons (`.nav-item-icon`) opacity 0.72 rest → 1 focused, scale `1.08` focused / `1.06` active. Collapsed rail: labels `sr-only`; a `.nav-tooltip` glass chip (`10px` radius, 12px type, 70ms show / 180ms hide) sits `left: row.right + 10px`. Indexes are 10px mono dim (hidden when collapsed). Operator chip is a lime-tinted well. Collapse plays `thud`; nav click plays `bass`; nav hover plays `pop` (skipped on the already-active row). Mobile: hamburger + scrim.
 
-Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Avatar is a 40px lime/20 disc with lime ring.
+Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Nav indexes: Overview `01` … Settings `07`, Admin `08`. Interview Calendar is `05` (`CalendarDays`). Avatar is a 40px lime/20 disc with lime ring. HeaderClock sits between the title cluster and search.
 
 ### Signature: body-portaled dialog
 `Modal` / `Drawer` in `src/components/ui/Modal.tsx`. Portal to `document.body`. Overlay `fixed inset-0 z-[200]` with `overflow-y-auto`, `bg-black/75`, `p-4 sm:p-6`, opacity fade 0.2s (`AnimatePresence`). Dialog: `rounded-[20px]`, `bg-surface` (or `.glass-panel` + lime/20 when `glass`), `max-h-[min(90vh,calc(100dvh-2rem))]`, sticky `px-5 py-4` title bar, scrollable `px-5 py-5` body. Open/exit uses `springSnappy` (stiffness 380 / damping 28 / mass 0.7) on the panel only: scale `0.94`, `blur(8px)`, `y: 12` → rest; exit scale `0.96`, `blur(6px)`, `y: 8`. Wide candidate form and offer preview are `max-w-2xl`. Confirm-delete is `max-w-lg` and names the candidate. Drawer scrim `bg-black/60`; panel `x: 28` + `blur(6px)`. Body scroll lock compensates for scrollbar width. Reduced motion is opacity-only at 0.01s. Do not reintroduce overlay `backdrop-blur` or nest these inside `PageTransition`.
@@ -368,7 +372,19 @@ Account card adds a **Storage** definition (`sm:col-span-2`): “Hosted Supabase
 `CandidatesPage` + Overview recent table. Market and gender are optional single-selects on the wide Add/Edit form (`CANDIDATE_MARKETS` / `CANDIDATE_GENDERS`, empty = Unset). Filters: All markets / Forex / Chinese / Unset; All genders / Male / Female / Unset. Table, detail drawer, and dashboard render lime Forex / cyan Chinese and cyan Male / magenta Female pills via `marketTone` / `genderTone`. Unset stays a dim em-dash (or “Unset” in the drawer). Do not invent a third market or a non-binary option the form does not ship.
 
 ### Signature: offer glass preview
-`OffersPage` cards are `.card-surface !p-4` in a 2/3-col grid. Click / Enter / Space opens a wide `Modal glass` titled “Offer preview”: title `text-xl`, provision/salary tiles, package lime badges, description well, Edit offer / Delete. Card Edit and Delete `stopPropagation` so they do not open the preview. Hover: lime/25 border + 12% lime ring. Do not make the card itself a modal.
+`OffersPage` cards are `.card-surface !p-4` in a 2/3-col grid. Click / Enter / Space opens a wide `Modal glass` titled “Offer preview”: title `text-xl`, provision/salary tiles, package lime badges, description well, **Candidates** list (rows whose `offerId` matches — name, stage chip, market chip, Open → `/candidates?id=`), Edit offer / Delete. Empty copy: “No candidates linked to this offer.” Card Edit and Delete are icon-only (`h-8 w-8`) and `stopPropagation`. Hover: lime/25 border + 12% lime ring. Do not make the card itself a modal.
+
+### Signature: DeskTotalsStrip
+`src/components/desk/DeskTotalsStrip.tsx`. Tops Candidates, Offers, and Interviews. One `.glass-panel !p-4` with three cells (Total candidates / Total offers / Total interviews): 14px lime/15 icon well + `glow-lime`, 11px lime tracked label, `text-3xl` / `sm:text-4xl` lime `AnimatedNumber`, 12px dim “All desk rows · live shared total”. Counts are **unfiltered** shared-desk lengths (not the page’s search/filter). A slow lime orb pulses unless `prefers-reduced-motion`. Do not restyle this as Overview KPI cards or add a fourth money cell.
+
+### Signature: header clock
+`src/components/layout/HeaderClock.tsx`. Right of the page title, before search. Peach `.floating-label` date (`weekday short` + `month short` + day via `Intl`) over JetBrains Mono `text-sm` time with seconds, ticking every 1s. Browser locale + local timezone. Hidden below `sm`. Do not use a second conversion color or a pill chrome around the clock.
+
+### Signature: icon-only row actions
+Candidates table and offer cards: Schedule / Edit / Delete (and offer Edit / Delete) are `h-8 w-8 px-0` buttons with Lucide icons, `aria-label`, and `title`. Do not restore wordy “Edit” / “Delete” labels in the table. Schedule interview routes to `/calendar?candidate=` (query cleared after the modal opens).
+
+### Signature: Interview Calendar
+`InterviewCalendarPage` + `ScheduleInterviewModal`. Same lime-glass desk, not a second product look. Month cells `min-h-[7.5rem]` / `sm:min-h-[8.5rem]`; out-of-month days sit on `bg-canvas/40`. Plus affordance appears on hover. Event chip: `rounded-[8px] border-lime/25 bg-lime/10` 11px semibold, time in tabular lime/80. Deep-link `?candidate=` (optional `at`) opens the schedule modal then strips the params. Do not introduce a full-bleed calendar library chrome or a non-lime today marker.
 
 ### Signature: collapsed rail tooltip
 `.nav-tooltip` in `src/index.css`. Fixed, `z-60`, 10px radius glass chip, 12px semibold, 70ms delay in / 180ms out, `translateX(-4px) scale(0.96)` → rest. 8px diamond caret on the left. Only when the rail is collapsed. Do not use a native `title` attribute as the collapsed label.
@@ -384,7 +400,8 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Nav pill:** hover + active; kill in-flight GSAP; lead 0.32s / trail 0.52s.
 - **Dialog panel:** `springSnappy` blur-scale. Overlay fades 0.2s with no blur.
 - **Dashboard:** `staggerContainer` 0.07 / 0.08; items `fadeUp` (y 18, blur 6px) with hover lift −2px. Item-level blur is fine; page-level filter is not.
-- **Numbers:** `AnimatedNumber` tabular.
+- **Numbers:** `AnimatedNumber` tabular (KPIs, live-desk money, **DeskTotalsStrip**).
+- **Totals orb:** `scale`/`opacity` loop 4.5s `easeInOut` on the strip’s lime bloom; skipped when reduced motion.
 - **SFX:** Web Audio `thud` / `bass` / `pop` / `hover` / `tap` / `success` / `whoosh`. Key `talent-desk.sfx-muted`. Default muted. Honors `prefers-reduced-motion`.
 
 ## Do's and Don'ts
@@ -405,6 +422,11 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge.
 - **Do** keep Admin on `.card-surface` KPI tiles + a `!p-0` accounts table; role badges are owner magenta / admin lime / else violet.
 - **Do** keep cloud vs local as a Settings fact (Storage row + Cloud sync card + secondary upload). Same lime-glass chrome in both modes.
+- **Do** put **DeskTotalsStrip** at the top of Candidates, Offers, and Interviews — unfiltered shared counts, lime on glass, `AnimatedNumber`.
+- **Do** keep Interview Calendar as nav `05` (`/calendar`) with pill month/week/day, lime today disc, and lime event chips.
+- **Do** keep the header clock as peach date + mono time on `sm+`; do not hide it behind a badge.
+- **Do** keep table/card row actions icon-only (`h-8 w-8`) with aria-label + title; Schedule interview goes to `/calendar?candidate=`.
+- **Do** list linked candidates inside the offer glass preview and deep-link with `/candidates?id=` (hold the param until the drawer closes).
 
 ### Don't:
 - **Don't** restore the violet-conversion Neon Signal Desk (`#080A10` canvas, `#7C3AED` primary CTA, magenta inset nav bar, gradient TD mark).
@@ -417,3 +439,6 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Don't** put CSS `filter` or backdrop-blur on `PageTransition` or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.
 - **Don't** let GSAP pill tweens stack on rapid hover. Don't use a native `title` tooltip for collapsed nav labels.
 - **Don't** commit secrets, password hashes, or live account JSON into either design file.
+- **Don't** restyle DeskTotalsStrip as Overview KPI tiles or add earnings into that strip.
+- **Don't** drop Interview Calendar from the rail or merge it into the Interviews list.
+- **Don't** promote the offer-preview “Open” cyan link into a second in-page link color — in-page links stay lime.

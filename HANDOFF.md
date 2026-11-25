@@ -1,8 +1,8 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `4594272aa2137777815265c078e44e7bd13717f1` (PR #22 merge — hosted Supabase cloud sync + PRs #19–#21 shared desk; product = Vite SPA + optional cloud)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag + Settings storage/upload chrome) from PR #22.
+> **Documented from:** `11ac446e35a2f4f04ef3c914ae7e91897ee04980` (PR #26 merge — offer-preview candidates + PRs #23–#25 / #27–#28; product = Vite SPA + optional cloud)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag + Settings storage/upload chrome) from PR #22. Languages column + icon-only row actions from PR #23. Glowing DeskTotalsStrip from PRs #24 + #28. Interview Calendar (`/calendar`) from PR #25. HeaderClock from PR #27. Offer-preview linked candidates + `?id=` drawer hold from PR #26. Tokens unchanged.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md), [`docs/cloud-sync.md`](./docs/cloud-sync.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
 
@@ -214,7 +214,8 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 | Overlay fade 0.2s; panel `springSnappy` blur-scale | `Modal` / `Drawer` |
 | `Modal glass` | Offer preview |
 | `fadeUp` + stagger 0.07 | Dashboard, auth form |
-| `AnimatedNumber` | KPIs, gauge, live-desk money |
+| `AnimatedNumber` | KPIs, gauge, live-desk money, **DeskTotalsStrip** |
+| Totals-strip lime orb (4.5s pulse; skipped if reduced motion) | `DeskTotalsStrip` |
 | `thud` | Collapse, mobile menu |
 | `bass` | Nav click, Open candidates |
 | `pop` / `hover` / `tap` | Focus, hover (skip pop on already-active nav), buttons |
@@ -236,6 +237,7 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 - Female gender chips use **magenta**; Male and Chinese market chips share **cyan**. Magenta is still not conversion.
 - Admin role badges: owner **magenta**, admin **lime**, moderator/user **violet**. Heritage tones on seats — not conversion.
 - Admin notes card prints the preferred-admin mailbox from `PRIMARY_ADMIN_EMAIL`. Do not copy that address into either docs file.
+- Offer-preview **Open** link is `text-cyan hover:text-lime`. In-page links in `DESIGN.md` are lime — do not canonize cyan as a second link color; new work should use lime.
 
 ## Invariants for the next build
 
@@ -256,6 +258,9 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 15. **Offer cards open a glass preview.** Edit/Delete on the card must `stopPropagation`. Preview uses `Modal` `wide` + `glass`.
 16. **Candidate market and gender are optional single-selects.** Values are `forex`/`chinese` and `male`/`female` (or null). Chips: lime Forex, cyan Chinese, cyan Male, magenta Female. Unset is a dim dash. Migrate unknown/missing to null; do not wipe older rows. Do not invent extra market or gender options.
 17. **Full desk is shared on this device.** Every signed-in role lists and mutates the same candidates / offers / interviews / earnings / activities. `userId` is creator attribution only (Admin per-seat counts). Do not restore `forUser` scoping. Deleting a seat must not wipe pipeline rows. Owner stays Protected; `MANAGEABLE_ROLES` never includes `owner`.
+18. **DeskTotalsStrip is unfiltered.** Candidates / Offers / Interviews show the same three live shared counts. Do not bind them to the page search/filter. Honor `prefers-reduced-motion` on the lime orb.
+19. **Interview Calendar is its own rail item.** `/calendar` (nav `05`) is month / week / day of `scheduledAt`. Candidates Schedule → `/calendar?candidate=`; offer preview Open → `/candidates?id=` (keep `?id=` until the drawer closes so `PageTransition` remount still reopens it). Do not merge calendar into the Interviews list.
+20. **Row actions are icon-only.** Schedule / Edit / Delete on the candidates table and Edit / Delete on offer cards are `h-8 w-8` with aria-label + title. Do not restore wordy table labels.
 
 ## How this documentation stays current
 

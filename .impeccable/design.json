@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-25T16:05:00Z",
+  "generatedAt": "2026-11-25T16:57:00Z",
   "title": "Design System: Talent Desk",
   "extensions": {
     "colorMeta": {
@@ -138,46 +138,172 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Extra-bold Plus Jakarta Sans for login wordmark and dashboard heroes." },
-      "headline": { "displayName": "Headline", "purpose": "Sticky header page titles (Overview, Candidates, …)." },
-      "title": { "displayName": "Title", "purpose": "CardTitle at text-xl so glass panes read as occupied. Offer preview title is also text-xl." },
-      "body": { "displayName": "Body", "purpose": "Forms, descriptions, table cells." },
-      "subtitle": { "displayName": "Subtitle", "purpose": "CardSubtitle — text-sm supporting line under titles." },
-      "label": { "displayName": "Label", "purpose": "Uppercase 10px peach kickers: Desk, APP_NAME, table thead." },
-      "mono": { "displayName": "Mono", "purpose": "JetBrains Mono tabular money, KPI numerals, nav indexes 01–07." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Extra-bold Plus Jakarta Sans for login wordmark and dashboard heroes."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Sticky header page titles (Overview, Candidates, …)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "CardTitle at text-xl so glass panes read as occupied. Offer preview title is also text-xl."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Forms, descriptions, table cells."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "CardSubtitle — text-sm supporting line under titles."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase 10px peach kickers: Desk, APP_NAME, table thead."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "JetBrains Mono tabular money, KPI numerals, nav indexes 01–07."
+      }
     },
     "shadows": [
-      { "name": "glow-lime", "value": "0 0 28px rgb(198 244 50 / 0.35), 0 0 8px rgb(198 244 50 / 0.2)", "purpose": "Primary CTA, TD mark, active pill, confirm lime." },
-      { "name": "glow-violet", "value": "0 0 28px rgb(124 58 237 / 0.4), 0 0 8px rgb(124 58 237 / 0.25)", "purpose": "Heritage CTA variant only." },
-      { "name": "glow-cyan", "value": "0 0 28px rgb(34 211 238 / 0.35), 0 0 8px rgb(34 211 238 / 0.2)", "purpose": "Cyan CTA variant." },
-      { "name": "glow-magenta", "value": "0 0 28px rgb(236 72 153 / 0.35), 0 0 8px rgb(236 72 153 / 0.2)", "purpose": "Magenta CTA variant." },
-      { "name": "card-glow", "value": "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(198 244 50 / 0.1), 0 12px 40px rgb(0 0 0 / 0.4)", "purpose": "Auth / KPI .card-glow." },
-      { "name": "auth-bloom", "value": "0 0 80px rgb(198 244 50 / 0.12)", "purpose": "Login glass extra bloom." },
-      { "name": "hero-lime", "value": "0 0 48px rgb(198 244 50 / 0.15)", "purpose": "Dashboard command-center slab." },
-      { "name": "glass-panel", "value": "inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(198 244 50 / 0.06), 0 18px 48px rgb(0 0 0 / 0.45)", "purpose": "Dashboard working panes." },
-      { "name": "focus-global", "value": "2px solid #C6F432, offset 2px", "purpose": "Global :focus-visible." },
-      { "name": "focus-field-heritage", "value": "0 0 0 2px rgb(124 58 237 / 0.30)", "purpose": "Leftover Input/Textarea/Select focus. New fields should use lime." },
-      { "name": "badge", "value": "0 0 12px rgb(0 0 0 / 0.15)", "purpose": "Soft rest under status pills." }
+      {
+        "name": "glow-lime",
+        "value": "0 0 28px rgb(198 244 50 / 0.35), 0 0 8px rgb(198 244 50 / 0.2)",
+        "purpose": "Primary CTA, TD mark, active pill, confirm lime."
+      },
+      {
+        "name": "glow-violet",
+        "value": "0 0 28px rgb(124 58 237 / 0.4), 0 0 8px rgb(124 58 237 / 0.25)",
+        "purpose": "Heritage CTA variant only."
+      },
+      {
+        "name": "glow-cyan",
+        "value": "0 0 28px rgb(34 211 238 / 0.35), 0 0 8px rgb(34 211 238 / 0.2)",
+        "purpose": "Cyan CTA variant."
+      },
+      {
+        "name": "glow-magenta",
+        "value": "0 0 28px rgb(236 72 153 / 0.35), 0 0 8px rgb(236 72 153 / 0.2)",
+        "purpose": "Magenta CTA variant."
+      },
+      {
+        "name": "card-glow",
+        "value": "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(198 244 50 / 0.1), 0 12px 40px rgb(0 0 0 / 0.4)",
+        "purpose": "Auth / KPI .card-glow."
+      },
+      {
+        "name": "auth-bloom",
+        "value": "0 0 80px rgb(198 244 50 / 0.12)",
+        "purpose": "Login glass extra bloom."
+      },
+      {
+        "name": "hero-lime",
+        "value": "0 0 48px rgb(198 244 50 / 0.15)",
+        "purpose": "Dashboard command-center slab."
+      },
+      {
+        "name": "glass-panel",
+        "value": "inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(198 244 50 / 0.06), 0 18px 48px rgb(0 0 0 / 0.45)",
+        "purpose": "Dashboard working panes."
+      },
+      {
+        "name": "focus-global",
+        "value": "2px solid #C6F432, offset 2px",
+        "purpose": "Global :focus-visible."
+      },
+      {
+        "name": "focus-field-heritage",
+        "value": "0 0 0 2px rgb(124 58 237 / 0.30)",
+        "purpose": "Leftover Input/Textarea/Select focus. New fields should use lime."
+      },
+      {
+        "name": "badge",
+        "value": "0 0 12px rgb(0 0 0 / 0.15)",
+        "purpose": "Soft rest under status pills."
+      }
     ],
     "motion": [
-      { "name": "ease-chrome", "value": "0.2s ease", "purpose": "Button, nav, pill-toggle, and field transitions." },
-      { "name": "rail-width", "value": "400ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Sidebar expand/collapse width." },
-      { "name": "slide-pill-lead", "value": "0.32s power3.out", "purpose": "GSAP stretchy nav pill lead edge. Kill in-flight tweens before each move." },
-      { "name": "slide-pill-trail", "value": "0.52s power3.inOut", "purpose": "GSAP stretchy nav pill trail edge." },
-      { "name": "page-in", "value": "springSoft y:14", "purpose": "PageTransition opacity + y in. No CSS filter on the wrapper." },
-      { "name": "page-out", "value": "0.2s cubic-bezier(0.4, 0, 1, 1) y:-8", "purpose": "PageTransition opacity + y out. No CSS filter on the wrapper." },
-      { "name": "spring-soft", "value": "stiffness 260 / damping 26 / mass 0.85", "purpose": "Page enter, fadeUp, list items, gauge." },
-      { "name": "spring-snappy", "value": "stiffness 380 / damping 28 / mass 0.7", "purpose": "Modal/Drawer panel open: scale 0.94, blur(8px), y:12." },
-      { "name": "nav-icon", "value": "scale 1.08 focused / 1.06 active, opacity 0.72 rest", "purpose": "Rail icon micro-motion." },
-      { "name": "nav-tooltip", "value": "70ms show / 180ms hide, translateX(-4px) scale(0.96)", "purpose": "Collapsed rail glass tooltip." },
-      { "name": "stagger", "value": "0.07 children / 0.08 delay", "purpose": "Dashboard and auth form entrance." },
-      { "name": "table-hover", "value": "0.15s ease", "purpose": "Data-table row background." },
-      { "name": "reduced-motion", "value": "0.01ms", "purpose": "Global prefers-reduced-motion override; also silences SFX." }
+      {
+        "name": "ease-chrome",
+        "value": "0.2s ease",
+        "purpose": "Button, nav, pill-toggle, and field transitions."
+      },
+      {
+        "name": "rail-width",
+        "value": "400ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Sidebar expand/collapse width."
+      },
+      {
+        "name": "slide-pill-lead",
+        "value": "0.32s power3.out",
+        "purpose": "GSAP stretchy nav pill lead edge. Kill in-flight tweens before each move."
+      },
+      {
+        "name": "slide-pill-trail",
+        "value": "0.52s power3.inOut",
+        "purpose": "GSAP stretchy nav pill trail edge."
+      },
+      {
+        "name": "page-in",
+        "value": "springSoft y:14",
+        "purpose": "PageTransition opacity + y in. No CSS filter on the wrapper."
+      },
+      {
+        "name": "page-out",
+        "value": "0.2s cubic-bezier(0.4, 0, 1, 1) y:-8",
+        "purpose": "PageTransition opacity + y out. No CSS filter on the wrapper."
+      },
+      {
+        "name": "spring-soft",
+        "value": "stiffness 260 / damping 26 / mass 0.85",
+        "purpose": "Page enter, fadeUp, list items, gauge."
+      },
+      {
+        "name": "spring-snappy",
+        "value": "stiffness 380 / damping 28 / mass 0.7",
+        "purpose": "Modal/Drawer panel open: scale 0.94, blur(8px), y:12."
+      },
+      {
+        "name": "nav-icon",
+        "value": "scale 1.08 focused / 1.06 active, opacity 0.72 rest",
+        "purpose": "Rail icon micro-motion."
+      },
+      {
+        "name": "nav-tooltip",
+        "value": "70ms show / 180ms hide, translateX(-4px) scale(0.96)",
+        "purpose": "Collapsed rail glass tooltip."
+      },
+      {
+        "name": "stagger",
+        "value": "0.07 children / 0.08 delay",
+        "purpose": "Dashboard and auth form entrance."
+      },
+      {
+        "name": "table-hover",
+        "value": "0.15s ease",
+        "purpose": "Data-table row background."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "Global prefers-reduced-motion override; also silences SFX."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
     ]
   },
   "components": [
@@ -257,7 +383,7 @@
       "name": "Offer Glass Preview",
       "kind": "custom",
       "refersTo": "glass-panel",
-      "description": "Wide glass modal opened by clicking an offer card. Edit/Delete on the card stopPropagation.",
+      "description": "Wide glass modal opened by clicking an offer card. Lists linked candidates (name, stage, market, Open to /candidates?id=). Card Edit/Delete are icon-only and stopPropagation.",
       "html": "<article class=\"ds-offer-card\"><p class=\"ds-kicker\">forex</p><h3>Senior closer</h3><p>Apex Desk</p><div class=\"ds-tiles\"><div><span>Provision</span><strong>$1,600</strong></div><div><span>Salary</span><strong>$4,200</strong></div></div></article>",
       "css": ".ds-offer-card { padding: 16px; border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.08); background: linear-gradient(165deg, rgb(32 32 32 / 0.95), rgb(22 22 22 / 0.98) 55%), linear-gradient(135deg, rgb(198 244 50 / 0.04), transparent 40%); color: #F8FAFC; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; cursor: pointer; transition: border-color 0.2s ease, box-shadow 0.2s ease; } .ds-offer-card:hover { border-color: rgb(198 244 50 / 0.25); box-shadow: 0 0 0 1px rgb(198 244 50 / 0.12); } .ds-offer-card:focus-visible { outline: 2px solid #C6F432; outline-offset: 2px; } .ds-kicker { margin: 0; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748B; } .ds-offer-card h3 { margin: 4px 0 0; font-size: 16px; font-weight: 700; } .ds-offer-card p { margin: 4px 0 0; font-size: 14px; color: #94A3B8; } .ds-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; } .ds-tiles div { border-radius: 12px; background: #161616; padding: 8px 12px; } .ds-tiles span { display: block; font-size: 11px; color: #64748B; } .ds-tiles strong { font-family: \"JetBrains Mono\", ui-monospace, monospace; font-variant-numeric: tabular-nums; }"
     },
@@ -292,65 +418,89 @@
       "description": "Settings-only storage fact. Account Storage row plus a card-surface Cloud sync card with a secondary upload. Not a dashboard banner.",
       "html": "<article class=\"ds-sync\"><h3>Cloud sync</h3><p>Every signed-in teammate sees the same candidates, offers, interviews, and earnings.</p><button class=\"ds-btn-secondary\" type=\"button\">Upload this browser’s local desk to cloud</button></article>",
       "css": ".ds-sync { padding: 24px; border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.08); background: #1A1A1A; color: #F8FAFC; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; } .ds-sync h3 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.015em; } .ds-sync p { margin: 16px 0; font-size: 14px; color: #94A3B8; line-height: 1.5; } .ds-btn-secondary { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid rgb(255 255 255 / 0.08); font-size: 14px; font-weight: 600; color: #F8FAFC; background: #1F1F1F; cursor: pointer; } .ds-btn-secondary:hover { background: #262626; border-color: rgb(255 255 255 / 0.14); } .ds-btn-secondary:focus-visible { outline: 2px solid #C6F432; outline-offset: 2px; }"
+    },
+    {
+      "name": "Desk Totals Strip",
+      "kind": "custom",
+      "refersTo": "glass-panel",
+      "description": "Unfiltered shared counts of candidates, offers, and interviews. Tops Candidates / Offers / Interviews. Lime labels + AnimatedNumber on glass, not Overview KPI tiles.",
+      "html": "<div class=\"ds-totals\" aria-live=\"polite\"><div class=\"ds-tot\"><span class=\"ds-ico\">◎</span><div><p class=\"ds-lab\">Total candidates</p><p class=\"ds-num\">12</p><p class=\"ds-meta\">All desk rows · live shared total</p></div></div><div class=\"ds-tot\"><span class=\"ds-ico\">▣</span><div><p class=\"ds-lab\">Total offers</p><p class=\"ds-num\">4</p><p class=\"ds-meta\">All desk rows · live shared total</p></div></div><div class=\"ds-tot\"><span class=\"ds-ico\">◷</span><div><p class=\"ds-lab\">Total interviews</p><p class=\"ds-num\">7</p><p class=\"ds-meta\">All desk rows · live shared total</p></div></div></div>",
+      "css": ".ds-totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 16px 20px; border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.09); background: linear-gradient(160deg, rgb(255 255 255 / 0.06), rgb(20 20 20 / 0.78)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(198 244 50 / 0.06), 0 18px 48px rgb(0 0 0 / 0.45); font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; color: #F8FAFC; } .ds-tot { display: flex; align-items: center; gap: 16px; padding: 0 20px; border-right: 1px solid rgb(255 255 255 / 0.08); } .ds-tot:last-child { border-right: 0; } .ds-ico { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 14px; background: rgb(198 244 50 / 0.15); color: #C6F432; box-shadow: 0 0 28px rgb(198 244 50 / 0.35); font-size: 16px; } .ds-lab { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #C6F432; } .ds-num { margin: 2px 0 0; font-family: \"JetBrains Mono\", ui-monospace, monospace; font-size: 36px; font-weight: 800; letter-spacing: -0.025em; color: #C6F432; font-variant-numeric: tabular-nums; text-shadow: 0 0 18px rgb(198 244 50 / 0.45); } .ds-meta { margin: 2px 0 0; font-size: 12px; color: #64748B; }"
+    },
+    {
+      "name": "Header Clock",
+      "kind": "custom",
+      "refersTo": "nav-link",
+      "description": "Sticky header live clock — peach floating-label date over JetBrains Mono time, browser locale / local TZ, 1s tick. Hidden below sm.",
+      "html": "<time class=\"ds-clock\" datetime=\"2026-11-25T16:57:00Z\"><span class=\"ds-date\">Wed, Nov 25</span><span class=\"ds-time\">4:57:00 PM</span></time>",
+      "css": ".ds-clock { display: flex; flex-direction: column; align-items: flex-end; text-align: right; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; } .ds-date { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #F4B183; } .ds-time { margin-top: 2px; font-family: \"JetBrains Mono\", ui-monospace, monospace; font-size: 14px; font-weight: 500; letter-spacing: -0.01em; color: #F8FAFC; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Interview Calendar",
+      "kind": "custom",
+      "refersTo": "panel-card",
+      "description": "Month/week/day calendar of scheduledAt. Lime today disc, lime event chips, pill-toggle view. Same card-surface desk, not a second look.",
+      "html": "<section class=\"ds-cal\"><div class=\"ds-pills\"><button class=\"on\">month</button><button>week</button><button>day</button></div><article class=\"ds-day\"><span class=\"ds-today\">25</span><button class=\"ds-chip\">14:00 Ana K.</button></article></section>",
+      "css": ".ds-cal { font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; color: #F8FAFC; } .ds-pills { display: inline-flex; margin-bottom: 16px; padding: 4px; border-radius: 9999px; background: #1A1A1A; border: 1px solid rgb(255 255 255 / 0.08); } .ds-pills button { border: 0; background: transparent; color: #94A3B8; padding: 6px 12px; border-radius: 9999px; font-size: 13px; font-weight: 600; text-transform: capitalize; cursor: pointer; } .ds-pills button.on { background: #C6F432; color: #111111; box-shadow: 0 0 20px rgb(198 244 50 / 0.35); } .ds-day { min-height: 7.5rem; padding: 6px; border: 1px solid rgb(255 255 255 / 0.08); background: #1A1A1A; border-radius: 0; } .ds-today { display: inline-flex; width: 28px; height: 28px; align-items: center; justify-content: center; border-radius: 9999px; background: #C6F432; color: #111111; font-size: 12px; font-weight: 800; box-shadow: 0 0 20px rgb(198 244 50 / 0.35); } .ds-chip { display: block; width: 100%; margin-top: 6px; text-align: left; border-radius: 8px; border: 1px solid rgb(198 244 50 / 0.25); background: rgb(198 244 50 / 0.10); color: #C6F432; padding: 4px 6px; font-size: 11px; font-weight: 600; cursor: pointer; } .ds-chip:hover { border-color: rgb(198 244 50 / 0.50); background: rgb(198 244 50 / 0.20); }"
     }
   ],
   "narrative": {
     "northStar": "The Lime Glass Desk",
-    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel, not a marketing site and not a Next.js app. Persistence is hosted Supabase when VITE_SUPABASE_* is set, otherwise device-local localStorage; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header hold the desk; the working canvas is glass KPI heroes, glowing Recharts, and data tables — never a photo-led landing.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, leftover field-focus, and candidate chips (cyan Chinese/Male, magenta Female) — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only. Candidate market uses the same forex/chinese values as offers, shown as lime/cyan pills.\n\nDensity is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`), including the Settings Cloud sync card. Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
-    "keyCharacteristics": [
-      "Charcoal canvas (#111111) with a lime / violet / peach mesh and optional film grain on auth",
-      "Lime (#C6F432) as conversion; peach (#F4B183) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only",
-      "Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips",
-      "Plus Jakarta Sans for all UI; JetBrains Mono only for money and counts (.tabular)",
-      "Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)",
-      "GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips",
-      "Glass dashboard panels (.glass-panel) as the working signature; neon Recharts (lime + peach)",
-      "Auth glass card on orbs — no rail until session; no demo-preview bypass",
-      "Offer cards click into a wide glass preview modal; Edit/Delete stay independent",
-      "Candidate market chips: lime Forex / cyan Chinese; gender chips: cyan Male / magenta Female; unset is a dim dash",
-      "Admin seats console uses the same cards/table chrome; role pills are owner magenta / admin lime / else violet",
-      "Settings Account Storage row plus a .card-surface Cloud sync card (secondary upload) when hosted env is set — not a dashboard banner"
-    ],
+    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel, not a marketing site and not a Next.js app. Persistence is hosted Supabase when VITE_SUPABASE_* is set, otherwise device-local localStorage; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on sm+) hold the desk; the working canvas is glass KPI heroes, a glowing DeskTotalsStrip on Candidates / Offers / Interviews, an Interview Calendar at /calendar, glowing Recharts, and data tables — never a photo-led landing.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, leftover field-focus, and candidate chips (cyan Chinese/Male, magenta Female) — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only. Candidate market uses the same forex/chinese values as offers, shown as lime/cyan pills.\n\nDensity is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`), including the Settings Cloud sync card. Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview that lists linked candidates. A slow lime orb pulses on the totals strip unless prefers-reduced-motion. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
+    "keyCharacteristics": ["Charcoal canvas (#111111) with a lime / violet / peach mesh and optional film grain on auth", "Lime (#C6F432) as conversion; peach (#F4B183) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only", "Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips", "Plus Jakarta Sans for all UI; JetBrains Mono only for money and counts (.tabular)", "Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)", "GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips", "Glass dashboard panels (.glass-panel) as the working signature; neon Recharts (lime + peach)", "Auth glass card on orbs — no rail until session; no demo-preview bypass", "Offer cards click into a wide glass preview modal with a linked-candidates list; Edit/Delete stay independent", "Candidate market chips: lime Forex / cyan Chinese; gender chips: cyan Male / magenta Female; unset is a dim dash", "Admin seats console uses the same cards/table chrome; role pills are owner magenta / admin lime / else violet", "Settings Account Storage row plus a .card-surface Cloud sync card (secondary upload) when hosted env is set — not a dashboard banner", "Candidates / Offers / Interviews open with a lime DeskTotalsStrip (unfiltered shared counts, AnimatedNumber)", "Interview Calendar (/calendar, nav 05) is month / week / day on .card-surface; today is a lime disc", "Sticky header clock: peach .floating-label date + JetBrains Mono live time (sm+ only)"],
     "rules": [
-      { "name": "The Lime Conversion Rule", "body": "#C6F432 is the irreversible action: Enter Talent Desk, Join Talent Desk, Confirm, Open candidates, the stretchy nav pill. Peach, violet, cyan, and magenta may light charts and kickers — they do not replace the primary CTA on a working pane.", "section": "colors" },
-      { "name": "The Status-Not-Brand Rule", "body": "Emerald, amber, and rose map pipeline / earning / offer states through stageTone. Do not promote them into a four-color brand.", "section": "colors" },
-      { "name": "The Market-Chip Rule", "body": "Candidate market uses the same values as offer categories (forex | chinese). Forex is lime (marketTone); Chinese is cyan. Unset is a dim em-dash, never a muted fake badge.", "section": "colors" },
-      { "name": "The Mesh-Is-Atmosphere Rule", "body": ".bg-mesh orbs are ground lighting, not a fill token for cards. Dashboard panes stay on .glass-panel; forms stay on .card-surface.", "section": "colors" },
-      { "name": "The One-Sans Rule", "body": "Plus Jakarta Sans is the product face. Do not introduce Inter, Geist, Syne, or a serif masthead. JetBrains Mono does not set sentences.", "section": "typography" },
-      { "name": "The Tracked Kicker Rule", "body": "Eyebrows are 10px uppercase with 0.18–0.22em tracking in peach (.floating-label). Do not restore a magenta kicker or a lime square badge as the system eyebrow.", "section": "typography" },
-      { "name": "The Occupied Glass Rule", "body": "Card titles are text-xl; subtitles 15–16px; empty-state copy 16–18px; chart ticks 14px #cbd5e1. Inner padding on glass panes is p-6 / sm:p-7. Do not drop supporting copy back to 11px gray on glass.", "section": "typography" },
-      { "name": "The Glow-Is-Signal Rule", "body": "Bloom belongs on conversion, brand mark, the stretchy pill, and charts. Rest forms use .card-surface only (inset highlight, no outer bloom). Dashboard KPIs may take .card-glow on glass.", "section": "elevation" },
-      { "name": "The Glass Desk Rule", "body": "Overview panes are .glass-panel (backdrop-filter: blur(20px) saturate(1.25)). Do not flatten them back to opaque navy steel (#121622) or a single un-blurred #111 slab.", "section": "elevation" },
-      { "name": "The Overlay-On-Body Rule", "body": "Modal and Drawer always createPortal to document.body at z-[200]. Page shells must not use CSS filter or a transform containing block. Overlay fill is bg-black/75 without backdrop-blur (blur on the overlay was cutting the viewport in half). Framer filter: blur on the dialog panel during open/exit is the preview motion — keep it off the overlay and off PageTransition.", "section": "elevation" }
+      {
+        "name": "The Lime Conversion Rule",
+        "body": "#C6F432 is the irreversible action: Enter Talent Desk, Join Talent Desk, Confirm, Open candidates, the stretchy nav pill. Peach, violet, cyan, and magenta may light charts and kickers — they do not replace the primary CTA on a working pane.",
+        "section": "colors"
+      },
+      {
+        "name": "The Status-Not-Brand Rule",
+        "body": "Emerald, amber, and rose map pipeline / earning / offer states through stageTone. Do not promote them into a four-color brand.",
+        "section": "colors"
+      },
+      {
+        "name": "The Market-Chip Rule",
+        "body": "Candidate market uses the same values as offer categories (forex | chinese). Forex is lime (marketTone); Chinese is cyan. Unset is a dim em-dash, never a muted fake badge.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mesh-Is-Atmosphere Rule",
+        "body": ".bg-mesh orbs are ground lighting, not a fill token for cards. Dashboard panes stay on .glass-panel; forms stay on .card-surface.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Sans Rule",
+        "body": "Plus Jakarta Sans is the product face. Do not introduce Inter, Geist, Syne, or a serif masthead. JetBrains Mono does not set sentences.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tracked Kicker Rule",
+        "body": "Eyebrows are 10px uppercase with 0.18–0.22em tracking in peach (.floating-label). Do not restore a magenta kicker or a lime square badge as the system eyebrow.",
+        "section": "typography"
+      },
+      {
+        "name": "The Occupied Glass Rule",
+        "body": "Card titles are text-xl; subtitles 15–16px; empty-state copy 16–18px; chart ticks 14px #cbd5e1. Inner padding on glass panes is p-6 / sm:p-7. Do not drop supporting copy back to 11px gray on glass.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glow-Is-Signal Rule",
+        "body": "Bloom belongs on conversion, brand mark, the stretchy pill, and charts. Rest forms use .card-surface only (inset highlight, no outer bloom). Dashboard KPIs may take .card-glow on glass.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Glass Desk Rule",
+        "body": "Overview panes are .glass-panel (backdrop-filter: blur(20px) saturate(1.25)). Do not flatten them back to opaque navy steel (#121622) or a single un-blurred #111 slab.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Overlay-On-Body Rule",
+        "body": "Modal and Drawer always createPortal to document.body at z-[200]. Page shells must not use CSS filter or a transform containing block. Overlay fill is bg-black/75 without backdrop-blur (blur on the overlay was cutting the viewport in half). Framer filter: blur on the dialog panel during open/exit is the preview motion — keep it off the overlay and off PageTransition.",
+        "section": "elevation"
+      }
     ],
-    "dos": [
-      "Do keep canvas / canvas-raised / surface as the charcoal ground family and #C6F432 as the primary conversion color.",
-      "Do set titles in extra-bold Plus Jakarta Sans; money and indexes in JetBrains Mono (.tabular).",
-      "Do build the Overview from .glass-panel + .data-table; build Settings/forms from .card-surface.",
-      "Do map pipeline and earning states through stageTone — emerald / cyan / violet / rose / amber.",
-      "Do keep the solid lime TD mark + glow as the lockup; keep the stretchy lime nav pill.",
-      "Do honor prefers-reduced-motion (global 0.01ms, no SFX) and keep chrome transitions at 200ms unless a named motion token applies.",
-      "Do keep auth as a centered glass card with orbs; do not put the rail on /login or /register.",
-      "Do keep SFX muted by default; never auto-unmute.",
-      "Do portal Modal/Drawer to document.body. Keep glass pane padding at p-6 / sm:p-7 and CardTitle at text-xl.",
-      "Do confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers.",
-      "Do slide the lime nav pill on hover and active, kill in-flight GSAP tweens, and show a glass tooltip when the rail is collapsed.",
-      "Do open offer cards into a wide glass preview modal; keep Edit/Delete stopPropagation.",
-      "Do tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge.",
-      "Do keep Admin on .card-surface KPI tiles plus a !p-0 accounts table; role badges are owner magenta / admin lime / else violet.",
-      "Do keep cloud vs local as a Settings fact (Storage row + Cloud sync card + secondary upload). Same lime-glass chrome in both modes."
-    ],
-    "donts": [
-      "Don't restore the violet-conversion Neon Signal Desk (#080A10 canvas, #7C3AED primary CTA, magenta inset nav bar, gradient TD mark).",
-      "Don't introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on #111111.",
-      "Don't sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.",
-      "Don't treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.",
-      "Don't add a second product look for Admin or for cloud sync — both use the same cards, tables, and badges. Owner/admin/moderator role chips stay magenta/lime/violet heritage, not a new brand. Cloud is not a dashboard banner.",
-      "Don't put project refs, anon keys, or service-role values into design files.",
-      "Don't seed demo income or restore a demo-preview bypass on the login screen.",
-      "Don't put CSS filter or backdrop-blur on PageTransition or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.",
-      "Don't let GSAP pill tweens stack on rapid hover. Don't use a native title tooltip for collapsed nav labels.",
-      "Don't commit secrets, password hashes, or live account JSON into either design file."
-    ]
+    "dos": ["Do keep canvas / canvas-raised / surface as the charcoal ground family and #C6F432 as the primary conversion color.", "Do set titles in extra-bold Plus Jakarta Sans; money and indexes in JetBrains Mono (.tabular).", "Do build the Overview from .glass-panel + .data-table; build Settings/forms from .card-surface.", "Do map pipeline and earning states through stageTone — emerald / cyan / violet / rose / amber.", "Do keep the solid lime TD mark + glow as the lockup; keep the stretchy lime nav pill.", "Do honor prefers-reduced-motion (global 0.01ms, no SFX) and keep chrome transitions at 200ms unless a named motion token applies.", "Do keep auth as a centered glass card with orbs; do not put the rail on /login or /register.", "Do keep SFX muted by default; never auto-unmute.", "Do portal Modal/Drawer to document.body. Keep glass pane padding at p-6 / sm:p-7 and CardTitle at text-xl.", "Do confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers.", "Do slide the lime nav pill on hover and active, kill in-flight GSAP tweens, and show a glass tooltip when the rail is collapsed.", "Do open offer cards into a wide glass preview modal; keep Edit/Delete stopPropagation.", "Do tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge.", "Do keep Admin on .card-surface KPI tiles plus a !p-0 accounts table; role badges are owner magenta / admin lime / else violet.", "Do keep cloud vs local as a Settings fact (Storage row + Cloud sync card + secondary upload). Same lime-glass chrome in both modes.", "Do put DeskTotalsStrip at the top of Candidates, Offers, and Interviews — unfiltered shared counts, lime on glass, AnimatedNumber.", "Do keep Interview Calendar as nav 05 (/calendar) with pill month/week/day, lime today disc, and lime event chips.", "Do keep the header clock as peach date + mono time on sm+; do not hide it behind a badge.", "Do keep table/card row actions icon-only (h-8 w-8) with aria-label + title; Schedule interview goes to /calendar?candidate=.", "Do list linked candidates inside the offer glass preview and deep-link with /candidates?id= (hold the param until the drawer closes)."],
+    "donts": ["Don't restore the violet-conversion Neon Signal Desk (#080A10 canvas, #7C3AED primary CTA, magenta inset nav bar, gradient TD mark).", "Don't introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on #111111.", "Don't sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.", "Don't treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.", "Don't add a second product look for Admin or for cloud sync — both use the same cards, tables, and badges. Owner/admin/moderator role chips stay magenta/lime/violet heritage, not a new brand. Cloud is not a dashboard banner.", "Don't put project refs, anon keys, or service-role values into design files.", "Don't seed demo income or restore a demo-preview bypass on the login screen.", "Don't put CSS filter or backdrop-blur on PageTransition or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.", "Don't let GSAP pill tweens stack on rapid hover. Don't use a native title tooltip for collapsed nav labels.", "Don't commit secrets, password hashes, or live account JSON into either design file.", "Don't restyle DeskTotalsStrip as Overview KPI tiles or add earnings into that strip.", "Don't drop Interview Calendar from the rail or merge it into the Interviews list.", "Don't promote the offer-preview Open cyan link into a second in-page link color — in-page links stay lime."]
   }
 }
