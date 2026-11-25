@@ -313,10 +313,11 @@ export function CandidatesPage() {
       ) : (
         <div className="card-surface overflow-hidden !p-0">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[940px] text-left text-sm">
+            <table className="w-full min-w-[1040px] text-left text-sm">
               <thead className="bg-white/[0.02] text-xs uppercase tracking-wide text-ink-dim">
                 <tr>
                   <th className="px-4 py-3">Candidate</th>
+                  <th className="px-4 py-3">Languages</th>
                   <th className="px-4 py-3">Market</th>
                   <th className="px-4 py-3">Gender</th>
                   <th className="px-4 py-3">Location</th>
@@ -345,8 +346,10 @@ export function CandidatesPage() {
                       <p className="text-xs text-ink-dim">
                         {c.telegram ? ensureAtHandle(c.telegram) : 'No Telegram'}
                         {c.age != null ? ` · ${c.age}` : ''}
-                        {c.languages ? ` · ${c.languages}` : ''}
                       </p>
+                    </td>
+                    <td className="px-4 py-3 text-ink-muted">
+                      {c.languages?.trim() ? c.languages : '—'}
                     </td>
                     <td className="px-4 py-3">
                       {c.market ? (
@@ -386,28 +389,30 @@ export function CandidatesPage() {
                           <Button
                             type="button"
                             variant="secondary"
-                            className="h-8 px-2"
+                            size="sm"
+                            className="h-8 w-8 px-0"
+                            aria-label={`Edit ${c.name}`}
+                            title={`Edit ${c.name}`}
                             onClick={(e) => {
                               e.stopPropagation()
                               openEdit(c)
                             }}
                           >
                             <Pencil className="h-3.5 w-3.5" />
-                            Edit
                           </Button>
                           <Button
                             type="button"
                             variant="danger"
                             size="sm"
-                            className="h-8 px-2"
+                            className="h-8 w-8 px-0"
                             aria-label={`Delete ${c.name}`}
+                            title={`Delete ${c.name}`}
                             onClick={(e) => {
                               e.stopPropagation()
                               requestDelete(c)
                             }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
-                            Delete
                           </Button>
                         </div>
                       ) : null}

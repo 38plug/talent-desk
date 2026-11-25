@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, ScanLine, Trash2 } from 'lucide-react'
+import { Pencil, Plus, ScanLine, Trash2 } from 'lucide-react'
 import { createWorker } from 'tesseract.js'
 import {
   Badge,
@@ -263,23 +263,28 @@ export function OffersPage() {
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="flex-1"
+                    className="h-8 w-8 px-0"
+                    aria-label={`Edit ${o.title}`}
+                    title={`Edit ${o.title}`}
                     onClick={(e) => {
                       e.stopPropagation()
                       openEdit(o)
                     }}
                   >
-                    Edit
+                    <Pencil className="h-3.5 w-3.5" />
                   </Button>
                   <Button
                     size="sm"
                     variant="danger"
+                    className="h-8 w-8 px-0"
+                    aria-label={`Delete ${o.title}`}
+                    title={`Delete ${o.title}`}
                     onClick={(e) => {
                       e.stopPropagation()
                       remove.mutate(o.id)
                     }}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               ) : null}
