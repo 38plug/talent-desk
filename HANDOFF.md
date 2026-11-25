@@ -184,7 +184,7 @@ src/components/interviews/ScheduleInterviewModal.tsx → create/edit/delete inte
 src/components/interviews/InterviewReminderWatcher.tsx → OS Notification + in-app toast ~1 min before start
 src/lib/interview-reminders.ts         → pref / permission / due window helpers
 src/lib/datetime.ts                    → datetime-local helpers
-src/pages/EarningsPage.tsx
+src/pages/EarningsPage.tsx             → Estimated awaiting + per-row payment status select
 src/pages/TelegramPage.tsx             → personal MTProto chat; Chats vs Groups tabs; NewMessage + light poll (msgs 1s / dialogs 5s)
 src/lib/telegram-mtproto.ts            → api creds / session helpers for Telegram user client
 src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
