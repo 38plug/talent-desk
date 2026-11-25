@@ -1,7 +1,7 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `30f9fd07e5e945f3a39ce76dfb740e3d0352a6ac` (2026-11-25, docs tip on `main` after PR #17 gender chips; product = Vite SPA + localStorage)
+> **Documented from:** `71e8044ab471c305f288e122e2dee02d52e046c8` (2026-11-25, Admin role Actions + preferred-admin bootstrap; product = Vite SPA + localStorage)
 > **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
@@ -76,15 +76,16 @@ Do not reintroduce `VITE_*` backend URLs. Do not put service-role keys anywhere.
 | Route / action | Role |
 | --- | --- |
 | `loginAccount` / `signIn` | Issue session (`LoginPage`) |
-| `registerAccount` | First account or reserved owner mailbox → `owner`; else `user` if under the seat cap |
+| `registerAccount` | First account or reserved owner mailbox → `owner`; preferred admin mailbox → `admin`; else `user` if under the seat cap |
 | `changePassword` | Re-hash with a new salt after verifying the current password |
-| `AdminRoute` | `owner` / `admin` / `moderator` may view; `owner` / `admin` may manage |
+| `AdminRoute` / Admin Accounts | `owner` / `admin` / `moderator` may view; `owner` / `admin` may manage. Actions: change role (`user`/`moderator`/`admin`), password, delete. Owner row stays **Protected** (no demote/delete). |
+| Preferred admin bootstrap | One-time per browser (`talent-desk.bootstrap.prof-admin.v1`): if `PRIMARY_ADMIN_EMAIL` seat exists and is not owner → set `admin`. Missing seat → Add account / register (still assigns `admin`). No co-owner. |
 
-Password rule: **≥ 8 characters**. Passwords are PBKDF2-SHA-256 (100,000 iterations) + 16-byte salt, stored in `localStorage`. Reserved owner email lives in `OWNER_EMAIL` (`src/lib/constants.ts`) — do not document the address here; do not let register mint that mailbox as `user`.
+Password rule: **≥ 8 characters**. Passwords are PBKDF2-SHA-256 (100,000 iterations) + 16-byte salt, stored in `localStorage`. Reserved owner email lives in `OWNER_EMAIL` (`src/lib/constants.ts`) — do not document the address here; do not let register mint that mailbox as `user`. Preferred admin email is `PRIMARY_ADMIN_EMAIL` in the same file.
 
 `ProtectedRoute` waits on `AuthProvider.loading`, then `Navigate` to `/login` unless a session exists. After login/register, pages call `notifyAuthChanged()` so the provider re-reads `talent-desk.session.v1`.
 
-Max **4** non-owner seats (`MAX_ACCOUNTS`). The register path in `local-db.ts` is the cap.
+Max **4** non-owner seats (`MAX_ACCOUNTS`). The register path in `local-db.ts` is the cap. Offers / candidates / interviews are **desk-shared** (`listOffers` / `listCandidates` / `listInterviews`); earnings stay per-account.
 
 ## Data
 
@@ -95,6 +96,7 @@ Store: `src/lib/local-db.ts`. App façade: `src/lib/api.ts`. Schema notes: `docs
 | `talent-desk.accounts.v1` | Accounts (email, role, PBKDF2 hash + salt) |
 | `talent-desk.data.v1` | Candidates, offers, interviews, earnings, activities |
 | `talent-desk.session.v1` | `{ userId, email }` |
+| `talent-desk.bootstrap.prof-admin.v1` | `'1'` after preferred-admin → `admin` bootstrap |
 | `talent-desk.sidebar-collapsed` | `'1'` / `'0'` |
 | `talent-desk.sfx-muted` | `'1'` (default) / `'0'` |
 

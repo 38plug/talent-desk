@@ -2,10 +2,15 @@ export const APP_NAME = 'Talent Desk'
 export const APP_TAGLINE = 'Forex Recruiting Command Center'
 
 export const OWNER_EMAIL = 'qrrupt@gmail.com'
+/** Preferred desk admin (not co-owner). One-time localStorage bootstrap promotes this seat to `admin`. */
+export const PRIMARY_ADMIN_EMAIL = 'prof@gmail.com'
 export const MAX_ACCOUNTS = 4
 
 export const ROLES = ['owner', 'admin', 'moderator', 'user'] as const
 export type Role = (typeof ROLES)[number]
+
+/** Assignable from Admin Actions (owner stays protected / unassignable). */
+export const MANAGEABLE_ROLES: Role[] = ['admin', 'moderator', 'user']
 
 export const ADMIN_VIEW_ROLES: Role[] = ['owner', 'admin', 'moderator']
 export const ADMIN_MANAGE_ROLES: Role[] = ['owner', 'admin']

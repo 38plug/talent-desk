@@ -22,10 +22,18 @@ import {
   fetchAdminStats,
 } from '@/lib/api'
 import { useAuth } from '@/auth/AuthProvider'
-import { ADMIN_MANAGE_ROLES, MAX_ACCOUNTS, OWNER_EMAIL, ROLES, type Role } from '@/lib/constants'
+import {
+  ADMIN_MANAGE_ROLES,
+  MANAGEABLE_ROLES,
+  MAX_ACCOUNTS,
+  OWNER_EMAIL,
+  PRIMARY_ADMIN_EMAIL,
+  type Role,
+} from '@/lib/constants'
+import type { AdminStats } from '@/lib/types'
 
 export function AdminPage() {
-  const { profile } = useAuth()
+  const { profile, refreshProfile } = useAuth()
   const qc = useQueryClient()
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-stats'],
@@ -47,8 +55,31 @@ export function AdminPage() {
 
   const roleMut = useMutation({
     mutationFn: ({ id, role }: { id: string; role: Role }) => adminUpdateRole(id, role),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['admin-stats'] }),
-    onError: (e: Error) => setActionError(e.message),
+    onMutate: async ({ id, role }) => {
+      setActionError(null)
+      await qc.cancelQueries({ queryKey: ['admin-stats'] })
+      const previous = qc.getQueryData<AdminStats | null>(['admin-stats'])
+      qc.setQueryData<AdminStats | null>(['admin-stats'], (old) => {
+        if (!old) return old
+        return {
+          ...old,
+          perAccount: old.perAccount.map((a) => (a.id === id ? { ...a, role } : a)),
+        }
+      })
+      return { previous }
+    },
+    onError: (e: Error, _vars, ctx) => {
+      if (ctx?.previous !== undefined) {
+        qc.setQueryData(['admin-stats'], ctx.previous)
+      }
+      setActionError(e.message)
+    },
+    onSuccess: async (_data, vars) => {
+      if (vars.id === profile?.id) await refreshProfile()
+    },
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: ['admin-stats'] })
+    },
   })
 
   const delMut = useMutation({
@@ -143,7 +174,8 @@ export function AdminPage() {
           <div>
             <CardTitle>Accounts</CardTitle>
             <p className="mt-1 text-xs text-ink-dim">
-              Every account in this browser&apos;s local store ({data.perAccount.length} shown)
+              Every registered account in this browser&apos;s local store ({data.perAccount.length}{' '}
+              shown)
             </p>
           </div>
           {canManage ? (
@@ -182,6 +214,7 @@ export function AdminPage() {
                   const isOwner =
                     a.role === 'owner' || a.email.toLowerCase() === OWNER_EMAIL.toLowerCase()
                   const isSelf = a.id === profile?.id
+                  const canChangeRole = canManage && !isOwner
                   return (
                     <tr key={a.id} className="border-t border-border">
                       <td className="px-4 py-3">
@@ -189,53 +222,60 @@ export function AdminPage() {
                         <p className="text-xs text-ink-dim">{a.email}</p>
                       </td>
                       <td className="px-4 py-3">
-                        {canManage && !isOwner && !isSelf ? (
-                          <Select
-                            className="w-36"
-                            value={a.role}
-                            onChange={(e) =>
-                              roleMut.mutate({ id: a.id, role: e.target.value as Role })
-                            }
-                          >
-                            {ROLES.filter((r) => r !== 'owner').map((r) => (
-                              <option key={r} value={r}>
-                                {r}
-                              </option>
-                            ))}
-                          </Select>
-                        ) : (
-                          <Badge tone={isOwner ? 'magenta' : 'violet'}>{a.role}</Badge>
-                        )}
+                        <Badge tone={isOwner ? 'magenta' : a.role === 'admin' ? 'lime' : 'violet'}>
+                          {a.role}
+                        </Badge>
                       </td>
                       <td className="px-4 py-3 text-ink-muted">
                         {a.candidates}c / {a.offers}o / {a.interviews}i / {a.earnings}e
                       </td>
                       <td className="px-4 py-3">
-                        {canManage && !isOwner && !isSelf ? (
-                          <div className="flex flex-wrap gap-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => {
-                                setActionError(null)
-                                setResetLink(null)
-                                setPwdModal({ id: a.id, email: a.email })
-                              }}
+                        {isOwner ? (
+                          <span className="text-xs text-ink-dim">Protected</span>
+                        ) : canChangeRole ? (
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Select
+                              aria-label={`Change role for ${a.email}`}
+                              className="w-36"
+                              value={MANAGEABLE_ROLES.includes(a.role) ? a.role : 'user'}
+                              disabled={roleMut.isPending}
+                              onChange={(e) =>
+                                roleMut.mutate({ id: a.id, role: e.target.value as Role })
+                              }
                             >
-                              Password
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="danger"
-                              onClick={() => {
-                                if (confirm(`Delete ${a.email}?`)) delMut.mutate(a.id)
-                              }}
-                            >
-                              Delete
-                            </Button>
+                              {MANAGEABLE_ROLES.map((r) => (
+                                <option key={r} value={r}>
+                                  {r}
+                                </option>
+                              ))}
+                            </Select>
+                            {!isSelf ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="secondary"
+                                  onClick={() => {
+                                    setActionError(null)
+                                    setResetLink(null)
+                                    setPwdModal({ id: a.id, email: a.email })
+                                  }}
+                                >
+                                  Password
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="danger"
+                                  onClick={() => {
+                                    if (confirm(`Delete ${a.email}?`)) delMut.mutate(a.id)
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </>
+                            ) : null}
                           </div>
                         ) : (
-                          <span className="text-xs text-ink-dim">Protected</span>
+                          <span className="text-xs text-ink-dim">View only</span>
                         )}
                       </td>
                     </tr>
@@ -252,8 +292,16 @@ export function AdminPage() {
           <CardTitle>Admin notes</CardTitle>
         </CardHeader>
         <ul className="list-disc space-y-1 pl-5 text-sm text-ink-muted">
-          <li>Owner cannot be demoted or deleted.</li>
-          <li>Admins may manage user/moderator/admin seats (not the owner).</li>
+          <li>Owner cannot be demoted or deleted — Actions shows Protected.</li>
+          <li>
+            Owner or admin can change any other seat&apos;s role (user / moderator / admin) from
+            Actions; changes save immediately to this browser&apos;s accounts store.
+          </li>
+          <li>
+            Preferred desk admin ({PRIMARY_ADMIN_EMAIL}) is bootstrapped to <code>admin</code> once
+            when that seat exists here (still one owner only — not a co-owner). If missing, use Add
+            account or Register.
+          </li>
           <li>
             Offers and candidates are shared across all accounts on this device; every role may
             create and edit them.
@@ -350,12 +398,15 @@ export function AdminPage() {
               value={createForm.role}
               onChange={(e) => setCreateForm((f) => ({ ...f, role: e.target.value as Role }))}
             >
-              {ROLES.filter((r) => r !== 'owner').map((r) => (
+              {MANAGEABLE_ROLES.map((r) => (
                 <option key={r} value={r}>
                   {r}
                 </option>
               ))}
             </Select>
+            <p className="mt-1 text-xs text-ink-dim">
+              Creating {PRIMARY_ADMIN_EMAIL} always assigns admin (sole owner stays elsewhere).
+            </p>
           </div>
           <div className="flex flex-wrap gap-2 pt-1">
             <Button type="submit" disabled={createMut.isPending}>
