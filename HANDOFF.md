@@ -1,8 +1,8 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `77c73fa84553e98e589b102a79c06bd6125b7c33` (2026-11-25, “Merge pull request #2 from 38plug/cursor/neon-ui-polish-e833” on `main`)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens extracted from `src/index.css` `@theme`.
+> **Documented from:** `b1240d3cffae23bc5ca12ed744ff3f384cbb3ef5` (2026-11-25, “Merge pull request #3 from 38plug/cursor/vercel-deploy-e833” on `main`)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens extracted from `src/index.css` `@theme` (unchanged since `77c73fa`; this artifact is hosting only).
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from**, leave both docs untouched.
 
 ## What it is
@@ -49,9 +49,25 @@ Browser (Vite 8 + React 19 + React Router 7)
 
 - **Framework:** Vite 8, React 19, React Router 7 (`React.lazy` + Suspense), TanStack Query 5, Tailwind 4 (`@import "tailwindcss"` + `@theme` in `src/index.css` — no `tailwind.config`).
 - **Dev server:** `npm run dev` → `http://127.0.0.1:5173` (`vite.config.ts` `host: true`, port 5173).
-- **Build:** `tsc -b && vite build`. Lint: `oxlint`.
+- **Build:** `tsc -b && vite build`. Lint: `oxlint`. Output: `dist`.
+- **Host:** Vercel SPA (`vercel.json`: framework `vite`, `npm run build` → `dist`, rewrite `/(.*)` → `/index.html`). `.vercel` is gitignored (local link dir).
 - **Auth:** `@supabase/supabase-js` GoTrue. Email/password. Local Studio auto-confirms (`enable_confirmations = false` in `supabase/config.toml`).
-- **Data:** Postgres via local `npx supabase start` (API `54321`, Studio `54323`). RLS on every app table: `auth.uid() = user_id` (profiles: own row). Income is isolated per user.
+- **Data:** Postgres via local `npx supabase start` (API `54321`, Studio `54323`) **or** hosted Supabase. RLS on every app table: `auth.uid() = user_id` (profiles: own row). Income is isolated per user.
+- **Public env (build-time):** `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`. Baked in at `vite build`; change them → redeploy. Local Docker `http://127.0.0.1:54321` is not reachable from Vercel. Without these vars the public site still loads; login shows the connectivity banner and **Preview Talent Desk UI** works for browsing.
+
+## Hosting
+
+Production is a static Vite SPA on Vercel. Client-side routes (`/candidates`, `/offers`, …) need the rewrite in `vercel.json` or they 404 on refresh.
+
+| Path | Notes |
+| --- | --- |
+| GitHub import | Framework **Vite**, root `.`, build `npm run build`, output `dist` |
+| Env | `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` on **production** (and preview if you want live login there) |
+| Path A | Hosted `https://<ref>.supabase.co` + run `supabase/migrations/0001_init.sql`; optional Edge Functions `register`, `admin-stats`, `admin-account` |
+| Path B | Cloudflared tunnel to local `:54321` (not the app). Tunnel hostnames change on restart — update env + redeploy |
+| Claim | An agent may leave a temporary Vercel deploy with a claim link (~60 min). After claim: `vercel link` or dashboard import |
+
+`SUPABASE_SERVICE_ROLE_KEY` stays in Edge Function / server env only. Do not put it in Vercel `VITE_*`.
 
 ## Auth
 
@@ -140,6 +156,8 @@ supabase/migrations/0001_init.sql
 supabase/functions/register/index.ts
 supabase/functions/admin-stats/index.ts
 supabase/functions/admin-account/index.ts
+vercel.json                            → Vite SPA: dist + client rewrites
+README.md                              → local setup + Vercel deploy runbook
 ```
 
 ## Invariants for the next build
@@ -154,13 +172,14 @@ supabase/functions/admin-account/index.ts
 8. **Visual world is The Neon Signal Desk.** New UI goes through `DESIGN.md` (violet conversion, cyan focus, magenta register, Plus Jakarta / JetBrains Mono). Do not introduce a second product look.
 9. **Demo metrics are a preview.** Banner must stay while `isDemo`. Do not pretend DEMO_METRICS are live money.
 10. **Do not commit secrets.** `VITE_SUPABASE_ANON_KEY` stays in env. Service role stays in Edge Function env only. The in-repo supabase client may use a placeholder JWT string — never a real key.
+11. **Vercel is a SPA, not an SSR host.** Keep `vercel.json` rewrites to `index.html`. `VITE_*` are build-time; do not assume runtime env injection. Do not point Vercel at local Docker `127.0.0.1:54321`.
 
 ## How this documentation stays current
 
 An hourly Cursor automation (“Design and System documentation”) compares `HEAD` on `main` to the **Documented from** SHA above.
 
 - If the SHA matches and `DESIGN.md` / `HANDOFF.md` exist, it reports **No changes**.
-- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, or shell), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` and rewrites this handoff from the shipped artifact.
+- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, shell, or hosting/deploy), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` when visuals moved, and rewrites this handoff from the shipped artifact. Hosting-only commits refresh this file and leave `DESIGN.md` tokens in place.
 - Confirmed incumbent decisions stay; the build wins where they diverge.
 - Track `main`. If a rebuild branch diverges, document the branch that holds the live desk until it is merged.
 - Do not commit secrets, env values, or identity tokens into either file.
