@@ -121,6 +121,7 @@ export function OffersPage() {
       setEditId(undefined)
       setForm(blank())
       await qc.invalidateQueries({ queryKey: ['offers'] })
+      await qc.invalidateQueries({ queryKey: ['activities'] })
       await qc.invalidateQueries({ queryKey: ['dashboard'] })
       if (previewOffer && editId === previewOffer.id) {
         const next = (await fetchOffers()).find((o) => o.id === editId)

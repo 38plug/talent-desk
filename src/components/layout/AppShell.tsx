@@ -21,6 +21,7 @@ import { useReducedMotion } from 'framer-motion'
 import { useAuth } from '@/auth/AuthProvider'
 import { InterviewReminderWatcher } from '@/components/interviews/InterviewReminderWatcher'
 import { HeaderClock } from '@/components/layout/HeaderClock'
+import { HeaderNotifications } from '@/components/layout/HeaderNotifications'
 import { PageTransition } from '@/components/motion/PageTransition'
 import { SoundToggle } from '@/components/motion/SoundToggle'
 import { Button } from '@/components/ui'
@@ -357,6 +358,7 @@ export function AppShell() {
                 onFocus={() => playSfx('pop')}
               />
             </div>
+            <HeaderNotifications />
             <SoundToggle />
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime/20 text-xs font-bold text-lime ring-1 ring-lime/35">
               {initials(profile?.fullName || user?.email || 'TD')}

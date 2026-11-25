@@ -209,6 +209,7 @@ export function CandidatesPage() {
       const savedId = editingId
       closeModal()
       await qc.invalidateQueries({ queryKey: ['candidates'] })
+      await qc.invalidateQueries({ queryKey: ['activities'] })
       await qc.invalidateQueries({ queryKey: ['dashboard'] })
       if (savedId) {
         const next = (await fetchCandidates()).find((c) => c.id === savedId)

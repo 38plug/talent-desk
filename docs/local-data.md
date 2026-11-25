@@ -16,6 +16,7 @@ Fallback store when cloud sync is off (`VITE_SUPABASE_*` unset). Nothing is seed
 | `talent-desk.interview-reminded.v1` | JSON map of interview id → fired-at ms (dedupe) |
 | `talent-desk.telegram-api.v1` | Optional `{ apiId, apiHash }` for personal Telegram client |
 | `talent-desk.telegram-session.v1` | Telegram MTProto session string (sensitive) |
+| `talent-desk.notifications-seen.v1` | ISO timestamp watermark for header notification unread |
 | `talent-desk.cloud-auto-migrated.v1` | `'1'` after one-time local → cloud upload attempt |
 
 ## Candidate row shape (in `data.candidates`)
