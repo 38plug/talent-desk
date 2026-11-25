@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 
 const tones = {
+  lime: 'bg-lime/15 text-lime border-lime/30',
   violet: 'bg-violet/15 text-violet-glow border-violet/30',
   cyan: 'bg-cyan/15 text-cyan border-cyan/30',
   magenta: 'bg-magenta/15 text-magenta-glow border-magenta/30',

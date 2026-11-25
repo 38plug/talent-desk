@@ -54,13 +54,14 @@ function GaugeRing({
           strokeDasharray={c}
           initial={reduce ? { strokeDashoffset: offset } : { strokeDashoffset: c }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: reduce ? 0 : 1.15, ease: [0.22, 1, 0.36, 1] }}
-          style={{ filter: 'drop-shadow(0 0 8px rgba(34,211,238,0.65))' }}
+          transition={{ duration: reduce ? 0 : 1.15, ease: [0.16, 1, 0.3, 1] }}
+          style={{ filter: 'drop-shadow(0 0 8px rgba(198,244,50,0.65))' }}
         />
         <defs>
           <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#7C3AED" />
-            <stop offset="100%" stopColor="#22D3EE" />
+            <stop offset="0%" stopColor="#F4B183" />
+            <stop offset="55%" stopColor="#C6F432" />
+            <stop offset="100%" stopColor="#D9FF6A" />
           </linearGradient>
         </defs>
       </svg>
@@ -144,17 +145,15 @@ export function DashboardPage() {
   return (
     <MotionStagger className="space-y-5">
       {data.candidates === 0 && data.liveOffers === 0 && data.totalIncome === 0 && data.estimated === 0 ? (
-        <MotionItem className="rounded-[16px] border border-cyan/30 bg-cyan/10 px-4 py-3 text-sm text-cyan shadow-[0_0_24px_rgb(34_211_238/0.12)]">
+        <MotionItem className="rounded-[16px] border border-lime/30 bg-lime/10 px-4 py-3 text-sm text-lime shadow-[0_0_24px_rgb(198_244_50/0.12)]">
           <span className="font-semibold">{APP_NAME}</span> has no pipeline rows yet for this account.
           KPIs stay at zero until you add records or import JSON from Settings.
         </MotionItem>
       ) : null}
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <MotionItem className="hero-gradient-violet relative overflow-hidden rounded-[20px] p-6 text-white shadow-[0_0_48px_rgb(124_58_237/0.4)] lg:col-span-3">
-          <p className="text-[11px] font-semibold tracking-[0.22em] text-white/75 uppercase">
-            {APP_NAME}
-          </p>
+        <MotionItem className="hero-gradient-violet relative overflow-hidden rounded-[20px] p-6 text-white shadow-[0_0_48px_rgb(198_244_50/0.15)] lg:col-span-3">
+          <p className="floating-label text-[11px] tracking-[0.22em] uppercase">{APP_NAME}</p>
           <h2 className="mt-2 max-w-lg text-3xl font-extrabold tracking-tight sm:text-4xl">
             Pipeline command center
           </h2>
@@ -163,24 +162,24 @@ export function DashboardPage() {
           </p>
           <Link
             to="/candidates"
-            onMouseEnter={() => playSfx('hover')}
-            onClick={() => playSfx('whoosh')}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-black/30 px-4 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-black/40 hover:shadow-[0_0_24px_rgb(34_211_238/0.35)]"
+            onMouseEnter={() => playSfx('pop')}
+            onClick={() => playSfx('bass')}
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-lime px-4 py-2.5 text-sm font-semibold text-canvas glow-lime transition hover:bg-lime-glow"
           >
             Open candidates <ArrowUpRight className="h-4 w-4" />
           </Link>
           <motion.div
-            className="pointer-events-none absolute -right-8 -bottom-12 h-48 w-48 rounded-full bg-cyan/35 blur-3xl"
-            animate={reduce ? undefined : { scale: [1, 1.15, 1], opacity: [0.35, 0.55, 0.35] }}
+            className="pointer-events-none absolute -right-8 -bottom-12 h-48 w-48 rounded-full bg-lime/25 blur-3xl"
+            animate={reduce ? undefined : { scale: [1, 1.15, 1], opacity: [0.25, 0.45, 0.25] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
           />
-          <div className="pointer-events-none absolute top-6 right-10 h-20 w-20 rounded-full bg-white/15 blur-2xl" />
+          <div className="pointer-events-none absolute top-6 right-10 h-20 w-20 rounded-full bg-peach/20 blur-2xl" />
         </MotionItem>
 
         <MotionItem className="glass-panel relative overflow-hidden rounded-[20px] p-5 lg:col-span-2">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-[0.16em] text-cyan uppercase">
+              <p className="text-[11px] font-semibold tracking-[0.16em] text-lime uppercase">
                 Live desk
               </p>
               <p className="mt-1 text-sm text-ink-muted">Paid provision</p>
@@ -188,7 +187,7 @@ export function DashboardPage() {
                 <AnimatedNumber value={data.paidEarnings} money />
               </p>
             </div>
-            <Briefcase className="h-7 w-7 text-cyan/70" />
+            <Briefcase className="h-7 w-7 text-lime/70" />
           </div>
           <GaugeRing value={data.totalIncome} max={incomeCap} label="booked" />
           <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
@@ -245,7 +244,7 @@ export function DashboardPage() {
               <CardTitle>Income vs estimated</CardTitle>
               <p className="mt-0.5 text-xs text-ink-dim">Glowing neon series · last 7 days</p>
             </div>
-            <Badge tone="cyan">7 days</Badge>
+            <Badge tone="lime">7 days</Badge>
           </CardHeader>
           <NeonAreaChart data={data.incomeSeries} />
         </MotionItem>
@@ -272,8 +271,8 @@ export function DashboardPage() {
                   </div>
                   <Link
                     to={item.href}
-                    className="shrink-0 text-xs font-semibold text-cyan hover:underline"
-                    onClick={() => playSfx('tap')}
+                    className="shrink-0 text-xs font-semibold text-lime hover:underline"
+                    onClick={() => playSfx('pop')}
                   >
                     Review
                   </Link>
@@ -323,7 +322,7 @@ export function DashboardPage() {
                   </div>
                   <Button
                     size="sm"
-                    variant="cyan"
+                    variant="lime"
                     disabled={confirm.isPending}
                     onClick={() => confirm.mutate(e.id)}
                   >
@@ -344,8 +343,8 @@ export function DashboardPage() {
           </div>
           <Link
             to="/candidates"
-            className="text-sm font-semibold text-cyan hover:underline"
-            onMouseEnter={() => playSfx('hover')}
+            className="text-sm font-semibold text-lime hover:underline"
+            onMouseEnter={() => playSfx('pop')}
           >
             View all
           </Link>

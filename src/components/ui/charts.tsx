@@ -70,12 +70,12 @@ export function NeonAreaChart({
         <AreaChart data={data}>
           <defs>
             <linearGradient id="gCyan" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22D3EE" stopOpacity={0.45} />
-              <stop offset="100%" stopColor="#22D3EE" stopOpacity={0} />
+              <stop offset="0%" stopColor="#C6F432" stopOpacity={0.45} />
+              <stop offset="100%" stopColor="#C6F432" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#7C3AED" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#7C3AED" stopOpacity={0} />
+              <stop offset="0%" stopColor="#F4B183" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#F4B183" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
@@ -91,25 +91,25 @@ export function NeonAreaChart({
           <Area
             type="monotone"
             dataKey={aKey}
-            stroke="#22D3EE"
+            stroke="#C6F432"
             fill="url(#gCyan)"
             strokeWidth={3}
             isAnimationActive
             animationDuration={1100}
             animationEasing="ease-out"
-            style={{ filter: 'drop-shadow(0 0 6px rgba(34,211,238,0.65))' }}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(198,244,50,0.65))' }}
           />
           <Area
             type="monotone"
             dataKey={bKey}
-            stroke="#A78BFA"
+            stroke="#F4B183"
             fill="url(#gViolet)"
             strokeWidth={2.5}
             strokeDasharray="5 5"
             isAnimationActive
             animationDuration={1300}
             animationEasing="ease-out"
-            style={{ filter: 'drop-shadow(0 0 6px rgba(124,58,237,0.55))' }}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(244,177,131,0.55))' }}
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -130,8 +130,8 @@ export function NeonBarChart({
         <BarChart data={data}>
           <defs>
             <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22D3EE" />
-              <stop offset="100%" stopColor="#7C3AED" />
+              <stop offset="0%" stopColor="#C6F432" />
+              <stop offset="100%" stopColor="#F4B183" />
             </linearGradient>
           </defs>
           <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
@@ -158,7 +158,7 @@ export function NeonBarChart({
   )
 }
 
-const DONUT_COLORS = ['#22D3EE', '#7C3AED', '#EC4899', '#10B981', '#F59E0B', '#F43F5E']
+const DONUT_COLORS = ['#C6F432', '#F4B183', '#7C3AED', '#10B981', '#F59E0B', '#F43F5E']
 
 export function NeonDonut({
   data,
