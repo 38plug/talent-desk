@@ -31,7 +31,7 @@ Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome o
 | Login | No session | `src/pages/LoginPage.tsx` + `AuthShell` |
 | Register | No session | `src/pages/RegisterPage.tsx` + `AuthShell` |
 | Boot | Session pending | `ProtectedRoute` + `PageLoader` |
-| Desk shell | Session required | `AppShell` (hover pill, collapsed glass tooltip) |
+| Desk shell | Session required | `AppShell` (hover pill, collapsed glass tooltip, header notification bell) |
 | Overview … Settings | Same | lazy pages under `AppShell` + `PageTransition` (`springSoft` opacity/y; no CSS filter on wrapper) |
 | Overlays | Any desk page | `Modal` / `Drawer` portal to `document.body` (`z-[200]`, `springSnappy` on the panel). Offer preview uses `glass`. |
 | Admin | `canViewAdmin(role)` | `AdminRoute` + `AdminPage` |
@@ -114,6 +114,7 @@ App façade: `src/lib/api.ts`. Cloud store: `src/lib/cloud-db.ts` + `supabase/mi
 | `talent-desk.interview-reminded.v1` | JSON `{ [interviewId]: firedAtMs }` dedupe |
 | `talent-desk.telegram-api.v1` | Optional `{ apiId, apiHash }` when env unset |
 | `talent-desk.telegram-session.v1` | MTProto StringSession for personal Telegram |
+| `talent-desk.notifications-seen.v1` | ISO watermark for header “Added candidate/offer” unread |
 
 Cloud tables (hosted Postgres, shared RLS): `profiles`, `offers`, `candidates`, `interviews`, `earnings`, `activities`. Realtime: `CloudRealtimeSync` invalidates TanStack Query on `postgres_changes`; `refetchOnWindowFocus` is on when cloud is enabled.
 
@@ -183,7 +184,9 @@ src/pages/TelegramPage.tsx             → personal MTProto chat (teleproto); di
 src/lib/telegram-mtproto.ts            → api creds / session helpers for Telegram user client
 src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
-src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock) + InterviewReminderWatcher
+src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock, notification bell) + InterviewReminderWatcher
+src/components/layout/HeaderNotifications.tsx → bell badge for Added candidate/offer activity
+src/lib/desk-notifications.ts          → seen watermark + add-activity filter
 src/components/layout/HeaderClock.tsx  → header date+time (browser locale / local TZ, 1s tick)
 src/lib/datetime.ts                    → datetime-local helpers + header Intl formatters
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle
