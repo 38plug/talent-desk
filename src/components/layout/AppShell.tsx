@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageCircle,
   Search,
   Settings,
   Shield,
@@ -36,6 +37,7 @@ const ICONS = {
   Calendar,
   CalendarDays,
   Wallet,
+  MessageCircle,
   Settings,
   Shield,
 } as const

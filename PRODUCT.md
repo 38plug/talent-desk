@@ -32,6 +32,7 @@ Provision/commission lives on the **offer** (fixed fee or percent of expected sa
 | Offers | Card grid with glass preview modal; OCR scan (tesseract.js); MyMemory translate; provision + Telegram |
 | Interviews | Schedule against candidate / optional offer |
 | Earnings | Estimated → Pending → Paid / Overdue; CSV export |
+| Telegram | Personal MTProto chat in-desk (optional; user api_id/hash; not a bot) |
 | Settings | Profile, password, JSON desk import/export, cloud upload |
 | Admin | Role-gated seats console |
 

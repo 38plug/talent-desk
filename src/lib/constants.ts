@@ -64,12 +64,13 @@ export const NAV_ITEMS = [
   { to: '/interviews', label: 'Interviews', icon: 'Calendar', index: '04' },
   { to: '/calendar', label: 'Interview Calendar', icon: 'CalendarDays', index: '05' },
   { to: '/earnings', label: 'Earnings', icon: 'Wallet', index: '06' },
-  { to: '/settings', label: 'Settings', icon: 'Settings', index: '07' },
+  { to: '/telegram', label: 'Telegram', icon: 'MessageCircle', index: '07' },
+  { to: '/settings', label: 'Settings', icon: 'Settings', index: '08' },
 ] as const
 
 export const ADMIN_NAV = {
   to: '/admin',
   label: 'Admin',
   icon: 'Shield',
-  index: '08',
+  index: '09',
 } as const
