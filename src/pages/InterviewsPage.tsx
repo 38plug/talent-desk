@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Bell, CalendarDays, Plus, Trash2 } from 'lucide-react'
+import { Bell, CalendarDays, Check, Plus, Trash2, X } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -12,20 +12,32 @@ import {
   PageLoader,
   Select,
   Textarea,
+  stageTone,
 } from '@/components/ui'
 import { DeskTotalsStrip } from '@/components/desk/DeskTotalsStrip'
 import {
   deleteInterview,
   fetchCandidates,
+  fetchEarnings,
   fetchInterviews,
   fetchOffers,
+  upsertCandidate,
+  upsertEarning,
   upsertInterview,
 } from '@/lib/api'
+import { estimateOfferCommission } from '@/lib/commission'
+import {
+  INTERVIEW_OUTCOME_CONFIRMED,
+  INTERVIEW_OUTCOME_DECLINED,
+  isInterviewDecided,
+} from '@/lib/constants'
 import {
   areInterviewRemindersEnabled,
   getNotificationPermission,
   requestNotificationPermission,
 } from '@/lib/interview-reminders'
+import { formatMoney } from '@/lib/utils'
+import type { Interview } from '@/lib/types'
 
 export function InterviewsPage() {
   const qc = useQueryClient()
@@ -35,9 +47,11 @@ export function InterviewsPage() {
   })
   const { data: candidates = [] } = useQuery({ queryKey: ['candidates'], queryFn: fetchCandidates })
   const { data: offers = [] } = useQuery({ queryKey: ['offers'], queryFn: fetchOffers })
+  const { data: earnings = [] } = useQuery({ queryKey: ['earnings'], queryFn: fetchEarnings })
 
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming')
   const [open, setOpen] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
   const [form, setForm] = useState({
     candidateId: '',
     offerId: '',
@@ -69,6 +83,122 @@ export function InterviewsPage() {
   const remove = useMutation({
     mutationFn: deleteInterview,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['interviews'] }),
+  })
+
+  const decide = useMutation({
+    mutationFn: async (payload: { interview: Interview; decision: 'confirmed' | 'declined' }) => {
+      const { interview, decision } = payload
+      const cand = candidates.find((c) => c.id === interview.candidateId)
+      if (!cand) throw new Error('Candidate not found')
+
+      const offerId = interview.offerId ?? cand.offerId
+      const offer = offerId ? offers.find((o) => o.id === offerId) : undefined
+
+      if (decision === 'confirmed') {
+        const amount = estimateOfferCommission(offer, cand)
+        if (amount == null) {
+          throw new Error(
+            'Cannot auto-calc commission — link an offer with provision (or candidate expected salary for %).',
+          )
+        }
+
+        await upsertInterview(
+          {
+            candidateId: interview.candidateId,
+            offerId: offerId ?? null,
+            scheduledAt: interview.scheduledAt,
+            outcome: INTERVIEW_OUTCOME_CONFIRMED,
+            notes: interview.notes ?? undefined,
+          },
+          interview.id,
+        )
+
+        const already = earnings.some(
+          (e) =>
+            e.candidateId === cand.id &&
+            (offerId ? e.offerId === offerId : true) &&
+            e.notes?.includes(`interview:${interview.id}`),
+        )
+        if (!already) {
+          await upsertEarning({
+            candidateId: cand.id,
+            offerId: offerId ?? null,
+            amount,
+            status: 'Estimated',
+            notes: `Interview confirm · interview:${interview.id}`,
+          })
+        }
+
+        await upsertCandidate(
+          {
+            name: cand.name,
+            email: cand.email,
+            phone: cand.phone,
+            source: cand.source,
+            stage: 'Accepted',
+            market: cand.market,
+            gender: cand.gender,
+            offerId: offerId ?? cand.offerId,
+            telegram: cand.telegram,
+            sentBy: cand.sentBy,
+            country: cand.country,
+            age: cand.age,
+            languages: cand.languages,
+            currentLocation: cand.currentLocation,
+            notes: cand.notes,
+            expectedSalary: cand.expectedSalary,
+          },
+          cand.id,
+        )
+        return { amount }
+      }
+
+      await upsertInterview(
+        {
+          candidateId: interview.candidateId,
+          offerId: offerId ?? null,
+          scheduledAt: interview.scheduledAt,
+          outcome: INTERVIEW_OUTCOME_DECLINED,
+          notes: interview.notes ?? undefined,
+        },
+        interview.id,
+      )
+
+      await upsertCandidate(
+        {
+          name: cand.name,
+          email: cand.email,
+          phone: cand.phone,
+          source: cand.source,
+          stage: 'Rejected',
+          market: cand.market,
+          gender: cand.gender,
+          offerId: cand.offerId,
+          telegram: cand.telegram,
+          sentBy: cand.sentBy,
+          country: cand.country,
+          age: cand.age,
+          languages: cand.languages,
+          currentLocation: cand.currentLocation,
+          notes: cand.notes,
+          expectedSalary: cand.expectedSalary,
+        },
+        cand.id,
+      )
+      return { amount: null as number | null }
+    },
+    onSuccess: async () => {
+      setActionError(null)
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['interviews'] }),
+        qc.invalidateQueries({ queryKey: ['earnings'] }),
+        qc.invalidateQueries({ queryKey: ['candidates'] }),
+        qc.invalidateQueries({ queryKey: ['dashboard'] }),
+      ])
+    },
+    onError: (err) => {
+      setActionError(err instanceof Error ? err.message : 'Action failed')
+    },
   })
 
   const filtered = useMemo(() => {
@@ -110,7 +240,7 @@ export function InterviewsPage() {
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="pill-toggle inline-flex">
-          {(['upcoming', 'past'] as const).map((t) => (
+          {(['upcoming' as const, 'past' as const]).map((t) => (
             <button
               key={t}
               type="button"
@@ -133,10 +263,16 @@ export function InterviewsPage() {
         </Button>
       </div>
 
+      {actionError ? <p className="text-sm text-rose">{actionError}</p> : null}
+
       {filtered.length === 0 ? (
         <EmptyState
           title={tab === 'upcoming' ? 'No upcoming interviews' : 'No past interviews'}
-          description="Schedule calls against candidates and offers. Outcomes stay on the record."
+          description={
+            tab === 'past'
+              ? 'After a slot passes, confirm hire (Estimated awaiting) or mark declined by the company.'
+              : 'Schedule calls against candidates and offers. Outcomes stay on the record.'
+          }
           action={
             <Button onClick={() => setOpen(true)}>
               <Plus className="h-4 w-4" /> Schedule interview
@@ -147,17 +283,51 @@ export function InterviewsPage() {
         <ul className="space-y-3">
           {filtered.map((i) => {
             const cand = candidates.find((c) => c.id === i.candidateId)
-            const offer = offers.find((o) => o.id === i.offerId)
+            const offer = offers.find((o) => o.id === (i.offerId ?? cand?.offerId))
+            const preview = estimateOfferCommission(offer, cand)
+            const decided = isInterviewDecided(i.outcome)
+            const showDecide = tab === 'past' && !decided
+
             return (
-              <li key={i.id} className="card-surface flex flex-wrap items-center gap-4 !p-4">
+              <li key={i.id} className="card-surface flex flex-wrap items-center gap-3 !p-4">
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold">{cand?.name ?? 'Candidate'}</p>
                   <p className="text-sm text-ink-muted">{offer?.title ?? 'No offer linked'}</p>
                   <p className="mt-1 text-xs text-ink-dim">
                     {new Date(i.scheduledAt).toLocaleString()}
+                    {tab === 'past' && preview != null ? (
+                      <>
+                        {' '}
+                        · Est. commission {formatMoney(preview)}
+                      </>
+                    ) : null}
                   </p>
                 </div>
-                {i.outcome ? <Badge tone="cyan">{i.outcome}</Badge> : <Badge>Scheduled</Badge>}
+                {i.outcome ? (
+                  <Badge tone={stageTone(i.outcome)}>{i.outcome}</Badge>
+                ) : (
+                  <Badge>Scheduled</Badge>
+                )}
+                {showDecide ? (
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="lime"
+                      disabled={decide.isPending}
+                      onClick={() => decide.mutate({ interview: i, decision: 'confirmed' })}
+                    >
+                      <Check className="h-3.5 w-3.5" /> Confirmed
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      disabled={decide.isPending}
+                      onClick={() => decide.mutate({ interview: i, decision: 'declined' })}
+                    >
+                      <X className="h-3.5 w-3.5" /> Declined
+                    </Button>
+                  </div>
+                ) : null}
                 <Button
                   size="sm"
                   variant="danger"

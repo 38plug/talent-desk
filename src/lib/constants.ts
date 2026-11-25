@@ -31,6 +31,21 @@ export type PipelineStage = (typeof PIPELINE_STAGES)[number]
 export const EARNING_STATUSES = ['Estimated', 'Pending', 'Paid', 'Overdue'] as const
 export type EarningStatus = (typeof EARNING_STATUSES)[number]
 
+/** Past-interview decisions on `/interviews`. */
+export const INTERVIEW_OUTCOME_CONFIRMED = 'Confirmed'
+export const INTERVIEW_OUTCOME_DECLINED = 'Declined by company'
+export const INTERVIEW_DECISION_OUTCOMES = [
+  INTERVIEW_OUTCOME_CONFIRMED,
+  INTERVIEW_OUTCOME_DECLINED,
+] as const
+export type InterviewDecisionOutcome = (typeof INTERVIEW_DECISION_OUTCOMES)[number]
+
+export function isInterviewDecided(outcome: string | null | undefined): boolean {
+  return (
+    outcome === INTERVIEW_OUTCOME_CONFIRMED || outcome === INTERVIEW_OUTCOME_DECLINED
+  )
+}
+
 export const OFFER_CATEGORIES = ['forex', 'chinese'] as const
 export type OfferCategory = (typeof OFFER_CATEGORIES)[number]
 
