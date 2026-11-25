@@ -297,6 +297,70 @@
     font-weight: 700;
     letter-spacing: 0.02em;
   }
+
+  /* Liquid-glass TD mark — depth + lime bloom; shine sweeps on hover */
+  .brand-logo {
+    border-radius: 14px;
+    filter:
+      drop-shadow(0 10px 18px rgb(0 0 0 / 0.55))
+      drop-shadow(0 0 16px rgb(198 244 50 / 0.45))
+      drop-shadow(0 0 4px rgb(198 244 50 / 0.35));
+    transition: filter 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, filter;
+  }
+  .brand-logo:hover,
+  .brand-logo:focus-within {
+    filter:
+      drop-shadow(0 14px 22px rgb(0 0 0 / 0.6))
+      drop-shadow(0 0 26px rgb(198 244 50 / 0.7))
+      drop-shadow(0 0 8px rgb(217 255 106 / 0.55));
+  }
+  .brand-logo-img {
+    display: block;
+    border-radius: 14px;
+  }
+  .brand-logo-shine {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .brand-logo-shine::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    left: -60%;
+    width: 55%;
+    height: 180%;
+    background: linear-gradient(
+      115deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.12) 45%,
+      rgb(217 255 106 / 0.28) 50%,
+      rgb(255 255 255 / 0.1) 55%,
+      transparent 100%
+    );
+    transform: translateX(0) rotate(12deg);
+  }
+  .brand-logo:hover .brand-logo-shine,
+  .brand-logo:focus-within .brand-logo-shine {
+    opacity: 1;
+  }
+  .brand-logo:hover .brand-logo-shine::after,
+  .brand-logo:focus-within .brand-logo-shine::after {
+    animation: brand-logo-sheen 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes brand-logo-sheen {
+    from {
+      transform: translateX(0) rotate(12deg);
+    }
+    to {
+      transform: translateX(280%) rotate(12deg);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -306,5 +370,12 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  .brand-logo {
+    transition: none;
+  }
+  .brand-logo:hover .brand-logo-shine::after,
+  .brand-logo:focus-within .brand-logo-shine::after {
+    animation: none !important;
   }
 }

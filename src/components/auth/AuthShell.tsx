@@ -1,8 +1,9 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 import { SoundToggle } from '@/components/motion/SoundToggle'
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants'
-import { fadeScale, fadeUp, springSoft, staggerContainer } from '@/lib/motion'
+import { fadeScale, fadeUp, staggerContainer } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 export function AuthShell({
@@ -49,14 +50,9 @@ export function AuthShell({
         animate="show"
       >
         <motion.div className="mb-8 text-center" variants={reduce ? undefined : fadeUp}>
-          <motion.div
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[18px] bg-lime text-xl font-black text-canvas glow-lime"
-            variants={reduce ? undefined : fadeScale}
-            whileHover={reduce ? undefined : { scale: 1.06, rotate: -2 }}
-            transition={springSoft}
-          >
-            TD
-          </motion.div>
+          <div className="mx-auto mb-4 flex justify-center">
+            <BrandLogo size="md" pulse />
+          </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-ink text-glow-lime">{APP_NAME}</h1>
           <p className="floating-label mt-2 text-sm">{APP_TAGLINE}</p>
         </motion.div>

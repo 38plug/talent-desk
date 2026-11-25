@@ -20,6 +20,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { useAuth } from '@/auth/AuthProvider'
 import { InterviewReminderWatcher } from '@/components/interviews/InterviewReminderWatcher'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 import { HeaderClock } from '@/components/layout/HeaderClock'
 import { HeaderNotifications } from '@/components/layout/HeaderNotifications'
 import { PageTransition } from '@/components/motion/PageTransition'
@@ -156,9 +157,7 @@ export function AppShell() {
             collapsed ? 'justify-center px-2' : 'px-5',
           )}
         >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-lime text-sm font-black text-canvas glow-lime">
-            TD
-          </div>
+          <BrandLogo size="sm" decorative />
           <div
             className={cn(
               'min-w-0 overflow-hidden transition-all duration-300',
