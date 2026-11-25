@@ -78,15 +78,31 @@ export function persistClientSession(client: TelegramClient) {
   if (typeof saved === 'string') writeSessionString(saved)
 }
 
+/** Private DM vs group/channel/supergroup. */
+export type TgDialogKind = 'chat' | 'group'
+
 export type TgDialogRow = {
   id: string
   title: string
   username: string | null
   unread: number
+  kind: TgDialogKind
   /** Entity for getMessages / sendMessage */
   entity: unknown
   lastMessage: string | null
   date: number | null
+}
+
+/** Cap badge noise from high-traffic groups (e.g. 47k unread). */
+export function formatUnread(n: number): string {
+  if (n <= 0) return ''
+  if (n > 999) return '999+'
+  return String(n)
+}
+
+/** Smaller history for groups/channels so opens don't stall. */
+export function messageLimitForKind(kind: TgDialogKind): number {
+  return kind === 'chat' ? 40 : 20
 }
 
 export type TgMessageRow = {
