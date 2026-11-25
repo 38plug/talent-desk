@@ -190,7 +190,7 @@ src/pages/TelegramPage.tsx             → personal MTProto chat; Chats vs Group
 src/lib/telegram-mtproto.ts            → api creds / session helpers for Telegram user client
 src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
-src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock, notification bell) + InterviewReminderWatcher
+src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock, notification bell, mobile-safe gutters / `env(safe-area-inset-*)`) + InterviewReminderWatcher
 src/components/layout/HeaderNotifications.tsx → bell badge for Added candidate/offer activity (1s poll + cloud realtime)
 src/lib/desk-notifications.ts          → seen watermark + add-activity filter
 src/components/layout/HeaderClock.tsx  → header date+time (browser locale / local TZ, 1s tick)

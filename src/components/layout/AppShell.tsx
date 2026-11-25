@@ -142,10 +142,10 @@ export function AppShell() {
   }
 
   return (
-    <div className="bg-mesh flex min-h-screen">
+    <div className="bg-mesh flex min-h-dvh overflow-x-hidden">
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-canvas-raised/95 backdrop-blur-xl transition-[width,transform] duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:static lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-canvas-raised/95 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] backdrop-blur-xl transition-[width,transform] duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:static lg:translate-x-0',
           collapsed ? 'w-[4.75rem]' : 'w-[17rem]',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         )}
@@ -331,10 +331,10 @@ export function AppShell() {
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-canvas/80 px-4 py-3 backdrop-blur-xl sm:px-6">
+        <header className="header-pad sticky top-0 z-20 flex items-center gap-2 border-b border-border bg-canvas/80 backdrop-blur-xl sm:gap-3">
           <button
             type="button"
-            className="rounded-[12px] border border-border p-2 text-ink-muted hover:bg-white/5 lg:hidden"
+            className="shrink-0 rounded-[12px] border border-border p-2 text-ink-muted hover:bg-white/5 lg:hidden"
             onClick={() => {
               playSfx('thud')
               setMobileOpen(true)
@@ -343,11 +343,15 @@ export function AppShell() {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div>
-            <p className="floating-label text-[10px] tracking-[0.2em] uppercase">{APP_NAME}</p>
-            <h1 className="text-lg font-extrabold tracking-tight text-ink sm:text-xl">{pageTitle}</h1>
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <p className="floating-label truncate text-[10px] tracking-[0.2em] uppercase">
+              {APP_NAME}
+            </p>
+            <h1 className="truncate text-base font-extrabold tracking-tight text-ink sm:text-xl">
+              {pageTitle}
+            </h1>
           </div>
-          <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-3">
             <HeaderClock className="mr-1 shrink-0" />
             <div className="relative hidden md:block">
               <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-ink-dim" />
@@ -360,12 +364,12 @@ export function AppShell() {
             </div>
             <HeaderNotifications />
             <SoundToggle />
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime/20 text-xs font-bold text-lime ring-1 ring-lime/35">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-lime/20 text-[11px] font-bold text-lime ring-1 ring-lime/35 sm:h-10 sm:w-10 sm:text-xs">
               {initials(profile?.fullName || user?.email || 'TD')}
             </div>
           </div>
         </header>
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <main className="page-pad flex-1 overflow-x-hidden">
           <PageTransition />
         </main>
       </div>

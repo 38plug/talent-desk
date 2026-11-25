@@ -58,16 +58,17 @@
 
   body {
     margin: 0;
-    min-height: 100vh;
+    min-height: 100dvh;
     font-family: var(--font-sans);
     background: var(--color-canvas);
     color: var(--color-ink);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 
   #root {
-    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   ::selection {
@@ -296,6 +297,41 @@
     color: var(--color-peach);
     font-weight: 700;
     letter-spacing: 0.02em;
+  }
+
+  /* Shell gutters — single class owns all padding so Tailwind py/px cannot clobber safe-area */
+  .page-pad {
+    padding-top: 1.25rem;
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+    padding-bottom: max(3rem, calc(2rem + env(safe-area-inset-bottom, 0px)));
+  }
+  @media (min-width: 640px) {
+    .page-pad {
+      padding-top: 1.5rem;
+      padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+      padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+      padding-bottom: max(2.5rem, calc(1.5rem + env(safe-area-inset-bottom, 0px)));
+    }
+  }
+  @media (min-width: 1024px) {
+    .page-pad {
+      padding-left: max(2rem, env(safe-area-inset-left, 0px));
+      padding-right: max(2rem, env(safe-area-inset-right, 0px));
+    }
+  }
+  .header-pad {
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+    padding-bottom: 0.625rem;
+    padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
+  }
+  @media (min-width: 640px) {
+    .header-pad {
+      padding-bottom: 0.75rem;
+      padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+      padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+    }
   }
 }
 

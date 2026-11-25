@@ -92,7 +92,7 @@ export function HeaderNotifications() {
     <div className="relative" ref={rootRef}>
       <button
         type="button"
-        className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface/80 text-ink-muted transition hover:border-lime/35 hover:text-lime"
+        className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface/80 text-ink-muted transition hover:border-lime/35 hover:text-lime sm:h-10 sm:w-10"
         aria-label={unread ? `${unread} new notifications` : 'Notifications'}
         aria-expanded={open}
         aria-haspopup="dialog"
