@@ -122,8 +122,35 @@ function randomSalt(): string {
   return [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
+function isRole(value: unknown): value is Role {
+  return value === 'owner' || value === 'admin' || value === 'moderator' || value === 'user'
+}
+
+/** Coerce whatever is in localStorage into a full accounts array (never owner-only). */
 export function loadAccounts(): StoredAccount[] {
-  return readJson<StoredAccount[]>(KEYS.accounts, [])
+  const raw = readJson<unknown>(KEYS.accounts, [])
+  const list = Array.isArray(raw)
+    ? raw
+    : raw && typeof raw === 'object'
+      ? Object.values(raw as Record<string, unknown>)
+      : []
+
+  const accounts: StoredAccount[] = []
+  for (const item of list) {
+    if (!item || typeof item !== 'object') continue
+    const a = item as Partial<StoredAccount>
+    if (!a.id || !a.email || !a.passwordHash || !a.salt) continue
+    accounts.push({
+      id: String(a.id),
+      email: String(a.email).trim().toLowerCase(),
+      fullName: a.fullName ?? null,
+      role: isRole(a.role) ? a.role : 'user',
+      passwordHash: String(a.passwordHash),
+      salt: String(a.salt),
+      createdAt: String(a.createdAt ?? new Date().toISOString()),
+    })
+  }
+  return accounts
 }
 
 function saveAccounts(accounts: StoredAccount[]) {
@@ -311,20 +338,21 @@ function forUser<T extends { userId: string }>(rows: T[], userId: string): T[] {
   return rows.filter((r) => r.userId === userId)
 }
 
-export function listOffers(userId: string): Offer[] {
-  return forUser(loadData().offers, userId).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+/**
+ * Offers / candidates / interviews are desk-shared on this device:
+ * every signed-in role (user → owner) can see and mutate the same pipeline.
+ * Earnings + activity stay private per account (income privacy).
+ */
+export function listOffers(_userId?: string): Offer[] {
+  return [...loadData().offers].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
-export function listCandidates(userId: string): Candidate[] {
-  return forUser(loadData().candidates, userId).sort((a, b) =>
-    b.updatedAt.localeCompare(a.updatedAt),
-  )
+export function listCandidates(_userId?: string): Candidate[] {
+  return [...loadData().candidates].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
-export function listInterviews(userId: string): Interview[] {
-  return forUser(loadData().interviews, userId).sort((a, b) =>
-    a.scheduledAt.localeCompare(b.scheduledAt),
-  )
+export function listInterviews(_userId?: string): Interview[] {
+  return [...loadData().interviews].sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))
 }
 
 export function listEarnings(userId: string): Earning[] {
@@ -363,11 +391,13 @@ export function upsertCandidateRow(
   const data = loadData()
   const now = new Date().toISOString()
   if (existingId) {
-    const idx = data.candidates.findIndex((c) => c.id === existingId && c.userId === userId)
+    const idx = data.candidates.findIndex((c) => c.id === existingId)
     if (idx < 0) throw new Error('Candidate not found')
     const prev = data.candidates[idx]!
     data.candidates[idx] = migrateCandidate({
       ...prev,
+      // Preserve creator attribution; any role may edit desk-shared rows.
+      userId: prev.userId,
       name: payload.name,
       email: payload.email ?? null,
       phone: payload.phone ?? null,
@@ -418,17 +448,13 @@ export function upsertCandidateRow(
 
 export function deleteCandidateRow(userId: string, candidateId: string) {
   const data = loadData()
-  const target = data.candidates.find((c) => c.id === candidateId && c.userId === userId)
+  const target = data.candidates.find((c) => c.id === candidateId)
   if (!target) return
 
-  data.candidates = data.candidates.filter((c) => !(c.id === candidateId && c.userId === userId))
-  // Cascade: interviews require a candidate; earnings may reference one.
-  data.interviews = data.interviews.filter(
-    (i) => !(i.userId === userId && i.candidateId === candidateId),
-  )
-  data.earnings = data.earnings.filter(
-    (e) => !(e.userId === userId && e.candidateId === candidateId),
-  )
+  data.candidates = data.candidates.filter((c) => c.id !== candidateId)
+  // Cascade desk-wide: interviews require a candidate; earnings may reference one.
+  data.interviews = data.interviews.filter((i) => i.candidateId !== candidateId)
+  data.earnings = data.earnings.filter((e) => e.candidateId !== candidateId)
   pushActivity(data, userId, 'candidate', candidateId, `Deleted candidate ${target.name}`)
   saveData(data)
 }
@@ -441,13 +467,14 @@ export function upsertOfferRow(
   const data = loadData()
   const now = new Date().toISOString()
   if (existingId) {
-    const idx = data.offers.findIndex((o) => o.id === existingId && o.userId === userId)
+    const idx = data.offers.findIndex((o) => o.id === existingId)
     if (idx < 0) throw new Error('Offer not found')
+    const prev = data.offers[idx]!
     data.offers[idx] = {
-      ...data.offers[idx]!,
+      ...prev,
       ...payload,
       id: existingId,
-      userId,
+      userId: prev.userId,
       updatedAt: now,
     }
     pushActivity(data, userId, 'offer', existingId, `Updated offer ${payload.title}`)
@@ -467,7 +494,9 @@ export function upsertOfferRow(
 
 export function deleteOfferRow(userId: string, offerId: string) {
   const data = loadData()
-  data.offers = data.offers.filter((o) => !(o.id === offerId && o.userId === userId))
+  const existed = data.offers.some((o) => o.id === offerId)
+  if (!existed) return
+  data.offers = data.offers.filter((o) => o.id !== offerId)
   pushActivity(data, userId, 'offer', offerId, 'Deleted offer')
   saveData(data)
 }
@@ -486,7 +515,7 @@ export function upsertInterviewRow(
   const data = loadData()
   const now = new Date().toISOString()
   if (existingId) {
-    const idx = data.interviews.findIndex((i) => i.id === existingId && i.userId === userId)
+    const idx = data.interviews.findIndex((i) => i.id === existingId)
     if (idx < 0) throw new Error('Interview not found')
     const prev = data.interviews[idx]!
     data.interviews[idx] = {
@@ -517,7 +546,9 @@ export function upsertInterviewRow(
 
 export function deleteInterviewRow(userId: string, interviewId: string) {
   const data = loadData()
-  data.interviews = data.interviews.filter((i) => !(i.id === interviewId && i.userId === userId))
+  const existed = data.interviews.some((i) => i.id === interviewId)
+  if (!existed) return
+  data.interviews = data.interviews.filter((i) => i.id !== interviewId)
   pushActivity(data, userId, 'interview', interviewId, 'Deleted interview')
   saveData(data)
 }
@@ -588,11 +619,17 @@ export function confirmEarningRow(userId: string, earningId: string) {
 }
 
 export function adminListStats() {
+  // Always expose every account in this browser's store — no owner-only filter.
   const accounts = loadAccounts()
   const data = loadData()
   const nonOwner = accounts.filter(
     (a) => a.role !== 'owner' && a.email.toLowerCase() !== OWNER_EMAIL.toLowerCase(),
   )
+  const sorted = [...accounts].sort((a, b) => {
+    if (a.role === 'owner' && b.role !== 'owner') return -1
+    if (b.role === 'owner' && a.role !== 'owner') return 1
+    return a.email.localeCompare(b.email)
+  })
   return {
     accounts: accounts.length,
     seatsUsed: nonOwner.length,
@@ -604,7 +641,7 @@ export function adminListStats() {
     estimated: data.earnings
       .filter((e) => e.status === 'Estimated')
       .reduce((s, e) => s + e.amount, 0),
-    perAccount: accounts.map((a) => ({
+    perAccount: sorted.map((a) => ({
       id: a.id,
       email: a.email,
       fullName: a.fullName,
@@ -615,6 +652,47 @@ export function adminListStats() {
       earnings: data.earnings.filter((e) => e.userId === a.id).length,
     })),
   }
+}
+
+/** Create a seat without switching the current session (Admin console). */
+export async function adminCreateAccountRow(input: {
+  email: string
+  password: string
+  fullName?: string
+  role?: Role
+}): Promise<Profile> {
+  const normalized = input.email.trim().toLowerCase()
+  if (!normalized) throw new Error('Email is required')
+  if (input.password.length < 8) throw new Error('Password must be at least 8 characters.')
+
+  if (input.role === 'owner') throw new Error('Cannot assign owner role')
+  const role: Role = input.role ?? 'user'
+
+  const accounts = loadAccounts()
+  if (accounts.some((a) => a.email.toLowerCase() === normalized)) {
+    throw new Error('An account with this email already exists. Sign in instead.')
+  }
+  if (normalized === OWNER_EMAIL.toLowerCase()) {
+    throw new Error('This email is reserved for the desk owner.')
+  }
+  if (nonOwnerCount(accounts) >= MAX_ACCOUNTS) {
+    throw new Error('Maximum of 4 accounts reached. No more registrations allowed.')
+  }
+
+  const salt = randomSalt()
+  const passwordHash = await hashPassword(input.password, salt)
+  const account: StoredAccount = {
+    id: id(),
+    email: normalized,
+    fullName: input.fullName?.trim() || null,
+    role,
+    passwordHash,
+    salt,
+    createdAt: new Date().toISOString(),
+  }
+  accounts.push(account)
+  saveAccounts(accounts)
+  return accountToProfile(account)
 }
 
 export function adminUpdateRoleRow(id: string, role: Role) {
@@ -701,30 +779,47 @@ export async function importDeskJson(raw: unknown): Promise<{ accounts: number; 
 
   const data = doc.data ?? emptyData()
   const incomingAccounts = doc.accounts ?? []
+  const existing = loadAccounts()
 
-  const accounts: StoredAccount[] = []
-  for (const a of incomingAccounts) {
-    const email = a.email.trim().toLowerCase()
-    let passwordHash = a.passwordHash
-    let salt = a.salt
-    if (a.password) {
-      salt = randomSalt()
-      passwordHash = await hashPassword(a.password, salt)
+  let accounts: StoredAccount[]
+  if (incomingAccounts.length === 0) {
+    // Never wipe local seats when an export omits accounts — that looked like
+    // "Admin only shows the owner" after a data-only import.
+    accounts = existing
+  } else {
+    // Merge by email: incoming credentials win; keep local seats not in the export.
+    const byEmail = new Map<string, StoredAccount>()
+    for (const a of existing) byEmail.set(a.email.toLowerCase(), a)
+
+    for (const a of incomingAccounts) {
+      const email = a.email.trim().toLowerCase()
+      let passwordHash = a.passwordHash
+      let salt = a.salt
+      if (a.password) {
+        salt = randomSalt()
+        passwordHash = await hashPassword(a.password, salt)
+      }
+      const prev = byEmail.get(email)
+      if (!passwordHash || !salt) {
+        if (prev) {
+          passwordHash = prev.passwordHash
+          salt = prev.salt
+        } else {
+          salt = randomSalt()
+          passwordHash = await hashPassword(crypto.randomUUID(), salt)
+        }
+      }
+      byEmail.set(email, {
+        id: a.id || prev?.id || id(),
+        email,
+        fullName: a.fullName ?? prev?.fullName ?? null,
+        role: isRole(a.role) ? a.role : (prev?.role ?? 'user'),
+        passwordHash,
+        salt,
+        createdAt: a.createdAt || prev?.createdAt || new Date().toISOString(),
+      })
     }
-    if (!passwordHash || !salt) {
-      // Accounts without credentials get a placeholder — user must reset via admin
-      salt = randomSalt()
-      passwordHash = await hashPassword(crypto.randomUUID(), salt)
-    }
-    accounts.push({
-      id: a.id || id(),
-      email,
-      fullName: a.fullName ?? null,
-      role: a.role ?? 'user',
-      passwordHash,
-      salt,
-      createdAt: a.createdAt || new Date().toISOString(),
-    })
+    accounts = [...byEmail.values()]
   }
 
   saveAccounts(accounts)

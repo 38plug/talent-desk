@@ -14,6 +14,7 @@ import {
   Select,
 } from '@/components/ui'
 import {
+  adminCreateAccount,
   adminDeleteAccount,
   adminResetLink,
   adminSetPassword,
@@ -36,6 +37,13 @@ export function AdminPage() {
   const [password, setPassword] = useState('')
   const [resetLink, setResetLink] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [createForm, setCreateForm] = useState({
+    email: '',
+    fullName: '',
+    password: '',
+    role: 'user' as Role,
+  })
 
   const roleMut = useMutation({
     mutationFn: ({ id, role }: { id: string; role: Role }) => adminUpdateRole(id, role),
@@ -54,6 +62,23 @@ export function AdminPage() {
     onSuccess: () => {
       setPwdModal(null)
       setPassword('')
+    },
+    onError: (e: Error) => setActionError(e.message),
+  })
+
+  const createMut = useMutation({
+    mutationFn: () =>
+      adminCreateAccount({
+        email: createForm.email,
+        password: createForm.password,
+        fullName: createForm.fullName || undefined,
+        role: createForm.role === 'owner' ? 'user' : createForm.role,
+      }),
+    onSuccess: () => {
+      setCreateOpen(false)
+      setCreateForm({ email: '', fullName: '', password: '', role: 'user' })
+      setActionError(null)
+      void qc.invalidateQueries({ queryKey: ['admin-stats'] })
     },
     onError: (e: Error) => setActionError(e.message),
   })
@@ -114,8 +139,26 @@ export function AdminPage() {
       ) : null}
 
       <Card className="!p-0 overflow-hidden">
-        <div className="border-b border-border px-5 py-4">
-          <CardTitle>Accounts</CardTitle>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
+          <div>
+            <CardTitle>Accounts</CardTitle>
+            <p className="mt-1 text-xs text-ink-dim">
+              Every account in this browser&apos;s local store ({data.perAccount.length} shown)
+            </p>
+          </div>
+          {canManage ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={data.seatsUsed >= (data.seatsMax || MAX_ACCOUNTS)}
+              onClick={() => {
+                setActionError(null)
+                setCreateOpen(true)
+              }}
+            >
+              Add account
+            </Button>
+          ) : null}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
@@ -128,68 +171,77 @@ export function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {data.perAccount.map((a) => {
-                const isOwner = a.role === 'owner' || a.email === OWNER_EMAIL
-                const isSelf = a.id === profile?.id
-                return (
-                  <tr key={a.id} className="border-t border-border">
-                    <td className="px-4 py-3">
-                      <p className="font-semibold">{a.fullName || a.email}</p>
-                      <p className="text-xs text-ink-dim">{a.email}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      {canManage && !isOwner && !isSelf ? (
-                        <Select
-                          className="w-36"
-                          value={a.role}
-                          onChange={(e) =>
-                            roleMut.mutate({ id: a.id, role: e.target.value as Role })
-                          }
-                        >
-                          {ROLES.filter((r) => r !== 'owner').map((r) => (
-                            <option key={r} value={r}>
-                              {r}
-                            </option>
-                          ))}
-                        </Select>
-                      ) : (
-                        <Badge tone={isOwner ? 'magenta' : 'violet'}>{a.role}</Badge>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-ink-muted">
-                      {a.candidates}c / {a.offers}o / {a.interviews}i / {a.earnings}e
-                    </td>
-                    <td className="px-4 py-3">
-                      {canManage && !isOwner && !isSelf ? (
-                        <div className="flex flex-wrap gap-2">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => {
-                              setActionError(null)
-                              setResetLink(null)
-                              setPwdModal({ id: a.id, email: a.email })
-                            }}
+              {data.perAccount.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center text-sm text-ink-muted">
+                    No accounts in localStorage yet.
+                  </td>
+                </tr>
+              ) : (
+                data.perAccount.map((a) => {
+                  const isOwner =
+                    a.role === 'owner' || a.email.toLowerCase() === OWNER_EMAIL.toLowerCase()
+                  const isSelf = a.id === profile?.id
+                  return (
+                    <tr key={a.id} className="border-t border-border">
+                      <td className="px-4 py-3">
+                        <p className="font-semibold">{a.fullName || a.email}</p>
+                        <p className="text-xs text-ink-dim">{a.email}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        {canManage && !isOwner && !isSelf ? (
+                          <Select
+                            className="w-36"
+                            value={a.role}
+                            onChange={(e) =>
+                              roleMut.mutate({ id: a.id, role: e.target.value as Role })
+                            }
                           >
-                            Password
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="danger"
-                            onClick={() => {
-                              if (confirm(`Delete ${a.email}?`)) delMut.mutate(a.id)
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-ink-dim">Protected</span>
-                      )}
-                    </td>
-                  </tr>
-                )
-              })}
+                            {ROLES.filter((r) => r !== 'owner').map((r) => (
+                              <option key={r} value={r}>
+                                {r}
+                              </option>
+                            ))}
+                          </Select>
+                        ) : (
+                          <Badge tone={isOwner ? 'magenta' : 'violet'}>{a.role}</Badge>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-ink-muted">
+                        {a.candidates}c / {a.offers}o / {a.interviews}i / {a.earnings}e
+                      </td>
+                      <td className="px-4 py-3">
+                        {canManage && !isOwner && !isSelf ? (
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => {
+                                setActionError(null)
+                                setResetLink(null)
+                                setPwdModal({ id: a.id, email: a.email })
+                              }}
+                            >
+                              Password
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="danger"
+                              onClick={() => {
+                                if (confirm(`Delete ${a.email}?`)) delMut.mutate(a.id)
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-ink-dim">Protected</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
             </tbody>
           </table>
         </div>
@@ -201,7 +253,11 @@ export function AdminPage() {
         </CardHeader>
         <ul className="list-disc space-y-1 pl-5 text-sm text-ink-muted">
           <li>Owner cannot be demoted or deleted.</li>
-          <li>Admins may only manage user/moderator targets.</li>
+          <li>Admins may manage user/moderator/admin seats (not the owner).</li>
+          <li>
+            Offers and candidates are shared across all accounts on this device; every role may
+            create and edit them.
+          </li>
           <li>Income stays private per account on this device; stats show aggregates only.</li>
           <li>Reset generates a temporary password (no email) — copy it immediately.</li>
         </ul>
@@ -250,6 +306,66 @@ export function AdminPage() {
             </p>
           ) : null}
         </div>
+      </Modal>
+
+      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Add account">
+        <form
+          className="space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault()
+            setActionError(null)
+            createMut.mutate()
+          }}
+        >
+          <div>
+            <Label>Full name</Label>
+            <Input
+              value={createForm.fullName}
+              onChange={(e) => setCreateForm((f) => ({ ...f, fullName: e.target.value }))}
+            />
+          </div>
+          <div>
+            <Label>Email</Label>
+            <Input
+              type="email"
+              required
+              value={createForm.email}
+              onChange={(e) => setCreateForm((f) => ({ ...f, email: e.target.value }))}
+            />
+          </div>
+          <div>
+            <Label>Password</Label>
+            <Input
+              type="password"
+              required
+              minLength={8}
+              value={createForm.password}
+              onChange={(e) => setCreateForm((f) => ({ ...f, password: e.target.value }))}
+            />
+          </div>
+          <div>
+            <Label>Role</Label>
+            <Select
+              className="w-full"
+              value={createForm.role}
+              onChange={(e) => setCreateForm((f) => ({ ...f, role: e.target.value as Role }))}
+            >
+              {ROLES.filter((r) => r !== 'owner').map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Button type="submit" disabled={createMut.isPending}>
+              {createMut.isPending ? 'Creating…' : 'Create account'}
+            </Button>
+            <Button type="button" variant="secondary" onClick={() => setCreateOpen(false)}>
+              Cancel
+            </Button>
+          </div>
+        </form>
       </Modal>
     </div>
   )

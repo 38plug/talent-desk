@@ -16,7 +16,9 @@ import {
   marketTone,
   stageTone,
 } from '@/components/ui'
+import { useAuth } from '@/auth/AuthProvider'
 import {
+  canManagePipeline,
   deleteCandidate,
   fetchCandidates,
   fetchOffers,
@@ -121,6 +123,9 @@ function locationLine(c: Candidate): string | null {
 }
 
 export function CandidatesPage() {
+  const { profile } = useAuth()
+  // All signed-in roles (user → owner) share candidates on this device.
+  const canEdit = canManagePipeline(profile?.role ?? 'user')
   const qc = useQueryClient()
   const { data: candidates = [], isLoading } = useQuery({
     queryKey: ['candidates'],
@@ -286,9 +291,11 @@ export function CandidatesPage() {
           <option value="female">Female</option>
           <option value="unset">Unset</option>
         </Select>
-        <Button onClick={openAdd}>
-          <Plus className="h-4 w-4" /> Add candidate
-        </Button>
+        {canEdit ? (
+          <Button onClick={openAdd}>
+            <Plus className="h-4 w-4" /> Add candidate
+          </Button>
+        ) : null}
       </div>
 
       {filtered.length === 0 ? (
@@ -296,9 +303,11 @@ export function CandidatesPage() {
           title="No candidates on the desk"
           description="Add your first candidate to start the pipeline. Talent Desk keeps Telegram handles and sender attribution with every row."
           action={
-            <Button onClick={openAdd}>
-              <Plus className="h-4 w-4" /> Add candidate
-            </Button>
+            canEdit ? (
+              <Button onClick={openAdd}>
+                <Plus className="h-4 w-4" /> Add candidate
+              </Button>
+            ) : undefined
           }
         />
       ) : (
@@ -372,34 +381,36 @@ export function CandidatesPage() {
                       {c.updatedAt ? new Date(c.updatedAt).toLocaleDateString() : '—'}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          className="h-8 px-2"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            openEdit(c)
-                          }}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                          Edit
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="danger"
-                          size="sm"
-                          className="h-8 px-2"
-                          aria-label={`Delete ${c.name}`}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            requestDelete(c)
-                          }}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          Delete
-                        </Button>
-                      </div>
+                      {canEdit ? (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className="h-8 px-2"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openEdit(c)
+                            }}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                            Edit
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            className="h-8 px-2"
+                            aria-label={`Delete ${c.name}`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              requestDelete(c)
+                            }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete
+                          </Button>
+                        </div>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -573,6 +584,7 @@ export function CandidatesPage() {
               <Label>Stage</Label>
               <Select
                 value={selected.stage}
+                disabled={!canEdit}
                 onChange={(e) => {
                   const stage = e.target.value as PipelineStage
                   setSelected({ ...selected, stage })
@@ -589,13 +601,20 @@ export function CandidatesPage() {
             <div>
               <Label>Candidate Telegram</Label>
               <div className="flex gap-2">
-                <Input value={editTg} onChange={(e) => setEditTg(e.target.value)} placeholder="@username" />
-                <Button
-                  variant="secondary"
-                  onClick={() => patchField.mutate({ id: selected.id, telegram: editTg })}
-                >
-                  Save
-                </Button>
+                <Input
+                  value={editTg}
+                  disabled={!canEdit}
+                  onChange={(e) => setEditTg(e.target.value)}
+                  placeholder="@username"
+                />
+                {canEdit ? (
+                  <Button
+                    variant="secondary"
+                    onClick={() => patchField.mutate({ id: selected.id, telegram: editTg })}
+                  >
+                    Save
+                  </Button>
+                ) : null}
               </div>
             </div>
             <div>
@@ -603,15 +622,18 @@ export function CandidatesPage() {
               <div className="flex gap-2">
                 <Input
                   value={editSentBy}
+                  disabled={!canEdit}
                   onChange={(e) => setEditSentBy(e.target.value)}
                   placeholder="@sender"
                 />
-                <Button
-                  variant="secondary"
-                  onClick={() => patchField.mutate({ id: selected.id, sentBy: editSentBy })}
-                >
-                  Save
-                </Button>
+                {canEdit ? (
+                  <Button
+                    variant="secondary"
+                    onClick={() => patchField.mutate({ id: selected.id, sentBy: editSentBy })}
+                  >
+                    Save
+                  </Button>
+                ) : null}
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -640,19 +662,21 @@ export function CandidatesPage() {
               <p className="mt-1">Current location: {selected.currentLocation || '—'}</p>
               <p className="mt-1">Notes: {selected.notes || '—'}</p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  openEdit(selected)
-                }}
-              >
-                <Pencil className="h-4 w-4" /> Edit candidate
-              </Button>
-              <Button variant="danger" onClick={() => requestDelete(selected)}>
-                <Trash2 className="h-4 w-4" /> Delete candidate
-              </Button>
-            </div>
+            {canEdit ? (
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    openEdit(selected)
+                  }}
+                >
+                  <Pencil className="h-4 w-4" /> Edit candidate
+                </Button>
+                <Button variant="danger" onClick={() => requestDelete(selected)}>
+                  <Trash2 className="h-4 w-4" /> Delete candidate
+                </Button>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </Drawer>
