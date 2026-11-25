@@ -173,7 +173,7 @@ components:
 
 **Creative North Star: "The Lime Glass Desk"**
 
-Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel — not a marketing site and not a Next.js app. Persistence is hosted Supabase when `VITE_SUPABASE_*` is set, otherwise device-local `localStorage`; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on `sm+`) hold the desk; the working canvas is glass KPI heroes, a glowing **DeskTotalsStrip** on Candidates / Offers / Interviews, an Interview Calendar at `/calendar`, glowing Recharts, and data tables — never a photo-led landing.
+Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel — not a marketing site and not a Next.js app. Persistence is hosted Supabase when `VITE_SUPABASE_*` is set, otherwise device-local `localStorage`; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on `sm+`, lime notification bell, sound toggle) hold the desk; the working canvas is glass KPI heroes, a glowing **DeskTotalsStrip** on Candidates / Offers / Interviews, an Interview Calendar at `/calendar`, a personal Telegram chat at `/telegram`, glowing Recharts, and data tables — never a photo-led landing. Interview start alerts portal a lime toast to `document.body` (`z-[220]`) while the desk is open.
 
 The room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.
 
@@ -183,7 +183,7 @@ Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radi
 - Charcoal canvas (`#111111`) with a lime / violet / peach mesh and optional film grain on auth
 - Lime (`#C6F432`) as conversion; peach (`#F4B183`) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only
 - Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips
-- Plus Jakarta Sans for all UI; JetBrains Mono only for money and counts (`.tabular`)
+- Plus Jakarta Sans for all UI; JetBrains Mono only for money, counts, and the header clock (`.tabular`)
 - Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)
 - GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips
 - Glass dashboard panels (`.glass-panel`) as the working signature; neon Recharts (lime + peach)
@@ -192,6 +192,9 @@ Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radi
 - Candidates / Offers / Interviews open with a lime **DeskTotalsStrip** (unfiltered shared counts, `AnimatedNumber`)
 - Interview Calendar (`/calendar`, nav `05`) is month / week / day on `.card-surface`; today is a lime disc
 - Sticky header clock: peach `.floating-label` date + JetBrains Mono live time (`sm+` only)
+- Header notification bell: 40px pill, lime unread badge, 16px glass dropdown of Added candidate/offer activity
+- Interview start toast: body-portaled lime glass bar (`z-[220]`), auto-dismiss 14s; Settings **Interview alerts** card + Interviews lime permission banner
+- Personal Telegram (`/telegram`, nav `07`): amber unofficial-client notice, `.card-surface` login steps, then three-pane chat (dialogs / thread / candidate match)
 - Settings Account card shows a Storage row; cloud mode adds a `.card-surface` Cloud sync card with a secondary upload button — same desk chrome, not a second look
 
 ## Colors
@@ -244,7 +247,7 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 **Body Font:** Plus Jakarta Sans
 **Label/Mono Font:** JetBrains Mono (with ui-monospace) via `--font-mono` and `.tabular`
 
-**Character:** One geometric sans does the room — extra-bold tracking-tight titles, semibold controls, medium labels. Mono is reserved for money, KPI numerals, the header clock, DeskTotalsStrip counts, and nav indexes (`01`–`07` plus Admin `08`). There is no serif editorial voice. Dashboard card titles are `text-xl` (`CardTitle`); subtitles are `15px` / `text-base` (`CardSubtitle`); empty panes use `CardEmpty` at `16–18px` so glass does not look empty.
+**Character:** One geometric sans does the room — extra-bold tracking-tight titles, semibold controls, medium labels. Mono is reserved for money, KPI numerals, the header clock, DeskTotalsStrip counts, and nav indexes (`01`–`08` plus Admin `09`). There is no serif editorial voice. Dashboard card titles are `text-xl` (`CardTitle`); subtitles are `15px` / `text-base` (`CardSubtitle`); empty panes use `CardEmpty` at `16–18px` so glass does not look empty.
 
 ### Hierarchy
 - **Display** (800, `text-3xl`–`text-4xl`, tracking tight, lime text-glow on auth): Login wordmark, dashboard “Pipeline command center”, live-desk paid figure.
@@ -267,7 +270,7 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 The authenticated product is a collapsible rail-plus-canvas command floor.
 
 - **Rail:** Fixed `17rem` expanded / `4.75rem` collapsed (`talent-desk.sidebar-collapsed`). `bg-canvas-raised/95` + `backdrop-blur-xl`, 1px right seam. Width transition `400ms` `cubic-bezier(0.16, 1, 0.3, 1)`. Brand lockup, peach “Desk” kicker, indexed nav with a GSAP lime slide-pill that tracks **hover or active** (`focusKey = hoveredKey ?? activeKey`). Icons scale `1.08` focused / `1.06` active. Collapsed rail shows a fixed glass tooltip 10px right of the row. Operator chip (lime/10 wash), ghost Sign out, collapse control. Below `lg` it slides off-canvas (`-translate-x-full`) behind a `bg-black/55` scrim.
-- **Header:** Sticky, `bg-canvas/80` + blur, 12px vertical padding. Page title left; **HeaderClock** (peach date + mono time, `hidden sm:flex`), search (md+), sound toggle, lime-ring initials avatar right. Mobile hamburger is a 12px-radius bordered square. Do not crowd the clock next to the search well.
+- **Header:** Sticky, `bg-canvas/80` + blur, 12px vertical padding. Page title left; **HeaderClock** (peach date + mono time, `hidden sm:flex`), search (md+), **HeaderNotifications** (40px pill + lime badge), sound toggle, lime-ring initials avatar right. Mobile hamburger is a 12px-radius bordered square. Do not crowd the clock next to the search well.
 - **Main:** `px-4 py-6` → `sm:px-6` → `lg:px-8`. Vertical stack `space-y-5` / `gap-4`. Page content swaps through `PageTransition` (`springSoft` opacity + `y: 14` in; exit opacity + `y: -8` in 0.2s). **No CSS `filter` or scale on this wrapper**, so `position: fixed` overlays are not clipped.
 - **Auth:** Centered `max-w-md` `.glass-panel.card-glow` on `.bg-mesh` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`). Film-grain overlay. Sound toggle top-right. No rail.
 - **Dashboard:** 5-col hero (`3 + 2`) at `lg`; 4 glass KPI cards (`!p-4`); then area + attention, donut + bar + estimated list (`p-6 sm:p-7`), recent table (`!p-0`). Empty desk shows a lime/10 banner and zeros — never seeded demo income.
@@ -354,7 +357,7 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 ### Navigation
 Rail: collapsible 17rem / 4.75rem, solid lime TD mark, “Talent Desk” 15px extrabold + 10px dim tagline. “Desk” kicker in peach. Rows are 14px radius; inactive muted; hover ink. The GSAP `.nav-pill` follows the **focused** row (hovered, else active). Active+focused text is canvas (`#111`); hover-only is ink. Lead 0.32s `power3.out`, trail 0.52s `power3.inOut`; other edges 0.38s. Rapid hover kills in-flight tweens. Icons (`.nav-item-icon`) opacity 0.72 rest → 1 focused, scale `1.08` focused / `1.06` active. Collapsed rail: labels `sr-only`; a `.nav-tooltip` glass chip (`10px` radius, 12px type, 70ms show / 180ms hide) sits `left: row.right + 10px`. Indexes are 10px mono dim (hidden when collapsed). Operator chip is a lime-tinted well. Collapse plays `thud`; nav click plays `bass`; nav hover plays `pop` (skipped on the already-active row). Mobile: hamburger + scrim.
 
-Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Nav indexes: Overview `01` … Settings `07`, Admin `08`. Interview Calendar is `05` (`CalendarDays`). Avatar is a 40px lime/20 disc with lime ring. HeaderClock sits between the title cluster and search.
+Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Nav indexes: Overview `01` … Earnings `06`, Telegram `07` (`MessageCircle`), Settings `08`, Admin `09`. Interview Calendar is `05` (`CalendarDays`). Avatar is a 40px lime/20 disc with lime ring. HeaderClock sits between the title cluster and search; the notification bell sits between search and the sound toggle.
 
 ### Signature: body-portaled dialog
 `Modal` / `Drawer` in `src/components/ui/Modal.tsx`. Portal to `document.body`. Overlay `fixed inset-0 z-[200]` with `overflow-y-auto`, `bg-black/75`, `p-4 sm:p-6`, opacity fade 0.2s (`AnimatePresence`). Dialog: `rounded-[20px]`, `bg-surface` (or `.glass-panel` + lime/20 when `glass`), `max-h-[min(90vh,calc(100dvh-2rem))]`, sticky `px-5 py-4` title bar, scrollable `px-5 py-5` body. Open/exit uses `springSnappy` (stiffness 380 / damping 28 / mass 0.7) on the panel only: scale `0.94`, `blur(8px)`, `y: 12` → rest; exit scale `0.96`, `blur(6px)`, `y: 8`. Wide candidate form and offer preview are `max-w-2xl`. Confirm-delete is `max-w-lg` and names the candidate. Drawer scrim `bg-black/60`; panel `x: 28` + `blur(6px)`. Body scroll lock compensates for scrollbar width. Reduced motion is opacity-only at 0.01s. Do not reintroduce overlay `backdrop-blur` or nest these inside `PageTransition`.
@@ -379,6 +382,15 @@ Account card adds a **Storage** definition (`sm:col-span-2`): “Hosted Supabase
 
 ### Signature: header clock
 `src/components/layout/HeaderClock.tsx`. Right of the page title, before search. Peach `.floating-label` date (`weekday short` + `month short` + day via `Intl`) over JetBrains Mono `text-sm` time with seconds, ticking every 1s. Browser locale + local timezone. Hidden below `sm`. Do not use a second conversion color or a pill chrome around the clock.
+
+### Signature: header notification bell
+`src/components/layout/HeaderNotifications.tsx`. 40px rounded-full pill (`border-border bg-surface/80`), Bell icon, hover lime. Unread count is a lime disc (`h-4`, `9+` cap, lime bloom). Dropdown is `rounded-[16px]` `bg-canvas-raised/95` blur, lime tracked “Notifications” kicker, 20-row list of Added candidate / Added offer activity (new rows `bg-lime/[0.06]`). Polls `activities` every 1s (cloud realtime also invalidates). Watermark is per-browser. `pop` SFX when unread rises. Do not fold interview reminders into this menu.
+
+### Signature: interview start toast
+`InterviewReminderWatcher` portals to `document.body` at `z-[220]`. Centered `max-w-md` bar: `rounded-[16px]`, `border-lime/35`, `bg-canvas/95`, lime bloom, 12px lime/15 Bell well, lime tracked “Interview starting”, candidate name, offer · time, cyan “Open interviews” (leftover — new work should be lime). Auto-dismiss 14s. Settings **Interview alerts** is a `.card-surface` with a lime-accent checkbox; Interviews shows a lime/10 permission banner (`Allow alerts` primary / `Not now` ghost) when permission is `default`. Do not add a second toast theme or a server push.
+
+### Signature: personal Telegram chat
+`TelegramPage` (`/telegram`, nav `07`). Login: amber unofficial-client notice, then `.card-surface !p-5` steps (api_id/hash, phone, code, 2FA). Ready: lime tracked “Telegram” kicker + secondary Disconnect; `lg` grid `280px / 1fr / 240px` of `.card-surface !p-0` panes. Active dialog is lime/10; unread is a lime/20 pill; outbound bubbles `bg-lime/20 rounded-[14px]`; inbound `bg-canvas-raised` + border. Candidate rail uses a lime kicker. Do not introduce Telegram-blue chrome or a bot-token login.
 
 ### Signature: icon-only row actions
 Candidates table and offer cards: Schedule / Edit / Delete (and offer Edit / Delete) are `h-8 w-8 px-0` buttons with Lucide icons, `aria-label`, and `title`. Do not restore wordy “Edit” / “Delete” labels in the table. Schedule interview routes to `/calendar?candidate=` (query cleared after the modal opens).
@@ -425,6 +437,9 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** put **DeskTotalsStrip** at the top of Candidates, Offers, and Interviews — unfiltered shared counts, lime on glass, `AnimatedNumber`.
 - **Do** keep Interview Calendar as nav `05` (`/calendar`) with pill month/week/day, lime today disc, and lime event chips.
 - **Do** keep the header clock as peach date + mono time on `sm+`; do not hide it behind a badge.
+- **Do** keep the header bell as a 40px lime-badge pill with a 16px glass dropdown of add-activity only.
+- **Do** portal the interview-start toast to `document.body` at `z-[220]` (lime glass, 14s dismiss). Keep alerts as a Settings card + Interviews permission banner.
+- **Do** keep Telegram as lime-glass three-pane chat on `/telegram` (nav `07`); login stays `.card-surface`, not a second product look.
 - **Do** keep table/card row actions icon-only (`h-8 w-8`) with aria-label + title; Schedule interview goes to `/calendar?candidate=`.
 - **Do** list linked candidates inside the offer glass preview and deep-link with `/candidates?id=` (hold the param until the drawer closes).
 
@@ -441,4 +456,7 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Don't** commit secrets, password hashes, or live account JSON into either design file.
 - **Don't** restyle DeskTotalsStrip as Overview KPI tiles or add earnings into that strip.
 - **Don't** drop Interview Calendar from the rail or merge it into the Interviews list.
-- **Don't** promote the offer-preview “Open” cyan link into a second in-page link color — in-page links stay lime.
+- **Don't** promote the offer-preview “Open”, interview-toast, or Telegram candidate cyan links into a second in-page link color — in-page links stay lime.
+- **Don't** put Telegram api_id / api_hash / session strings, project refs, or anon keys into design files.
+- **Don't** restyle `/telegram` as Telegram-blue messenger chrome or replace the user client with a bot token.
+- **Don't** mix interview start alerts into the header bell, or drop Telegram from the rail.

@@ -1,8 +1,8 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `11ac446e35a2f4f04ef3c914ae7e91897ee04980` (PR #26 merge — offer-preview candidates + PRs #23–#25 / #27–#28; product = Vite SPA + optional cloud)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag + Settings storage/upload chrome) from PR #22. Languages column + icon-only row actions from PR #23. Glowing DeskTotalsStrip from PRs #24 + #28. Interview Calendar (`/calendar`) from PR #25. HeaderClock from PR #27. Offer-preview linked candidates + `?id=` drawer hold from PR #26. Tokens unchanged.
+> **Documented from:** `0f0d4dcc8b44f6db868971779fe797c6d1722b02` (PR #33 merge — live notification/Telegram poll + PRs #29–#32; product = Vite SPA + optional cloud)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag + Settings storage/upload chrome) from PR #22. Languages column + icon-only row actions from PR #23. Glowing DeskTotalsStrip from PRs #24 + #28. Interview Calendar (`/calendar`) from PR #25. HeaderClock from PR #27. Offer-preview linked candidates + `?id=` drawer hold from PR #26. Interview start toast + OS Notification from PR #29. Personal Telegram (`/telegram`, teleproto) from PR #31. Header activity bell from PR #32. 1s live poll of bell + open Telegram thread from PR #33. Tokens unchanged.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md), [`docs/cloud-sync.md`](./docs/cloud-sync.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
 
@@ -31,7 +31,8 @@ Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome o
 | Login | No session | `src/pages/LoginPage.tsx` + `AuthShell` |
 | Register | No session | `src/pages/RegisterPage.tsx` + `AuthShell` |
 | Boot | Session pending | `ProtectedRoute` + `PageLoader` |
-| Desk shell | Session required | `AppShell` (hover pill, collapsed glass tooltip, header notification bell) |
+| Desk shell | Session required | `AppShell` (hover pill, collapsed glass tooltip, HeaderClock, header notification bell, InterviewReminderWatcher) |
+| Telegram | Session required | `TelegramPage` (`/telegram`, nav `07`) — creds/phone/code/2FA on `.card-surface`, then dialogs / thread / candidate match |
 | Overview … Settings | Same | lazy pages under `AppShell` + `PageTransition` (`springSoft` opacity/y; no CSS filter on wrapper) |
 | Overlays | Any desk page | `Modal` / `Drawer` portal to `document.body` (`z-[200]`, `springSnappy` on the panel). Offer preview uses `glass`. |
 | Admin | `canViewAdmin(role)` | `AdminRoute` + `AdminPage` |
@@ -52,6 +53,9 @@ Browser (Vite 8 + React 19 + React Router 7)
   ├─ Import / export     →  Settings JSON (format: talent-desk-export) + cloud upload
   ├─ Offer scan          →  tesseract.js in-browser OCR
   ├─ Offer translate     →  MyMemory (EN/PT stay; CJK/Cyrillic/etc. → PT)
+  ├─ Telegram            →  teleproto MTProto user client (browser WS); session local
+  ├─ Interview alerts    →  in-app toast (body portal z-220) + browser Notification
+  ├─ Header activity     →  1s TanStack poll of `activities` (+ cloud realtime invalidate)
   ├─ Motion              →  framer-motion + GSAP slide-pill
   └─ SFX                 →  Web Audio (muted by default)
 ```
@@ -62,7 +66,7 @@ Browser (Vite 8 + React 19 + React Router 7)
 - **Host:** Vercel SPA (`vercel.json`: framework `vite`, `npm run build` → `dist`, rewrite `/(.*)` → `/index.html`). `.vercel` is gitignored.
 - **Auth:** email/password — Supabase Auth in cloud mode; `talent-desk.accounts.v1` (PBKDF2) in local fallback. First account / reserved `OWNER_EMAIL` → `owner`. Max 4 non-owner seats.
 - **Data:** shared team desk (cloud tables or local `talent-desk.data.v1`). Empty by default. `getDashboardData` returns honest zeros (`isDemo: false`) — never `DEMO_METRICS`.
-- **Env (optional):** `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` enable cloud sync. Unset → localStorage. Never put `service_role` in `VITE_*`.
+- **Env (optional):** `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` enable cloud sync. Unset → localStorage. Never put `service_role` in `VITE_*`. Optional `VITE_TELEGRAM_API_ID` + `VITE_TELEGRAM_API_HASH` prefill the personal Telegram client (else paste on `/telegram`). Do not copy real ids, hashes, project refs, or anon keys into this file.
 - **Production alias (README):** `https://talent-desk-leadforge3.vercel.app`
 
 ## Hosting
@@ -72,7 +76,7 @@ Production is a static Vite SPA on Vercel. Client-side routes (`/candidates`, `/
 | Path | Notes |
 | --- | --- |
 | GitHub import | Framework **Vite**, root `.`, build `npm run build`, output `dist` |
-| Env | Optional `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` for cloud sync |
+| Env | Optional `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` for cloud sync. Optional `VITE_TELEGRAM_API_ID` + `VITE_TELEGRAM_API_HASH` for in-desk Telegram (names only in docs). |
 | Data | Hosted Supabase shared desk, or device-local localStorage fallback |
 | Claim | An agent may leave a temporary Vercel deploy with a claim link (~60 min). After claim: `vercel link` or dashboard import |
 
@@ -154,7 +158,7 @@ Chinese packages use `salary` + `commission` plus boolean visa / flight / accomm
 | --- | --- | --- |
 | Hosted Supabase (when env set) | Auth (GoTrue email/password, PKCE) + Postgres desk tables + realtime | Shared across teammates |
 | `localStorage` fallback | Accounts, session, pipeline rows | This browser only (when env unset) |
-| `localStorage` always | SFX mute, rail collapse, cloud-auto-migrated flag | This browser |
+| `localStorage` always | SFX mute, rail collapse, cloud-auto-migrated flag, interview-reminder pref/fired map, notification seen watermark, Telegram api/session | This browser |
 | Tesseract | OCR WASM | In-browser, ephemeral |
 
 No object storage. Header search does not query. Never put `service_role` in `VITE_*`. Do not copy project refs or anon keys into this file — they live in `.env` / Vercel (see `docs/cloud-sync.md`).
@@ -197,7 +201,7 @@ src/lib/supabase.ts                    → client + isCloudSyncEnabled feature f
 src/lib/cloud-db.ts                    → hosted Supabase CRUD + upload/migrate
 src/lib/local-db.ts                    → accounts, shared-desk CRUD, merge-import, PBKDF2, migrateCandidate, preferred-admin bootstrap
 src/auth/CloudRealtimeSync.tsx         → invalidate queries on postgres_changes
-src/lib/constants.ts                   → APP_NAME, roles, NAV_ITEMS (incl. Interview Calendar `/calendar`), MANAGEABLE_ROLES, ADMIN_VIEW/MANAGE, PIPELINE_ROLES, CANDIDATE_MARKETS, CANDIDATE_GENDERS, marketLabel, genderLabel
+src/lib/constants.ts                   → APP_NAME, roles, NAV_ITEMS (Interview Calendar `/calendar` `05`, Telegram `/telegram` `07`, Settings `08`), ADMIN_NAV `09`, MANAGEABLE_ROLES, ADMIN_VIEW/MANAGE, PIPELINE_ROLES, CANDIDATE_MARKETS, CANDIDATE_GENDERS, marketLabel, genderLabel
 src/lib/types.ts
 src/lib/demo-data.ts                   → SPARK_SERIES shapes only (not KPI values)
 src/lib/parse-offer.ts
@@ -230,8 +234,8 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 | Totals-strip lime orb (4.5s pulse; skipped if reduced motion) | `DeskTotalsStrip` |
 | `thud` | Collapse, mobile menu |
 | `bass` | Nav click, Open candidates |
-| `pop` / `hover` / `tap` | Focus, hover (skip pop on already-active nav), buttons |
-| `success` | Login, register, confirm earning |
+| `pop` / `hover` / `tap` | Focus, hover (skip pop on already-active nav), buttons; `pop` when header unread count rises |
+| `success` | Login, register, confirm earning, interview-start toast |
 | `whoosh` | Sign out, auth link |
 
 `prefers-reduced-motion`: snap the pill, skip page transition, opacity-only overlays at 0.01s, skip SFX, collapse CSS animations to 0.01ms.
@@ -249,7 +253,8 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 - Female gender chips use **magenta**; Male and Chinese market chips share **cyan**. Magenta is still not conversion.
 - Admin role badges: owner **magenta**, admin **lime**, moderator/user **violet**. Heritage tones on seats — not conversion.
 - Admin notes card prints the preferred-admin mailbox from `PRIMARY_ADMIN_EMAIL`. Do not copy that address into either docs file.
-- Offer-preview **Open** link is `text-cyan hover:text-lime`. In-page links in `DESIGN.md` are lime — do not canonize cyan as a second link color; new work should use lime.
+- Offer-preview **Open**, interview-toast **Open interviews**, and Telegram candidate/API links are `text-cyan hover:text-lime`. In-page links in `DESIGN.md` are lime — do not canonize cyan as a second link color; new work should use lime.
+- Open PR #30 (DeskTotalsStrip per-cell subtexts) is **not** on `main`. Keep documenting the shipped strip copy until it merges.
 
 ## Invariants for the next build
 
@@ -273,13 +278,16 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 18. **DeskTotalsStrip is unfiltered.** Candidates / Offers / Interviews show the same three live shared counts. Do not bind them to the page search/filter. Honor `prefers-reduced-motion` on the lime orb.
 19. **Interview Calendar is its own rail item.** `/calendar` (nav `05`) is month / week / day of `scheduledAt`. Candidates Schedule → `/calendar?candidate=`; offer preview Open → `/candidates?id=` (keep `?id=` until the drawer closes so `PageTransition` remount still reopens it). Do not merge calendar into the Interviews list.
 20. **Row actions are icon-only.** Schedule / Edit / Delete on the candidates table and Edit / Delete on offer cards are `h-8 w-8` with aria-label + title. Do not restore wordy table labels.
+21. **Telegram is a personal MTProto client, not a bot.** `teleproto` user login (api_id/hash, phone, code, optional 2FA). Session and optional pasted creds stay in this browser. Do not put api_id, api_hash, or session strings in git or docs. Unofficial-client account-limit risk stays in the amber notice. Live refresh is `NewMessage` plus a 1s dialog/open-thread tick — do not restore a bot token flow.
+22. **Interview start alerts need the desk open.** `InterviewReminderWatcher` ticks every 5s, fires ~1 min before `scheduledAt` (grace ~2 min after), portals a lime toast at `z-[220]` (auto-dismiss 14s) and an OS `Notification` when permitted. Pref defaults on. No server push.
+23. **Header bell is add-activity only.** Unread “Added candidate/offer” from `activities`, 1s poll + cloud realtime, per-browser watermark `talent-desk.notifications-seen.v1`. Lime badge `9+` cap. Do not mix interview reminders into the bell.
 
 ## How this documentation stays current
 
 An hourly Cursor automation (“Design and System documentation”) compares `HEAD` on `main` to the **Documented from** SHA above.
 
 - If the SHA matches and `DESIGN.md` / `HANDOFF.md` exist, it reports **No changes**.
-- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, shell, motion/SFX, local-db, cloud-db, or hosting/deploy), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` when visuals moved, and rewrites this handoff from the shipped artifact. Hosting-only commits refresh this file and leave `DESIGN.md` tokens in place.
+- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, shell, motion/SFX, local-db, cloud-db, calendar, Telegram, notifications, or hosting/deploy), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` when visuals moved, and rewrites this handoff from the shipped artifact. Hosting-only commits refresh this file and leave `DESIGN.md` tokens in place.
 - Confirmed incumbent decisions stay; the build wins where they diverge.
 - Track `main`. If a rebuild branch diverges, document the branch that holds the live desk until it is merged.
 - Do not commit secrets, env values, identity tokens, or account JSON into either file.

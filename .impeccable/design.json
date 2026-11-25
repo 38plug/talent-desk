@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-25T16:57:00Z",
+  "generatedAt": "2026-11-25T19:10:00Z",
   "title": "Design System: Talent Desk",
   "extensions": {
     "colorMeta": {
@@ -8,133 +8,331 @@
         "role": "neutral",
         "displayName": "Canvas",
         "canonical": "#111111",
-        "tonalRamp": ["#0A0A0A", "#111111", "#161616", "#1A1A1A", "#262626", "#3F3F3F", "#64748B", "#F8FAFC"]
+        "tonalRamp": [
+          "#0A0A0A",
+          "#111111",
+          "#161616",
+          "#1A1A1A",
+          "#262626",
+          "#3F3F3F",
+          "#64748B",
+          "#F8FAFC"
+        ]
       },
       "canvas-raised": {
         "role": "neutral",
         "displayName": "Canvas Raised",
         "canonical": "#161616",
-        "tonalRamp": ["#0A0A0A", "#111111", "#161616", "#1A1A1A", "#1F1F1F", "#3F3F3F", "#64748B", "#94A3B8"]
+        "tonalRamp": [
+          "#0A0A0A",
+          "#111111",
+          "#161616",
+          "#1A1A1A",
+          "#1F1F1F",
+          "#3F3F3F",
+          "#64748B",
+          "#94A3B8"
+        ]
       },
       "surface": {
         "role": "neutral",
         "displayName": "Surface",
         "canonical": "#1A1A1A",
-        "tonalRamp": ["#111111", "#161616", "#1A1A1A", "#1F1F1F", "#262626", "#3F3F3F", "#64748B", "#94A3B8"]
+        "tonalRamp": [
+          "#111111",
+          "#161616",
+          "#1A1A1A",
+          "#1F1F1F",
+          "#262626",
+          "#3F3F3F",
+          "#64748B",
+          "#94A3B8"
+        ]
       },
       "surface-raised": {
         "role": "neutral",
         "displayName": "Surface Raised",
         "canonical": "#1F1F1F",
-        "tonalRamp": ["#161616", "#1A1A1A", "#1F1F1F", "#262626", "#333333", "#525252", "#64748B", "#94A3B8"]
+        "tonalRamp": [
+          "#161616",
+          "#1A1A1A",
+          "#1F1F1F",
+          "#262626",
+          "#333333",
+          "#525252",
+          "#64748B",
+          "#94A3B8"
+        ]
       },
       "surface-hover": {
         "role": "neutral",
         "displayName": "Surface Hover",
         "canonical": "#262626",
-        "tonalRamp": ["#161616", "#1A1A1A", "#1F1F1F", "#262626", "#333333", "#525252", "#7A88A0", "#C8D0DC"]
+        "tonalRamp": [
+          "#161616",
+          "#1A1A1A",
+          "#1F1F1F",
+          "#262626",
+          "#333333",
+          "#525252",
+          "#7A88A0",
+          "#C8D0DC"
+        ]
       },
       "border": {
         "role": "neutral",
         "displayName": "Border",
         "canonical": "rgb(255 255 255 / 0.08)",
-        "tonalRamp": ["#111111", "#1A1A1A", "#262626", "#3F3F3F", "#525252", "#64748B", "#94A3B8", "#F8FAFC"]
+        "tonalRamp": [
+          "#111111",
+          "#1A1A1A",
+          "#262626",
+          "#3F3F3F",
+          "#525252",
+          "#64748B",
+          "#94A3B8",
+          "#F8FAFC"
+        ]
       },
       "border-strong": {
         "role": "neutral",
         "displayName": "Border Strong",
         "canonical": "rgb(255 255 255 / 0.14)",
-        "tonalRamp": ["#111111", "#1A1A1A", "#262626", "#3F3F3F", "#5A5A5A", "#7A88A0", "#A8B4C4", "#F8FAFC"]
+        "tonalRamp": [
+          "#111111",
+          "#1A1A1A",
+          "#262626",
+          "#3F3F3F",
+          "#5A5A5A",
+          "#7A88A0",
+          "#A8B4C4",
+          "#F8FAFC"
+        ]
       },
       "lime": {
         "role": "primary",
         "displayName": "Signal Lime",
         "canonical": "#C6F432",
-        "tonalRamp": ["#3F4A0A", "#6B7A12", "#8BC420", "#C6F432", "#D9FF6A", "#E8FF9A", "#F3FFC8", "#FBFFE8"]
+        "tonalRamp": [
+          "#3F4A0A",
+          "#6B7A12",
+          "#8BC420",
+          "#C6F432",
+          "#D9FF6A",
+          "#E8FF9A",
+          "#F3FFC8",
+          "#FBFFE8"
+        ]
       },
       "lime-glow": {
         "role": "primary",
         "displayName": "Lime Glow",
         "canonical": "#D9FF6A",
-        "tonalRamp": ["#6B7A12", "#8BC420", "#C6F432", "#D9FF6A", "#E8FF9A", "#F3FFC8", "#F7FFDC", "#FBFFE8"]
+        "tonalRamp": [
+          "#6B7A12",
+          "#8BC420",
+          "#C6F432",
+          "#D9FF6A",
+          "#E8FF9A",
+          "#F3FFC8",
+          "#F7FFDC",
+          "#FBFFE8"
+        ]
       },
       "peach": {
         "role": "secondary",
         "displayName": "Peach",
         "canonical": "#F4B183",
-        "tonalRamp": ["#7A3E1A", "#B86A3A", "#D48955", "#F4B183", "#F7C4A0", "#FAD8C0", "#FCE9DC", "#FFF6F0"]
+        "tonalRamp": [
+          "#7A3E1A",
+          "#B86A3A",
+          "#D48955",
+          "#F4B183",
+          "#F7C4A0",
+          "#FAD8C0",
+          "#FCE9DC",
+          "#FFF6F0"
+        ]
       },
       "violet": {
         "role": "secondary",
         "displayName": "Heritage Violet",
         "canonical": "#7C3AED",
-        "tonalRamp": ["#2E1065", "#4C1D95", "#6D28D9", "#7C3AED", "#8B5CF6", "#A78BFA", "#C4B5FD", "#EDE9FE"]
+        "tonalRamp": [
+          "#2E1065",
+          "#4C1D95",
+          "#6D28D9",
+          "#7C3AED",
+          "#8B5CF6",
+          "#A78BFA",
+          "#C4B5FD",
+          "#EDE9FE"
+        ]
       },
       "violet-glow": {
         "role": "secondary",
         "displayName": "Violet Glow",
         "canonical": "#A78BFA",
-        "tonalRamp": ["#4C1D95", "#6D28D9", "#7C3AED", "#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE", "#F5F3FF"]
+        "tonalRamp": [
+          "#4C1D95",
+          "#6D28D9",
+          "#7C3AED",
+          "#8B5CF6",
+          "#A78BFA",
+          "#C4B5FD",
+          "#DDD6FE",
+          "#F5F3FF"
+        ]
       },
       "cyan": {
         "role": "secondary",
         "displayName": "Heritage Cyan",
         "canonical": "#22D3EE",
-        "tonalRamp": ["#083344", "#0E7490", "#0891B2", "#22D3EE", "#67E8F9", "#A5F3FC", "#CFFAFE", "#ECFEFF"]
+        "tonalRamp": [
+          "#083344",
+          "#0E7490",
+          "#0891B2",
+          "#22D3EE",
+          "#67E8F9",
+          "#A5F3FC",
+          "#CFFAFE",
+          "#ECFEFF"
+        ]
       },
       "cyan-glow": {
         "role": "secondary",
         "displayName": "Cyan Glow",
         "canonical": "#67E8F9",
-        "tonalRamp": ["#0E7490", "#0891B2", "#22D3EE", "#67E8F9", "#A5F3FC", "#CFFAFE", "#ECFEFF", "#F0FDFF"]
+        "tonalRamp": [
+          "#0E7490",
+          "#0891B2",
+          "#22D3EE",
+          "#67E8F9",
+          "#A5F3FC",
+          "#CFFAFE",
+          "#ECFEFF",
+          "#F0FDFF"
+        ]
       },
       "magenta": {
         "role": "secondary",
         "displayName": "Heritage Magenta",
         "canonical": "#EC4899",
-        "tonalRamp": ["#701A45", "#9D174D", "#DB2777", "#EC4899", "#F472B6", "#F9A8D4", "#FBCFE8", "#FDF2F8"]
+        "tonalRamp": [
+          "#701A45",
+          "#9D174D",
+          "#DB2777",
+          "#EC4899",
+          "#F472B6",
+          "#F9A8D4",
+          "#FBCFE8",
+          "#FDF2F8"
+        ]
       },
       "magenta-glow": {
         "role": "secondary",
         "displayName": "Magenta Glow",
         "canonical": "#F472B6",
-        "tonalRamp": ["#9D174D", "#DB2777", "#EC4899", "#F472B6", "#F9A8D4", "#FBCFE8", "#FCE7F3", "#FDF2F8"]
+        "tonalRamp": [
+          "#9D174D",
+          "#DB2777",
+          "#EC4899",
+          "#F472B6",
+          "#F9A8D4",
+          "#FBCFE8",
+          "#FCE7F3",
+          "#FDF2F8"
+        ]
       },
       "emerald": {
         "role": "tertiary",
         "displayName": "Emerald",
         "canonical": "#10B981",
-        "tonalRamp": ["#064E3B", "#047857", "#059669", "#10B981", "#34D399", "#6EE7B7", "#A7F3D0", "#D1FAE5"]
+        "tonalRamp": [
+          "#064E3B",
+          "#047857",
+          "#059669",
+          "#10B981",
+          "#34D399",
+          "#6EE7B7",
+          "#A7F3D0",
+          "#D1FAE5"
+        ]
       },
       "amber": {
         "role": "tertiary",
         "displayName": "Amber",
         "canonical": "#F59E0B",
-        "tonalRamp": ["#78350F", "#B45309", "#D97706", "#F59E0B", "#FBBF24", "#FCD34D", "#FDE68A", "#FEF3C7"]
+        "tonalRamp": [
+          "#78350F",
+          "#B45309",
+          "#D97706",
+          "#F59E0B",
+          "#FBBF24",
+          "#FCD34D",
+          "#FDE68A",
+          "#FEF3C7"
+        ]
       },
       "rose": {
         "role": "tertiary",
         "displayName": "Rose",
         "canonical": "#F43F5E",
-        "tonalRamp": ["#7F1D1D", "#BE123C", "#E11D48", "#F43F5E", "#FB7185", "#FDA4AF", "#FECDD3", "#FFE4E6"]
+        "tonalRamp": [
+          "#7F1D1D",
+          "#BE123C",
+          "#E11D48",
+          "#F43F5E",
+          "#FB7185",
+          "#FDA4AF",
+          "#FECDD3",
+          "#FFE4E6"
+        ]
       },
       "ink": {
         "role": "neutral",
         "displayName": "Ink",
         "canonical": "#F8FAFC",
-        "tonalRamp": ["#111111", "#262626", "#334155", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F8FAFC"]
+        "tonalRamp": [
+          "#111111",
+          "#262626",
+          "#334155",
+          "#64748B",
+          "#94A3B8",
+          "#CBD5E1",
+          "#E2E8F0",
+          "#F8FAFC"
+        ]
       },
       "ink-muted": {
         "role": "neutral",
         "displayName": "Ink Muted",
         "canonical": "#94A3B8",
-        "tonalRamp": ["#262626", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F8FAFC"]
+        "tonalRamp": [
+          "#262626",
+          "#334155",
+          "#475569",
+          "#64748B",
+          "#94A3B8",
+          "#CBD5E1",
+          "#E2E8F0",
+          "#F8FAFC"
+        ]
       },
       "ink-dim": {
         "role": "neutral",
         "displayName": "Ink Dim",
         "canonical": "#64748B",
-        "tonalRamp": ["#111111", "#262626", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0"]
+        "tonalRamp": [
+          "#111111",
+          "#262626",
+          "#334155",
+          "#475569",
+          "#64748B",
+          "#94A3B8",
+          "#CBD5E1",
+          "#E2E8F0"
+        ]
       }
     },
     "typographyMeta": {
@@ -442,12 +640,55 @@
       "description": "Month/week/day calendar of scheduledAt. Lime today disc, lime event chips, pill-toggle view. Same card-surface desk, not a second look.",
       "html": "<section class=\"ds-cal\"><div class=\"ds-pills\"><button class=\"on\">month</button><button>week</button><button>day</button></div><article class=\"ds-day\"><span class=\"ds-today\">25</span><button class=\"ds-chip\">14:00 Ana K.</button></article></section>",
       "css": ".ds-cal { font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; color: #F8FAFC; } .ds-pills { display: inline-flex; margin-bottom: 16px; padding: 4px; border-radius: 9999px; background: #1A1A1A; border: 1px solid rgb(255 255 255 / 0.08); } .ds-pills button { border: 0; background: transparent; color: #94A3B8; padding: 6px 12px; border-radius: 9999px; font-size: 13px; font-weight: 600; text-transform: capitalize; cursor: pointer; } .ds-pills button.on { background: #C6F432; color: #111111; box-shadow: 0 0 20px rgb(198 244 50 / 0.35); } .ds-day { min-height: 7.5rem; padding: 6px; border: 1px solid rgb(255 255 255 / 0.08); background: #1A1A1A; border-radius: 0; } .ds-today { display: inline-flex; width: 28px; height: 28px; align-items: center; justify-content: center; border-radius: 9999px; background: #C6F432; color: #111111; font-size: 12px; font-weight: 800; box-shadow: 0 0 20px rgb(198 244 50 / 0.35); } .ds-chip { display: block; width: 100%; margin-top: 6px; text-align: left; border-radius: 8px; border: 1px solid rgb(198 244 50 / 0.25); background: rgb(198 244 50 / 0.10); color: #C6F432; padding: 4px 6px; font-size: 11px; font-weight: 600; cursor: pointer; } .ds-chip:hover { border-color: rgb(198 244 50 / 0.50); background: rgb(198 244 50 / 0.20); }"
+    },
+    {
+      "name": "Header Notifications",
+      "kind": "nav",
+      "refersTo": "chip-pill",
+      "description": "Header bell for Added candidate/offer activity. 40px pill, lime unread badge, 16px glass dropdown. 1s poll. Not interview reminders.",
+      "html": "<div class=\"ds-bell\"><button class=\"ds-bell-btn\" type=\"button\" aria-label=\"3 new notifications\">bell<span class=\"ds-badge\">3</span></button><div class=\"ds-drop\" role=\"dialog\"><p class=\"ds-kicker\">Notifications</p><a class=\"ds-row ds-new\" href=\"#\">Added candidate Ana K.<small>Candidate · Nov 25, 2:10 PM</small></a></div></div>",
+      "css": ".ds-bell { position: relative; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; } .ds-bell-btn { position: relative; width: 40px; height: 40px; border-radius: 9999px; border: 1px solid rgb(255 255 255 / 0.08); background: rgb(26 26 26 / 0.80); color: #94A3B8; cursor: pointer; } .ds-bell-btn:hover { border-color: rgb(198 244 50 / 0.35); color: #C6F432; } .ds-badge { position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 9999px; background: #C6F432; color: #111111; font-size: 10px; font-weight: 700; box-shadow: 0 0 12px rgb(198 244 50 / 0.55); } .ds-drop { margin-top: 8px; width: 22rem; border-radius: 16px; border: 1px solid rgb(255 255 255 / 0.08); background: rgb(22 22 22 / 0.95); box-shadow: 0 16px 48px rgb(0 0 0 / 0.45); overflow: hidden; } .ds-kicker { margin: 0; padding: 10px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #C6F432; border-bottom: 1px solid rgb(255 255 255 / 0.08); } .ds-row { display: block; padding: 10px 12px; color: #F8FAFC; text-decoration: none; font-size: 14px; font-weight: 600; } .ds-row small { display: block; margin-top: 2px; font-size: 11px; font-weight: 400; color: #64748B; } .ds-new { background: rgb(198 244 50 / 0.06); } .ds-row:hover { background: rgb(255 255 255 / 0.04); }"
+    },
+    {
+      "name": "Interview Start Toast",
+      "kind": "custom",
+      "refersTo": "glass-panel",
+      "description": "Body-portaled lime glass toast when an interview is about to start. z-220, 14s auto-dismiss. Companion to Settings Interview alerts card.",
+      "html": "<div class=\"ds-toast\" role=\"status\"><span class=\"ds-ico\">bell</span><div><p class=\"ds-kicker\">Interview starting</p><p class=\"ds-name\">Ana K.</p><p class=\"ds-meta\">Forex closer · Nov 25, 3:00 PM</p></div></div>",
+      "css": ".ds-toast { display: flex; gap: 12px; align-items: flex-start; width: 100%; max-width: 28rem; padding: 12px 16px; border-radius: 16px; border: 1px solid rgb(198 244 50 / 0.35); background: rgb(17 17 17 / 0.95); box-shadow: 0 0 32px rgb(198 244 50 / 0.18); font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; color: #F8FAFC; } .ds-ico { display: flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 12px; background: rgb(198 244 50 / 0.15); color: #C6F432; font-size: 12px; } .ds-kicker { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #C6F432; } .ds-name { margin: 2px 0 0; font-size: 14px; font-weight: 700; } .ds-meta { margin: 0; font-size: 12px; color: #94A3B8; }"
+    },
+    {
+      "name": "Telegram Chat",
+      "kind": "custom",
+      "refersTo": "panel-card",
+      "description": "Personal MTProto chat on /telegram. Lime-glass three panes: dialogs, thread, candidate match. Not Telegram-blue chrome and not a bot.",
+      "html": "<section class=\"ds-tg\"><aside class=\"ds-pane\"><button class=\"ds-dlg on\" type=\"button\">Ana K.<small>@ana · see you at 3</small></button></aside><article class=\"ds-pane ds-thread\"><p class=\"ds-bubble in\">Hi</p><p class=\"ds-bubble out\">On my way</p></article></section>",
+      "css": ".ds-tg { display: grid; grid-template-columns: 200px 1fr; gap: 12px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; color: #F8FAFC; min-height: 240px; } .ds-pane { border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.08); background: #1A1A1A; overflow: hidden; } .ds-dlg { display: block; width: 100%; text-align: left; padding: 10px 12px; border: 0; background: transparent; color: #F8FAFC; cursor: pointer; font-size: 14px; font-weight: 600; } .ds-dlg small { display: block; font-size: 12px; font-weight: 400; color: #64748B; } .ds-dlg.on { background: rgb(198 244 50 / 0.10); } .ds-thread { padding: 16px; display: flex; flex-direction: column; gap: 8px; } .ds-bubble { max-width: 85%; margin: 0; padding: 8px 12px; border-radius: 14px; font-size: 14px; } .ds-bubble.in { align-self: flex-start; border: 1px solid rgb(255 255 255 / 0.08); background: #161616; } .ds-bubble.out { align-self: flex-end; background: rgb(198 244 50 / 0.20); }"
     }
   ],
   "narrative": {
     "northStar": "The Lime Glass Desk",
-    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel, not a marketing site and not a Next.js app. Persistence is hosted Supabase when VITE_SUPABASE_* is set, otherwise device-local localStorage; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on sm+) hold the desk; the working canvas is glass KPI heroes, a glowing DeskTotalsStrip on Candidates / Offers / Interviews, an Interview Calendar at /calendar, glowing Recharts, and data tables — never a photo-led landing.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, leftover field-focus, and candidate chips (cyan Chinese/Male, magenta Female) — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only. Candidate market uses the same forex/chinese values as offers, shown as lime/cyan pills.\n\nDensity is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`), including the Settings Cloud sync card. Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview that lists linked candidates. A slow lime orb pulses on the totals strip unless prefers-reduced-motion. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
-    "keyCharacteristics": ["Charcoal canvas (#111111) with a lime / violet / peach mesh and optional film grain on auth", "Lime (#C6F432) as conversion; peach (#F4B183) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only", "Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips", "Plus Jakarta Sans for all UI; JetBrains Mono only for money and counts (.tabular)", "Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)", "GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips", "Glass dashboard panels (.glass-panel) as the working signature; neon Recharts (lime + peach)", "Auth glass card on orbs — no rail until session; no demo-preview bypass", "Offer cards click into a wide glass preview modal with a linked-candidates list; Edit/Delete stay independent", "Candidate market chips: lime Forex / cyan Chinese; gender chips: cyan Male / magenta Female; unset is a dim dash", "Admin seats console uses the same cards/table chrome; role pills are owner magenta / admin lime / else violet", "Settings Account Storage row plus a .card-surface Cloud sync card (secondary upload) when hosted env is set — not a dashboard banner", "Candidates / Offers / Interviews open with a lime DeskTotalsStrip (unfiltered shared counts, AnimatedNumber)", "Interview Calendar (/calendar, nav 05) is month / week / day on .card-surface; today is a lime disc", "Sticky header clock: peach .floating-label date + JetBrains Mono live time (sm+ only)"],
+    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel, not a marketing site and not a Next.js app. Persistence is hosted Supabase when VITE_SUPABASE_* is set, otherwise device-local localStorage; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on sm+, lime notification bell) hold the desk; the working canvas is glass KPI heroes, a glowing DeskTotalsStrip on Candidates / Offers / Interviews, an Interview Calendar at /calendar, a personal Telegram chat at /telegram, glowing Recharts, and data tables — never a photo-led landing. Interview start alerts portal a lime toast to document.body (z-[220]) while the desk is open.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, leftover field-focus, and candidate chips (cyan Chinese/Male, magenta Female) — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only. Candidate market uses the same forex/chinese values as offers, shown as lime/cyan pills.\n\nDensity is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`), including the Settings Cloud sync card and Interview alerts card. Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview that lists linked candidates. A slow lime orb pulses on the totals strip unless prefers-reduced-motion. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
+    "keyCharacteristics": [
+      "Charcoal canvas (#111111) with a lime / violet / peach mesh and optional film grain on auth",
+      "Lime (#C6F432) as conversion; peach (#F4B183) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only",
+      "Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips",
+      "Plus Jakarta Sans for all UI; JetBrains Mono only for money and counts (.tabular)",
+      "Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)",
+      "GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips",
+      "Glass dashboard panels (.glass-panel) as the working signature; neon Recharts (lime + peach)",
+      "Auth glass card on orbs — no rail until session; no demo-preview bypass",
+      "Offer cards click into a wide glass preview modal with a linked-candidates list; Edit/Delete stay independent",
+      "Candidate market chips: lime Forex / cyan Chinese; gender chips: cyan Male / magenta Female; unset is a dim dash",
+      "Admin seats console uses the same cards/table chrome; role pills are owner magenta / admin lime / else violet",
+      "Settings Account Storage row plus a .card-surface Cloud sync card (secondary upload) when hosted env is set — not a dashboard banner",
+      "Candidates / Offers / Interviews open with a lime DeskTotalsStrip (unfiltered shared counts, AnimatedNumber)",
+      "Interview Calendar (/calendar, nav 05) is month / week / day on .card-surface; today is a lime disc",
+      "Sticky header clock: peach .floating-label date + JetBrains Mono live time (sm+ only)",
+      "Header notification bell: 40px pill, lime unread badge, 16px glass dropdown of Added candidate/offer activity",
+      "Interview start toast: body-portaled lime glass bar (z-[220]), auto-dismiss 14s; Settings Interview alerts card",
+      "Personal Telegram (/telegram, nav 07): amber unofficial-client notice, card-surface login, then three-pane lime-glass chat"
+    ],
     "rules": [
       {
         "name": "The Lime Conversion Rule",
@@ -500,7 +741,48 @@
         "section": "elevation"
       }
     ],
-    "dos": ["Do keep canvas / canvas-raised / surface as the charcoal ground family and #C6F432 as the primary conversion color.", "Do set titles in extra-bold Plus Jakarta Sans; money and indexes in JetBrains Mono (.tabular).", "Do build the Overview from .glass-panel + .data-table; build Settings/forms from .card-surface.", "Do map pipeline and earning states through stageTone — emerald / cyan / violet / rose / amber.", "Do keep the solid lime TD mark + glow as the lockup; keep the stretchy lime nav pill.", "Do honor prefers-reduced-motion (global 0.01ms, no SFX) and keep chrome transitions at 200ms unless a named motion token applies.", "Do keep auth as a centered glass card with orbs; do not put the rail on /login or /register.", "Do keep SFX muted by default; never auto-unmute.", "Do portal Modal/Drawer to document.body. Keep glass pane padding at p-6 / sm:p-7 and CardTitle at text-xl.", "Do confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers.", "Do slide the lime nav pill on hover and active, kill in-flight GSAP tweens, and show a glass tooltip when the rail is collapsed.", "Do open offer cards into a wide glass preview modal; keep Edit/Delete stopPropagation.", "Do tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge.", "Do keep Admin on .card-surface KPI tiles plus a !p-0 accounts table; role badges are owner magenta / admin lime / else violet.", "Do keep cloud vs local as a Settings fact (Storage row + Cloud sync card + secondary upload). Same lime-glass chrome in both modes.", "Do put DeskTotalsStrip at the top of Candidates, Offers, and Interviews — unfiltered shared counts, lime on glass, AnimatedNumber.", "Do keep Interview Calendar as nav 05 (/calendar) with pill month/week/day, lime today disc, and lime event chips.", "Do keep the header clock as peach date + mono time on sm+; do not hide it behind a badge.", "Do keep table/card row actions icon-only (h-8 w-8) with aria-label + title; Schedule interview goes to /calendar?candidate=.", "Do list linked candidates inside the offer glass preview and deep-link with /candidates?id= (hold the param until the drawer closes)."],
-    "donts": ["Don't restore the violet-conversion Neon Signal Desk (#080A10 canvas, #7C3AED primary CTA, magenta inset nav bar, gradient TD mark).", "Don't introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on #111111.", "Don't sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.", "Don't treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.", "Don't add a second product look for Admin or for cloud sync — both use the same cards, tables, and badges. Owner/admin/moderator role chips stay magenta/lime/violet heritage, not a new brand. Cloud is not a dashboard banner.", "Don't put project refs, anon keys, or service-role values into design files.", "Don't seed demo income or restore a demo-preview bypass on the login screen.", "Don't put CSS filter or backdrop-blur on PageTransition or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.", "Don't let GSAP pill tweens stack on rapid hover. Don't use a native title tooltip for collapsed nav labels.", "Don't commit secrets, password hashes, or live account JSON into either design file.", "Don't restyle DeskTotalsStrip as Overview KPI tiles or add earnings into that strip.", "Don't drop Interview Calendar from the rail or merge it into the Interviews list.", "Don't promote the offer-preview Open cyan link into a second in-page link color — in-page links stay lime."]
+    "dos": [
+      "Do keep canvas / canvas-raised / surface as the charcoal ground family and #C6F432 as the primary conversion color.",
+      "Do set titles in extra-bold Plus Jakarta Sans; money and indexes in JetBrains Mono (.tabular).",
+      "Do build the Overview from .glass-panel + .data-table; build Settings/forms from .card-surface.",
+      "Do map pipeline and earning states through stageTone — emerald / cyan / violet / rose / amber.",
+      "Do keep the solid lime TD mark + glow as the lockup; keep the stretchy lime nav pill.",
+      "Do honor prefers-reduced-motion (global 0.01ms, no SFX) and keep chrome transitions at 200ms unless a named motion token applies.",
+      "Do keep auth as a centered glass card with orbs; do not put the rail on /login or /register.",
+      "Do keep SFX muted by default; never auto-unmute.",
+      "Do portal Modal/Drawer to document.body. Keep glass pane padding at p-6 / sm:p-7 and CardTitle at text-xl.",
+      "Do confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers.",
+      "Do slide the lime nav pill on hover and active, kill in-flight GSAP tweens, and show a glass tooltip when the rail is collapsed.",
+      "Do open offer cards into a wide glass preview modal; keep Edit/Delete stopPropagation.",
+      "Do tag candidates with lime Forex / cyan Chinese market chips and cyan Male / magenta Female gender chips; leave unset as a dim dash, not a muted badge.",
+      "Do keep Admin on .card-surface KPI tiles plus a !p-0 accounts table; role badges are owner magenta / admin lime / else violet.",
+      "Do keep cloud vs local as a Settings fact (Storage row + Cloud sync card + secondary upload). Same lime-glass chrome in both modes.",
+      "Do put DeskTotalsStrip at the top of Candidates, Offers, and Interviews — unfiltered shared counts, lime on glass, AnimatedNumber.",
+      "Do keep Interview Calendar as nav 05 (/calendar) with pill month/week/day, lime today disc, and lime event chips.",
+      "Do keep the header clock as peach date + mono time on sm+; do not hide it behind a badge.",
+      "Do keep table/card row actions icon-only (h-8 w-8) with aria-label + title; Schedule interview goes to /calendar?candidate=.",
+      "Do list linked candidates inside the offer glass preview and deep-link with /candidates?id= (hold the param until the drawer closes).",
+      "Do keep the header bell as a 40px lime-badge pill with a 16px glass dropdown of add-activity only.",
+      "Do portal the interview-start toast to document.body at z-[220] (lime glass, 14s dismiss). Keep alerts as a Settings card + Interviews permission banner.",
+      "Do keep Telegram as lime-glass three-pane chat on /telegram (nav 07); login stays .card-surface, not a second product look."
+    ],
+    "donts": [
+      "Don't restore the violet-conversion Neon Signal Desk (#080A10 canvas, #7C3AED primary CTA, magenta inset nav bar, gradient TD mark).",
+      "Don't introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on #111111.",
+      "Don't sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.",
+      "Don't treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.",
+      "Don't add a second product look for Admin or for cloud sync — both use the same cards, tables, and badges. Owner/admin/moderator role chips stay magenta/lime/violet heritage, not a new brand. Cloud is not a dashboard banner.",
+      "Don't put project refs, anon keys, or service-role values into design files.",
+      "Don't seed demo income or restore a demo-preview bypass on the login screen.",
+      "Don't put CSS filter or backdrop-blur on PageTransition or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.",
+      "Don't let GSAP pill tweens stack on rapid hover. Don't use a native title tooltip for collapsed nav labels.",
+      "Don't commit secrets, password hashes, or live account JSON into either design file.",
+      "Don't restyle DeskTotalsStrip as Overview KPI tiles or add earnings into that strip.",
+      "Don't drop Interview Calendar from the rail or merge it into the Interviews list.",
+      "Don't promote the offer-preview Open, interview-toast, or Telegram candidate cyan links into a second in-page link color — in-page links stay lime.",
+      "Don't put Telegram api_id / api_hash / session strings, project refs, or anon keys into design files.",
+      "Don't restyle /telegram as Telegram-blue messenger chrome or replace the user client with a bot token.",
+      "Don't mix interview start alerts into the header bell, or drop Telegram from the rail."
+    ]
   }
 }
