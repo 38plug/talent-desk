@@ -8,6 +8,7 @@ import {
   Badge,
   Button,
   CardHeader,
+  CardSubtitle,
   CardTitle,
   EmptyState,
   NeonAreaChart,
@@ -225,11 +226,11 @@ export function DashboardPage() {
                 >
                   <k.icon className="h-4 w-4" style={{ color: k.color }} />
                 </div>
-                <p className="text-xs text-ink-muted">{k.label}</p>
+                <p className="text-sm text-ink-muted">{k.label}</p>
                 <p className="mt-1 text-2xl font-extrabold tracking-tight tabular text-ink">
                   <AnimatedNumber value={k.value} money={k.money} />
                 </p>
-                <p className="mt-1 text-[11px] leading-snug text-ink-dim">{k.delta}</p>
+                <p className="mt-1 text-xs leading-snug text-ink-muted">{k.delta}</p>
               </div>
               <Sparkline data={k.spark} color={k.color} />
             </div>
@@ -242,7 +243,7 @@ export function DashboardPage() {
           <CardHeader>
             <div>
               <CardTitle>Income vs estimated</CardTitle>
-              <p className="mt-0.5 text-xs text-ink-dim">Glowing neon series · last 7 days</p>
+              <CardSubtitle>Glowing neon series · last 7 days</CardSubtitle>
             </div>
             <Badge tone="lime">7 days</Badge>
           </CardHeader>
@@ -250,11 +251,16 @@ export function DashboardPage() {
         </MotionItem>
         <MotionItem className="glass-panel card-glow">
           <CardHeader>
-            <CardTitle>Needs attention</CardTitle>
+            <div>
+              <CardTitle>Needs attention</CardTitle>
+              <CardSubtitle>Flags that need a decision today</CardSubtitle>
+            </div>
           </CardHeader>
           <ul className="space-y-2.5">
             {data.attention.length === 0 ? (
-              <li className="text-sm text-ink-muted">Nothing urgent — desk is clear.</li>
+              <li className="rounded-[14px] border border-dashed border-border bg-white/[0.02] px-4 py-8 text-center text-base text-ink-muted">
+                Nothing urgent — desk is clear.
+              </li>
             ) : (
               data.attention.map((item, i) => (
                 <motion.li
@@ -267,11 +273,11 @@ export function DashboardPage() {
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-ink">{item.title}</p>
-                    <p className="truncate text-xs text-ink-muted">{item.subtitle}</p>
+                    <p className="truncate text-sm text-ink-muted">{item.subtitle}</p>
                   </div>
                   <Link
                     to={item.href}
-                    className="shrink-0 text-xs font-semibold text-lime hover:underline"
+                    className="shrink-0 text-sm font-semibold text-lime hover:underline"
                     onClick={() => playSfx('pop')}
                   >
                     Review
@@ -286,27 +292,40 @@ export function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         <MotionItem className="glass-panel card-glow">
           <CardHeader>
-            <CardTitle>Pipeline mix</CardTitle>
+            <div>
+              <CardTitle>Pipeline mix</CardTitle>
+              <CardSubtitle>Candidates by stage</CardSubtitle>
+            </div>
           </CardHeader>
           {stageData.length ? (
             <NeonDonut data={stageData} />
           ) : (
-            <p className="text-sm text-ink-muted">No stage data yet.</p>
+            <p className="rounded-[14px] border border-dashed border-border bg-white/[0.02] px-4 py-10 text-center text-base text-ink-muted">
+              No stage data yet.
+            </p>
           )}
         </MotionItem>
         <MotionItem className="glass-panel card-glow">
           <CardHeader>
-            <CardTitle>Daily income</CardTitle>
+            <div>
+              <CardTitle>Daily income</CardTitle>
+              <CardSubtitle>Booked provision by day</CardSubtitle>
+            </div>
           </CardHeader>
           <NeonBarChart data={barData} />
         </MotionItem>
         <MotionItem className="glass-panel card-glow">
           <CardHeader>
-            <CardTitle>Awaiting confirmation</CardTitle>
+            <div>
+              <CardTitle>Awaiting confirmation</CardTitle>
+              <CardSubtitle>Estimated → Pending</CardSubtitle>
+            </div>
           </CardHeader>
           <ul className="space-y-2">
             {data.estimatedList.length === 0 ? (
-              <li className="text-sm text-ink-muted">No estimated rows waiting.</li>
+              <li className="rounded-[14px] border border-dashed border-border bg-white/[0.02] px-4 py-10 text-center text-base text-ink-muted">
+                No estimated rows waiting.
+              </li>
             ) : (
               data.estimatedList.slice(0, 6).map((e, i) => (
                 <motion.li
@@ -318,7 +337,7 @@ export function DashboardPage() {
                 >
                   <div>
                     <p className="text-sm font-medium">{e.candidateName ?? 'Candidate'}</p>
-                    <p className="tabular text-xs text-ink-muted">{formatMoney(e.amount)}</p>
+                    <p className="tabular text-sm text-ink-muted">{formatMoney(e.amount)}</p>
                   </div>
                   <Button
                     size="sm"
@@ -339,7 +358,7 @@ export function DashboardPage() {
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div>
             <CardTitle>Recent candidates</CardTitle>
-            <p className="mt-0.5 text-xs text-ink-dim">Dense register · Telegram under name</p>
+            <CardSubtitle>Dense register · Telegram under name</CardSubtitle>
           </div>
           <Link
             to="/candidates"
@@ -362,7 +381,7 @@ export function DashboardPage() {
             <tbody>
               {data.recentCandidates.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="!py-10 text-center text-ink-muted">
+                  <td colSpan={4} className="!py-10 text-center text-base text-ink-muted">
                     No candidates yet for this account.
                   </td>
                 </tr>

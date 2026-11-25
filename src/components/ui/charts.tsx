@@ -79,13 +79,28 @@ export function NeonAreaChart({
             </linearGradient>
           </defs>
           <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-          <XAxis dataKey="label" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
-          <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+          <XAxis
+            dataKey="label"
+            stroke="#94a3b8"
+            fontSize={13}
+            tick={{ fill: '#94a3b8', fontSize: 13 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            stroke="#94a3b8"
+            fontSize={13}
+            tick={{ fill: '#94a3b8', fontSize: 13 }}
+            tickLine={false}
+            axisLine={false}
+            width={40}
+          />
           <Tooltip
             contentStyle={{
-              background: '#171C2B',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: '#1a1a1a',
+              border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: 12,
+              fontSize: 13,
             }}
           />
           <Area
@@ -135,13 +150,28 @@ export function NeonBarChart({
             </linearGradient>
           </defs>
           <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-          <XAxis dataKey="label" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
-          <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+          <XAxis
+            dataKey="label"
+            stroke="#94a3b8"
+            fontSize={13}
+            tick={{ fill: '#94a3b8', fontSize: 13 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            stroke="#94a3b8"
+            fontSize={13}
+            tick={{ fill: '#94a3b8', fontSize: 13 }}
+            tickLine={false}
+            axisLine={false}
+            width={40}
+          />
           <Tooltip
             contentStyle={{
-              background: '#171C2B',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: '#1a1a1a',
+              border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: 12,
+              fontSize: 13,
             }}
           />
           <Bar
@@ -196,17 +226,17 @@ export function NeonDonut({
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <ul className="flex flex-1 flex-col gap-2 text-xs">
+      <ul className="flex flex-1 flex-col gap-2.5 text-sm">
         {data.map((d, i) => (
           <li key={d.name} className="flex items-center justify-between gap-2">
             <span className="flex items-center gap-2 text-ink-muted">
               <span
-                className="h-2.5 w-2.5 rounded-full"
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
                 style={{ background: DONUT_COLORS[i % DONUT_COLORS.length] }}
               />
               {d.name}
             </span>
-            <span className="tabular font-medium text-ink">{d.value}</span>
+            <span className="tabular font-semibold text-ink">{d.value}</span>
           </li>
         ))}
       </ul>
