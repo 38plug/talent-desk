@@ -9,15 +9,16 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 - Build: `npm run build` (`tsc -b && vite build`) → `dist`
 - Lint: `npm run lint` (`oxlint`); typecheck: `npm run typecheck`
 - Tailwind v4 via `@import "tailwindcss"` + `@theme` in `src/index.css` — **no** `tailwind.config.*`
-- Data + auth: `src/lib/local-db.ts` + `src/lib/api.ts` over `localStorage`. No `@supabase/*`.
-- Host: Vercel SPA (`vercel.json` rewrite to `index.html`). No backend env.
+- Data + auth: `src/lib/api.ts` routes to **hosted Supabase** when `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` are set (`src/lib/cloud-db.ts` + `src/lib/supabase.ts`); otherwise `src/lib/local-db.ts` over `localStorage`.
+- Host: Vercel SPA (`vercel.json` rewrite to `index.html`). Cloud sync uses hosted Supabase only — no Docker / Cloudflared.
 
 ## Read first
 
 1. [`HANDOFF.md`](./HANDOFF.md) — architecture, invariants, file map
 2. [`DESIGN.md`](./DESIGN.md) — Lime Glass Desk tokens and motion
 3. [`PRODUCT.md`](./PRODUCT.md) — product purpose and constraints
-4. [`docs/local-data.md`](./docs/local-data.md) — storage keys / export shape
+4. [`docs/cloud-sync.md`](./docs/cloud-sync.md) — hosted Supabase setup
+5. [`docs/local-data.md`](./docs/local-data.md) — storage keys / export shape
 
 ## Do
 
@@ -29,10 +30,13 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 - Open offer cards into a wide `glass` preview; keep card Edit/Delete `stopPropagation`.
 - Slide the lime nav pill on hover **and** active; kill in-flight GSAP tweens.
 - Ship empty Overview as zeros — never invent demo income.
+- Keep cloud sync feature-flagged: unset/placeholder `VITE_SUPABASE_*` → localStorage fallback.
+- Shared desk: all authenticated teammates CRUD the full pipeline; `user_id` is creator attribution only.
 
 ## Don't
 
-- Do not reintroduce Supabase, Edge Functions, Docker, Cloudflared, or `VITE_SUPABASE_*`.
+- Do not require local Docker Supabase or Cloudflared tunnels for production.
+- Do not put `service_role` in `VITE_*` / the browser / Vercel client env.
 - Do not restore Next.js App Router, API routes, or SSR hosting assumptions.
 - Do not restore The Neon Signal Desk (violet primary CTA, `#080A10`, magenta inset nav) or dealing-slip cream/brass.
 - Do not commit secrets, password hashes, export JSON with credentials, or print `OWNER_EMAIL` in docs.

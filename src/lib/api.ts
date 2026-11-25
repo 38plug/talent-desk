@@ -19,6 +19,7 @@ import {
   listEarnings,
   listInterviews,
   listOffers,
+  loadData,
   registerAccount as dbRegister,
   requireSession,
   signIn as dbSignIn,
@@ -28,6 +29,37 @@ import {
   upsertInterviewRow,
   upsertOfferRow,
 } from './local-db'
+import {
+  cloudAdminCreateAccount,
+  cloudAdminDeleteAccount,
+  cloudAdminListStats,
+  cloudAdminResetLink,
+  cloudAdminSetPassword,
+  cloudAdminUpdateRole,
+  cloudChangePassword,
+  cloudConfirmEarning,
+  cloudDeleteCandidate,
+  cloudDeleteEarning,
+  cloudDeleteInterview,
+  cloudDeleteOffer,
+  cloudExportDeskJson,
+  cloudGetProfile,
+  cloudImportDeskJson,
+  cloudListActivities,
+  cloudListCandidates,
+  cloudListEarnings,
+  cloudListInterviews,
+  cloudListOffers,
+  cloudSignIn,
+  cloudSignOut,
+  cloudSignUp,
+  cloudUpsertCandidate,
+  cloudUpsertEarning,
+  cloudUpsertInterview,
+  cloudUpsertOffer,
+  maybeAutoMigrateLocalToCloud,
+} from './cloud-db'
+import { isCloudSyncEnabled, supabase } from './supabase'
 import type {
   Activity,
   AdminStats,
@@ -40,6 +72,8 @@ import type {
 } from './types'
 import { ADMIN_VIEW_ROLES, PIPELINE_ROLES, type Role } from './constants'
 import { parseNumericInput, stripAtHandle } from './utils'
+
+export { isCloudSyncEnabled }
 
 /** Honest empty desk — never invents fake income/candidates. */
 const EMPTY_METRICS: DashboardMetrics = {
@@ -64,31 +98,61 @@ const EMPTY_METRICS: DashboardMetrics = {
   isDemo: false,
 }
 
+async function requireActorId(): Promise<string> {
+  if (isCloudSyncEnabled) {
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data.user) throw new Error('Not signed in')
+    return data.user.id
+  }
+  return requireSession().userId
+}
+
 export async function fetchProfile(userId: string): Promise<Profile | null> {
+  if (isCloudSyncEnabled) return cloudGetProfile(userId)
   return getProfile(userId)
 }
 
 export async function fetchOffers(): Promise<Offer[]> {
+  if (isCloudSyncEnabled) {
+    await requireActorId()
+    return cloudListOffers()
+  }
   requireSession()
   return listOffers()
 }
 
 export async function fetchCandidates(): Promise<Candidate[]> {
+  if (isCloudSyncEnabled) {
+    await requireActorId()
+    return cloudListCandidates()
+  }
   requireSession()
   return listCandidates()
 }
 
 export async function fetchInterviews(): Promise<Interview[]> {
+  if (isCloudSyncEnabled) {
+    await requireActorId()
+    return cloudListInterviews()
+  }
   requireSession()
   return listInterviews()
 }
 
 export async function fetchEarnings(): Promise<Earning[]> {
+  if (isCloudSyncEnabled) {
+    await requireActorId()
+    return cloudListEarnings()
+  }
   requireSession()
   return listEarnings()
 }
 
 export async function fetchActivities(limit = 20): Promise<Activity[]> {
+  if (isCloudSyncEnabled) {
+    await requireActorId()
+    return cloudListActivities(limit)
+  }
   requireSession()
   return listActivities(limit)
 }
@@ -213,7 +277,11 @@ export async function getDashboardData(): Promise<DashboardMetrics> {
 }
 
 export async function confirmEarning(id: string): Promise<void> {
-  const { userId } = requireSession()
+  const userId = await requireActorId()
+  if (isCloudSyncEnabled) {
+    await cloudConfirmEarning(userId, id)
+    return
+  }
   confirmEarningRow(userId, id)
 }
 
@@ -221,20 +289,25 @@ export async function upsertCandidate(
   payload: Partial<Candidate> & { name: string },
   id?: string,
 ): Promise<void> {
-  const { userId } = requireSession()
-  upsertCandidateRow(
-    userId,
-    {
-      ...payload,
-      telegram: payload.telegram ? stripAtHandle(payload.telegram) || null : null,
-      sentBy: payload.sentBy ? stripAtHandle(payload.sentBy) || null : null,
-    },
-    id,
-  )
+  const userId = await requireActorId()
+  const next = {
+    ...payload,
+    telegram: payload.telegram ? stripAtHandle(payload.telegram) || null : null,
+    sentBy: payload.sentBy ? stripAtHandle(payload.sentBy) || null : null,
+  }
+  if (isCloudSyncEnabled) {
+    await cloudUpsertCandidate(userId, next, id)
+    return
+  }
+  upsertCandidateRow(userId, next, id)
 }
 
 export async function deleteCandidate(id: string): Promise<void> {
-  const { userId } = requireSession()
+  const userId = await requireActorId()
+  if (isCloudSyncEnabled) {
+    await cloudDeleteCandidate(userId, id)
+    return
+  }
   deleteCandidateRow(userId, id)
 }
 
@@ -261,35 +334,40 @@ export async function upsertOffer(
   },
   id?: string,
 ): Promise<void> {
-  const { userId } = requireSession()
-  upsertOfferRow(
-    userId,
-    {
-      title: payload.title,
-      company: payload.company || null,
-      category: payload.category,
-      status: payload.status,
-      commissionType: payload.commissionType,
-      commissionValue: parseNumericInput(payload.commissionValue ?? ''),
-      commission: parseNumericInput(payload.commission ?? ''),
-      salaryMin: parseNumericInput(payload.salaryMin ?? ''),
-      salaryMax: parseNumericInput(payload.salaryMax ?? ''),
-      salary: parseNumericInput(payload.salary ?? ''),
-      location: payload.location || null,
-      telegram: payload.telegram ? stripAtHandle(payload.telegram) || null : null,
-      description: payload.description || null,
-      roleType: payload.roleType || null,
-      accommodation: payload.accommodation ?? null,
-      visa: payload.visa ?? null,
-      flight: payload.flight ?? null,
-      videoCall: payload.videoCall ?? null,
-    },
-    id,
-  )
+  const userId = await requireActorId()
+  const row = {
+    title: payload.title,
+    company: payload.company || null,
+    category: payload.category,
+    status: payload.status,
+    commissionType: payload.commissionType,
+    commissionValue: parseNumericInput(payload.commissionValue ?? ''),
+    commission: parseNumericInput(payload.commission ?? ''),
+    salaryMin: parseNumericInput(payload.salaryMin ?? ''),
+    salaryMax: parseNumericInput(payload.salaryMax ?? ''),
+    salary: parseNumericInput(payload.salary ?? ''),
+    location: payload.location || null,
+    telegram: payload.telegram ? stripAtHandle(payload.telegram) || null : null,
+    description: payload.description || null,
+    roleType: payload.roleType || null,
+    accommodation: payload.accommodation ?? null,
+    visa: payload.visa ?? null,
+    flight: payload.flight ?? null,
+    videoCall: payload.videoCall ?? null,
+  }
+  if (isCloudSyncEnabled) {
+    await cloudUpsertOffer(userId, row, id)
+    return
+  }
+  upsertOfferRow(userId, row, id)
 }
 
 export async function deleteOffer(id: string): Promise<void> {
-  const { userId } = requireSession()
+  const userId = await requireActorId()
+  if (isCloudSyncEnabled) {
+    await cloudDeleteOffer(userId, id)
+    return
+  }
   deleteOfferRow(userId, id)
 }
 
@@ -303,12 +381,20 @@ export async function upsertInterview(
   },
   id?: string,
 ): Promise<void> {
-  const { userId } = requireSession()
+  const userId = await requireActorId()
+  if (isCloudSyncEnabled) {
+    await cloudUpsertInterview(userId, payload, id)
+    return
+  }
   upsertInterviewRow(userId, payload, id)
 }
 
 export async function deleteInterview(id: string): Promise<void> {
-  const { userId } = requireSession()
+  const userId = await requireActorId()
+  if (isCloudSyncEnabled) {
+    await cloudDeleteInterview(userId, id)
+    return
+  }
   deleteInterviewRow(userId, id)
 }
 
@@ -322,48 +408,87 @@ export async function upsertEarning(
   },
   id?: string,
 ): Promise<void> {
-  const { userId } = requireSession()
+  const userId = await requireActorId()
+  if (isCloudSyncEnabled) {
+    await cloudUpsertEarning(userId, payload, id)
+    return
+  }
   upsertEarningRow(userId, payload, id)
 }
 
 export async function deleteEarning(id: string): Promise<void> {
-  const { userId } = requireSession()
+  const userId = await requireActorId()
+  if (isCloudSyncEnabled) {
+    await cloudDeleteEarning(userId, id)
+    return
+  }
   deleteEarningRow(userId, id)
 }
 
 export async function registerAccount(email: string, password: string, fullName?: string) {
+  if (isCloudSyncEnabled) {
+    await cloudSignUp(email, password, fullName)
+    return
+  }
   await dbRegister(email, password, fullName)
 }
 
 export async function loginAccount(email: string, password: string) {
+  if (isCloudSyncEnabled) {
+    await cloudSignIn(email, password)
+    await maybeAutoMigrateLocalToCloud(loadData())
+    return
+  }
   await dbSignIn(email, password)
 }
 
 export async function logoutAccount() {
+  if (isCloudSyncEnabled) {
+    await cloudSignOut()
+    return
+  }
   dbSignOut()
 }
 
 export async function changePassword(currentPassword: string, newPassword: string) {
+  if (isCloudSyncEnabled) {
+    await cloudChangePassword(currentPassword, newPassword)
+    return
+  }
   await dbChangePassword(currentPassword, newPassword)
 }
 
 export async function fetchAdminStats(): Promise<AdminStats | null> {
+  if (isCloudSyncEnabled) return cloudAdminListStats()
   return adminListStats()
 }
 
 export async function adminUpdateRole(id: string, role: Role) {
+  if (isCloudSyncEnabled) {
+    await cloudAdminUpdateRole(id, role)
+    return
+  }
   adminUpdateRoleRow(id, role)
 }
 
 export async function adminDeleteAccount(id: string) {
+  if (isCloudSyncEnabled) {
+    await cloudAdminDeleteAccount(id)
+    return
+  }
   adminDeleteAccountRow(id)
 }
 
 export async function adminSetPassword(id: string, password: string) {
+  if (isCloudSyncEnabled) {
+    await cloudAdminSetPassword(id, password)
+    return
+  }
   await adminSetPasswordRow(id, password)
 }
 
 export async function adminResetLink(id: string): Promise<string> {
+  if (isCloudSyncEnabled) return cloudAdminResetLink(id)
   return adminResetPasswordRow(id)
 }
 
@@ -382,14 +507,38 @@ export async function adminCreateAccount(input: {
   fullName?: string
   role?: Role
 }) {
+  if (isCloudSyncEnabled) return cloudAdminCreateAccount(input)
   return adminCreateAccountRow(input)
 }
 
 export function exportDataJson(includeCredentialHashes = false): string {
+  if (isCloudSyncEnabled) {
+    // Sync export is async — callers that need cloud should use exportDataJsonAsync.
+    // Keep sync API for local mode; cloud Settings uses the async path.
+    return JSON.stringify(exportDeskJson(includeCredentialHashes), null, 2)
+  }
+  return JSON.stringify(exportDeskJson(includeCredentialHashes), null, 2)
+}
+
+export async function exportDataJsonAsync(includeCredentialHashes = false): Promise<string> {
+  if (isCloudSyncEnabled) {
+    const doc = await cloudExportDeskJson()
+    return JSON.stringify(doc, null, 2)
+  }
   return JSON.stringify(exportDeskJson(includeCredentialHashes), null, 2)
 }
 
 export async function importDataJson(raw: string | unknown): Promise<{ accounts: number; rows: number }> {
   const parsed = typeof raw === 'string' ? (JSON.parse(raw) as unknown) : raw
+  if (isCloudSyncEnabled) return cloudImportDeskJson(parsed)
   return importDeskJson(parsed)
+}
+
+/** Manual “upload this browser’s local desk to cloud” from Settings. */
+export async function uploadLocalDeskToCloud(): Promise<{ rows: number }> {
+  if (!isCloudSyncEnabled) throw new Error('Cloud sync is not configured.')
+  const { cloudUploadDeskData, markCloudMigrated } = await import('./cloud-db')
+  const result = await cloudUploadDeskData(loadData())
+  markCloudMigrated()
+  return result
 }

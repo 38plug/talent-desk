@@ -1,6 +1,6 @@
 # Talent Desk — local data (localStorage)
 
-Auth and pipeline data live in the browser. Nothing is seeded. There is no Supabase / Postgres.
+Fallback store when cloud sync is off (`VITE_SUPABASE_*` unset). Nothing is seeded. For hosted Supabase setup see [`cloud-sync.md`](./cloud-sync.md).
 
 ## Keys
 
@@ -12,6 +12,7 @@ Auth and pipeline data live in the browser. Nothing is seeded. There is no Supab
 | `talent-desk.bootstrap.prof-admin.v1` | `'1'` after one-time promote of preferred admin email → `admin` |
 | `talent-desk.sidebar-collapsed` | `'1'` / `'0'` — rail collapsed |
 | `talent-desk.sfx-muted` | `'1'` (default) / `'0'` — Web Audio mute |
+| `talent-desk.cloud-auto-migrated.v1` | `'1'` after one-time local → cloud upload attempt |
 
 ## Candidate row shape (in `data.candidates`)
 

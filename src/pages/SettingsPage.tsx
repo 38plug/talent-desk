@@ -2,12 +2,19 @@ import { useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/auth/AuthProvider'
 import { Button, Card, CardHeader, CardTitle, Input, Label } from '@/components/ui'
-import { changePassword, exportDataJson, importDataJson } from '@/lib/api'
+import {
+  changePassword,
+  exportDataJsonAsync,
+  importDataJson,
+  isCloudSyncEnabled,
+  uploadLocalDeskToCloud,
+} from '@/lib/api'
 import { APP_NAME, PIPELINE_STAGES } from '@/lib/constants'
 import { friendlyAuthError } from '@/lib/local-db'
+import { friendlyCloudAuthError } from '@/lib/supabase'
 
 export function SettingsPage() {
-  const { profile, user, notifyAuthChanged } = useAuth()
+  const { profile, user, notifyAuthChanged, cloudSync } = useAuth()
   const qc = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
   const [currentPassword, setCurrentPassword] = useState('')
@@ -18,6 +25,9 @@ export function SettingsPage() {
   const [importText, setImportText] = useState('')
   const [importMsg, setImportMsg] = useState<string | null>(null)
   const [importErr, setImportErr] = useState<string | null>(null)
+  const [syncBusy, setSyncBusy] = useState(false)
+  const [syncMsg, setSyncMsg] = useState<string | null>(null)
+  const [syncErr, setSyncErr] = useState<string | null>(null)
 
   async function onChangePassword(e: React.FormEvent) {
     e.preventDefault()
@@ -30,15 +40,15 @@ export function SettingsPage() {
       setCurrentPassword('')
       setNewPassword('')
     } catch (error) {
-      const f = friendlyAuthError(error)
+      const f = isCloudSyncEnabled ? friendlyCloudAuthError(error) : friendlyAuthError(error)
       setErr(f.message)
     } finally {
       setBusy(false)
     }
   }
 
-  function downloadExport() {
-    const json = exportDataJson(true)
+  async function downloadExport() {
+    const json = await exportDataJsonAsync(true)
     const blob = new Blob([json], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -53,12 +63,33 @@ export function SettingsPage() {
     setImportErr(null)
     try {
       const result = await importDataJson(raw)
-      setImportMsg(`Imported ${result.accounts} account(s) and ${result.rows} pipeline row(s).`)
+      if (isCloudSyncEnabled) {
+        setImportMsg(
+          `Uploaded ${result.rows} pipeline row(s) to the shared cloud desk. Team accounts must register/sign in separately (local password hashes do not transfer).`,
+        )
+      } else {
+        setImportMsg(`Imported ${result.accounts} account(s) and ${result.rows} pipeline row(s).`)
+      }
       setImportText('')
       await qc.invalidateQueries()
       notifyAuthChanged()
     } catch (error) {
       setImportErr(error instanceof Error ? error.message : 'Import failed')
+    }
+  }
+
+  async function onUploadLocal() {
+    setSyncMsg(null)
+    setSyncErr(null)
+    setSyncBusy(true)
+    try {
+      const { rows } = await uploadLocalDeskToCloud()
+      setSyncMsg(`Uploaded ${rows} local pipeline row(s) to the shared cloud desk.`)
+      await qc.invalidateQueries()
+    } catch (error) {
+      setSyncErr(error instanceof Error ? error.message : 'Upload failed')
+    } finally {
+      setSyncBusy(false)
     }
   }
 
@@ -87,7 +118,11 @@ export function SettingsPage() {
           </div>
           <div className="sm:col-span-2">
             <dt className="text-ink-dim">Storage</dt>
-            <dd className="font-semibold">This browser · localStorage (device-local)</dd>
+            <dd className="font-semibold">
+              {cloudSync
+                ? 'Hosted Supabase · shared team desk (realtime + refresh)'
+                : 'This browser · localStorage (device-local fallback)'}
+            </dd>
           </div>
         </dl>
       </Card>
@@ -124,16 +159,35 @@ export function SettingsPage() {
         </form>
       </Card>
 
+      {cloudSync ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Cloud sync</CardTitle>
+          </CardHeader>
+          <p className="mb-4 text-sm text-ink-muted">
+            Every signed-in teammate sees the same candidates, offers, interviews, and earnings.
+            First cloud login auto-uploads this browser’s local desk when the cloud is empty. Use the
+            button below to force another upload from localStorage.
+          </p>
+          <Button type="button" variant="secondary" disabled={syncBusy} onClick={() => void onUploadLocal()}>
+            {syncBusy ? 'Uploading…' : 'Upload this browser’s local desk to cloud'}
+          </Button>
+          {syncMsg ? <p className="mt-3 text-sm text-emerald">{syncMsg}</p> : null}
+          {syncErr ? <p className="mt-3 text-sm text-rose">{syncErr}</p> : null}
+        </Card>
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle>Import / export desk data</CardTitle>
         </CardHeader>
         <p className="mb-4 text-sm text-ink-muted">
-          Optional: paste or upload a Talent Desk JSON export to restore accounts and pipeline rows
-          on this device. Desk starts empty — nothing is seeded.
+          {cloudSync
+            ? 'Paste or upload a Talent Desk JSON export to upsert pipeline rows into the shared cloud desk. Account passwords in the export do not transfer — each teammate registers once with Supabase Auth.'
+            : 'Optional: paste or upload a Talent Desk JSON export to restore accounts and pipeline rows on this device. Desk starts empty — nothing is seeded.'}
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="secondary" onClick={downloadExport}>
+          <Button type="button" variant="secondary" onClick={() => void downloadExport()}>
             Download JSON export
           </Button>
           <Button type="button" variant="secondary" onClick={() => fileRef.current?.click()}>
@@ -209,11 +263,10 @@ export function SettingsPage() {
           <CardTitle>Visual system</CardTitle>
         </CardHeader>
         <p className="text-sm text-ink-muted">
-          Neon dark violet / cyan / magenta for {APP_NAME}. Dealing-slip / blotter direction is
-          retired.
+          Lime Glass Desk for {APP_NAME}. See DESIGN.md for tokens.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
-          {['#7C3AED', '#22D3EE', '#EC4899', '#10B981', '#F59E0B', '#F43F5E'].map((c) => (
+          {['#C6F432', '#FFB5A0', '#111111', '#1A1A1A', '#22D3EE', '#EC4899'].map((c) => (
             <span
               key={c}
               className="h-8 w-8 rounded-full border border-white/10"
