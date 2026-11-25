@@ -78,8 +78,11 @@ function ScheduleInterviewForm({
       ),
     onSuccess: async () => {
       onClose()
-      await qc.invalidateQueries({ queryKey: ['interviews'] })
-      await qc.invalidateQueries({ queryKey: ['dashboard'] })
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['interviews'] }),
+        qc.invalidateQueries({ queryKey: ['candidates'] }),
+        qc.invalidateQueries({ queryKey: ['dashboard'] }),
+      ])
     },
   })
 
@@ -90,8 +93,11 @@ function ScheduleInterviewForm({
     },
     onSuccess: async () => {
       onClose()
-      await qc.invalidateQueries({ queryKey: ['interviews'] })
-      await qc.invalidateQueries({ queryKey: ['dashboard'] })
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['interviews'] }),
+        qc.invalidateQueries({ queryKey: ['candidates'] }),
+        qc.invalidateQueries({ queryKey: ['dashboard'] }),
+      ])
     },
   })
 

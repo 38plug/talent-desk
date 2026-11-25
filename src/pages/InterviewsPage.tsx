@@ -21,7 +21,6 @@ import {
   fetchEarnings,
   fetchInterviews,
   fetchOffers,
-  upsertCandidate,
   upsertEarning,
   upsertInterview,
 } from '@/lib/api'
@@ -75,8 +74,11 @@ export function InterviewsPage() {
     onSuccess: async () => {
       setOpen(false)
       setForm({ candidateId: '', offerId: '', scheduledAt: '', outcome: '', notes: '' })
-      await qc.invalidateQueries({ queryKey: ['interviews'] })
-      await qc.invalidateQueries({ queryKey: ['dashboard'] })
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['interviews'] }),
+        qc.invalidateQueries({ queryKey: ['candidates'] }),
+        qc.invalidateQueries({ queryKey: ['dashboard'] }),
+      ])
     },
   })
 
@@ -128,28 +130,7 @@ export function InterviewsPage() {
             notes: `Interview confirm · interview:${interview.id}`,
           })
         }
-
-        await upsertCandidate(
-          {
-            name: cand.name,
-            email: cand.email,
-            phone: cand.phone,
-            source: cand.source,
-            stage: 'Accepted',
-            market: cand.market,
-            gender: cand.gender,
-            offerId: offerId ?? cand.offerId,
-            telegram: cand.telegram,
-            sentBy: cand.sentBy,
-            country: cand.country,
-            age: cand.age,
-            languages: cand.languages,
-            currentLocation: cand.currentLocation,
-            notes: cand.notes,
-            expectedSalary: cand.expectedSalary,
-          },
-          cand.id,
-        )
+        // Candidate stage → Accepted via upsertInterview sync
         return { amount }
       }
 
@@ -163,28 +144,7 @@ export function InterviewsPage() {
         },
         interview.id,
       )
-
-      await upsertCandidate(
-        {
-          name: cand.name,
-          email: cand.email,
-          phone: cand.phone,
-          source: cand.source,
-          stage: 'Rejected',
-          market: cand.market,
-          gender: cand.gender,
-          offerId: cand.offerId,
-          telegram: cand.telegram,
-          sentBy: cand.sentBy,
-          country: cand.country,
-          age: cand.age,
-          languages: cand.languages,
-          currentLocation: cand.currentLocation,
-          notes: cand.notes,
-          expectedSalary: cand.expectedSalary,
-        },
-        cand.id,
-      )
+      // Candidate stage → Rejected via upsertInterview sync
       return { amount: null as number | null }
     },
     onSuccess: async () => {
