@@ -49,7 +49,7 @@ export function DashboardPage() {
     {
       label: 'Total income',
       value: formatMoney(data.totalIncome),
-      delta: data.isDemo ? '+12% demo' : 'Paid + Pending + Overdue',
+      delta: 'Paid + Pending + Overdue',
       spark: SPARK_SERIES.income,
       color: '#22D3EE',
       icon: TrendingUp,
@@ -82,10 +82,10 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-5">
-      {data.isDemo ? (
+      {data.candidates === 0 && data.liveOffers === 0 && data.totalIncome === 0 && data.estimated === 0 ? (
         <div className="rounded-[16px] border border-cyan/30 bg-cyan/10 px-4 py-3 text-sm text-cyan shadow-[0_0_24px_rgb(34_211_238/0.12)]">
-          <span className="font-semibold">{APP_NAME}</span> is showing demo metrics — your tables are
-          empty. Add candidates, offers, or earnings to replace this preview.
+          <span className="font-semibold">{APP_NAME}</span> has no pipeline rows yet for this account.
+          KPIs stay at zero until your real data is loaded (hosted Supabase) or you add records.
         </div>
       ) : null}
 
@@ -238,8 +238,7 @@ export function DashboardPage() {
                   <Button
                     size="sm"
                     variant="cyan"
-                    disabled={confirm.isPending || data.isDemo}
-                    title={data.isDemo ? 'Connect Supabase to confirm estimates' : undefined}
+                    disabled={confirm.isPending}
                     onClick={() => confirm.mutate(e.id)}
                   >
                     Confirmed
@@ -275,7 +274,7 @@ export function DashboardPage() {
               {data.recentCandidates.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="!py-10 text-center text-ink-muted">
-                    No candidates yet — demo KPIs above stay until you add pipeline data.
+                    No candidates yet for this account.
                   </td>
                 </tr>
               ) : (

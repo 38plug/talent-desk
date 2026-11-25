@@ -27,3 +27,4 @@ dist-ssr
 .env.local
 dist
 .vercel
+dumps/
