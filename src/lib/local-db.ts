@@ -8,6 +8,7 @@ import {
   MAX_ACCOUNTS,
   OFFER_CATEGORIES,
   OWNER_EMAIL,
+  PRIMARY_ADMIN_EMAIL,
   type CandidateGender,
   type OfferCategory,
   type Role,
@@ -25,6 +26,8 @@ const KEYS = {
   accounts: 'talent-desk.accounts.v1',
   data: 'talent-desk.data.v1',
   session: 'talent-desk.session.v1',
+  /** One-time: promote PRIMARY_ADMIN_EMAIL → admin when that seat already exists. */
+  profAdminBootstrap: 'talent-desk.bootstrap.prof-admin.v1',
 } as const
 
 export const EXPORT_FORMAT = 'talent-desk-export' as const
@@ -150,11 +153,51 @@ export function loadAccounts(): StoredAccount[] {
       createdAt: String(a.createdAt ?? new Date().toISOString()),
     })
   }
+  return applyPrimaryAdminBootstrap(accounts)
+}
+
+/**
+ * One-time per browser: if PRIMARY_ADMIN_EMAIL already has a seat and is not owner,
+ * promote to `admin`. Does not create the account — use Admin Add account / register.
+ * Owner remains the sole `owner` (no co-owner).
+ */
+function applyPrimaryAdminBootstrap(accounts: StoredAccount[]): StoredAccount[] {
+  if (typeof localStorage === 'undefined') return accounts
+  if (localStorage.getItem(KEYS.profAdminBootstrap) === '1') return accounts
+
+  const target = PRIMARY_ADMIN_EMAIL.toLowerCase()
+  const idx = accounts.findIndex((a) => a.email.toLowerCase() === target)
+  if (idx < 0) {
+    // Seat not on this device yet — leave flag unset so a later register/add still bootstraps.
+    return accounts
+  }
+
+  const a = accounts[idx]!
+  if (a.role === 'owner' || a.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+    localStorage.setItem(KEYS.profAdminBootstrap, '1')
+    return accounts
+  }
+
+  if (a.role !== 'admin') {
+    const next = accounts.slice()
+    next[idx] = { ...a, role: 'admin' }
+    writeJson(KEYS.accounts, next)
+    localStorage.setItem(KEYS.profAdminBootstrap, '1')
+    return next
+  }
+
+  localStorage.setItem(KEYS.profAdminBootstrap, '1')
   return accounts
 }
 
 function saveAccounts(accounts: StoredAccount[]) {
   writeJson(KEYS.accounts, accounts)
+}
+
+/** Default role for a new non-owner seat (preferred admin mailbox → admin). */
+function defaultSeatRole(email: string): Role {
+  if (email.toLowerCase() === PRIMARY_ADMIN_EMAIL.toLowerCase()) return 'admin'
+  return 'user'
 }
 
 function normalizeAge(value: unknown): number | null {
@@ -270,22 +313,24 @@ export async function registerAccount(
 
   const salt = randomSalt()
   const passwordHash = await hashPassword(password, salt)
+  // Sole owner: reserved mailbox or first seat on an empty desk. Prefer PRIMARY_ADMIN_EMAIL → admin (not co-owner).
+  const role: Role =
+    isOwnerEmail || accounts.length === 0 ? 'owner' : defaultSeatRole(normalized)
   const account: StoredAccount = {
     id: id(),
     email: normalized,
     fullName: fullName?.trim() || null,
-    role: isOwnerEmail || accounts.length === 0 ? 'owner' : 'user',
+    role,
     passwordHash,
     salt,
     createdAt: new Date().toISOString(),
   }
 
-  // Only one owner: if registering owner email later, keep existing owner roles as-is;
-  // first account always becomes owner for empty desks.
-  if (isOwnerEmail) account.role = 'owner'
-
   accounts.push(account)
   saveAccounts(accounts)
+  if (normalized === PRIMARY_ADMIN_EMAIL.toLowerCase() && account.role === 'admin') {
+    localStorage.setItem(KEYS.profAdminBootstrap, '1')
+  }
 
   const session = { userId: account.id, email: account.email }
   setSession(session)
@@ -666,7 +711,11 @@ export async function adminCreateAccountRow(input: {
   if (input.password.length < 8) throw new Error('Password must be at least 8 characters.')
 
   if (input.role === 'owner') throw new Error('Cannot assign owner role')
-  const role: Role = input.role ?? 'user'
+  // Preferred admin mailbox always lands as admin (owner stays sole owner elsewhere).
+  const role: Role =
+    normalized === PRIMARY_ADMIN_EMAIL.toLowerCase()
+      ? 'admin'
+      : (input.role ?? defaultSeatRole(normalized))
 
   const accounts = loadAccounts()
   if (accounts.some((a) => a.email.toLowerCase() === normalized)) {
@@ -692,6 +741,9 @@ export async function adminCreateAccountRow(input: {
   }
   accounts.push(account)
   saveAccounts(accounts)
+  if (normalized === PRIMARY_ADMIN_EMAIL.toLowerCase() && account.role === 'admin') {
+    localStorage.setItem(KEYS.profAdminBootstrap, '1')
+  }
   return accountToProfile(account)
 }
 

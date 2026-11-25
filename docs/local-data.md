@@ -9,6 +9,7 @@ Auth and pipeline data live in the browser. Nothing is seeded. There is no Supab
 | `talent-desk.accounts.v1` | Accounts (email, role, PBKDF2 hash + salt) |
 | `talent-desk.data.v1` | Candidates, offers, interviews, earnings, activities |
 | `talent-desk.session.v1` | Current `{ userId, email }` |
+| `talent-desk.bootstrap.prof-admin.v1` | `'1'` after one-time promote of preferred admin email → `admin` |
 | `talent-desk.sidebar-collapsed` | `'1'` / `'0'` — rail collapsed |
 | `talent-desk.sfx-muted` | `'1'` (default) / `'0'` — Web Audio mute |
 
@@ -58,7 +59,9 @@ Deleting a candidate removes that row and cascades interviews and earnings that 
 
 Settings → Download JSON export / Upload / paste. Import replaces pipeline data. Accounts are **merged** by email (incoming credentials win); an export with no accounts leaves existing seats untouched.
 
-Offers, candidates, and interviews are **desk-shared** across every account on this device. Earnings stay private per account.
+Offers, candidates, and interviews are **desk-shared** across every account on this device (`listOffers` / `listCandidates` / `listInterviews` ignore `userId`). Earnings stay private per account.
+
+**Roles:** sole `owner` (reserved mailbox / first seat). Admin → Accounts Actions can set other seats to `user` / `moderator` / `admin` (owner row stays Protected). Preferred admin mailbox (`PRIMARY_ADMIN_EMAIL` in `constants.ts`) is promoted to `admin` once when that seat already exists on the device; if missing, use Admin **Add account** or `/register` (both assign `admin` for that email). There is no co-owner.
 
 Accounts may include a plaintext `"password"` instead of hash/salt when preparing a one-time restore for another browser. UI export with passwords currently means hash + salt, not plaintext.
 
