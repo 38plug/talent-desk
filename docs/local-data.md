@@ -14,6 +14,8 @@ Fallback store when cloud sync is off (`VITE_SUPABASE_*` unset). Nothing is seed
 | `talent-desk.sfx-muted` | `'1'` (default) / `'0'` — Web Audio mute |
 | `talent-desk.interview-reminders.v1` | `'1'` (default when unset) / `'0'` — interview start alerts |
 | `talent-desk.interview-reminded.v1` | JSON map of interview id → fired-at ms (dedupe) |
+| `talent-desk.telegram-api.v1` | Optional `{ apiId, apiHash }` for personal Telegram client |
+| `talent-desk.telegram-session.v1` | Telegram MTProto session string (sensitive) |
 | `talent-desk.cloud-auto-migrated.v1` | `'1'` after one-time local → cloud upload attempt |
 
 ## Candidate row shape (in `data.candidates`)

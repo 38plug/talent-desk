@@ -28,6 +28,9 @@ const InterviewCalendarPage = lazy(() =>
 const EarningsPage = lazy(() =>
   import('@/pages/EarningsPage').then((m) => ({ default: m.EarningsPage })),
 )
+const TelegramPage = lazy(() =>
+  import('@/pages/TelegramPage').then((m) => ({ default: m.TelegramPage })),
+)
 const SettingsPage = lazy(() =>
   import('@/pages/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 )
@@ -106,6 +109,14 @@ export default function App() {
                   element={
                     <Lazy>
                       <EarningsPage />
+                    </Lazy>
+                  }
+                />
+                <Route
+                  path="telegram"
+                  element={
+                    <Lazy>
+                      <TelegramPage />
                     </Lazy>
                   }
                 />

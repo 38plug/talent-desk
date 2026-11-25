@@ -18,8 +18,9 @@ After sign-in:
 4. **Interviews** (`/interviews`) — list upcoming / past; schedule against a candidate / offer. Link through to the calendar. **Start alerts:** within ~1 min of `scheduledAt` (grace ~2 min after), `InterviewReminderWatcher` (in `AppShell`) fires an in-app toast + browser `Notification` when permitted; Settings **Interview alerts** toggle + Interviews “Allow alerts” prompt. Pref `talent-desk.interview-reminders.v1`; fired ids in `talent-desk.interview-reminded.v1`. Desk tab must be open/recent — no server push.
 5. **Interview Calendar** (`/calendar`) — month / week / day views of `scheduledAt`. Create or edit via modal (candidate picker + datetime). Deep-link `?candidate=<id>` opens the schedule modal preselected (from Candidates row / drawer).
 6. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
-7. **Settings** (`/settings`) — profile, **Storage** row (cloud vs this-browser), **Interview alerts** (reminders + Notification permission), change password, **JSON import/export**. When `cloudSync`: a **Cloud sync** card with “Upload this browser’s local desk to cloud”. Pipeline copy.
-8. **Admin** (`/admin`) — role-gated seats console. KPI cards: seats used, accounts, pipeline row totals, estimated aggregate. Accounts table with role `Select`. Local mode: password/delete + Add account. Cloud mode: role change + delete profile row still work; Add account / set password / reset **throw** (create seats via Register or Dashboard; password via Dashboard). Owner / admin manage; moderator is view-only.
+7. **Telegram** (`/telegram`) — personal MTProto client (teleproto, **not** a bot): api_id/api_hash from my.telegram.org (env `VITE_TELEGRAM_*` or paste on page → `talent-desk.telegram-api.v1`); phone + code (+ 2FA); session `talent-desk.telegram-session.v1`. Chat list + message pane + send; side panel matches `@username` / name to desk candidates. Unofficial client — account-limit risk; session stays in this browser.
+8. **Settings** (`/settings`) — profile, **Storage** row (cloud vs this-browser), **Interview alerts** (reminders + Notification permission), change password, **JSON import/export**. When `cloudSync`: a **Cloud sync** card with “Upload this browser’s local desk to cloud”. Pipeline copy.
+9. **Admin** (`/admin`) — role-gated seats console. KPI cards: seats used, accounts, pipeline row totals, estimated aggregate. Accounts table with role `Select`. Local mode: password/delete + Add account. Cloud mode: role change + delete profile row still work; Add account / set password / reset **throw** (create seats via Register or Dashboard; password via Dashboard). Owner / admin manage; moderator is view-only.
 
 Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome only.
 
@@ -111,6 +112,8 @@ App façade: `src/lib/api.ts`. Cloud store: `src/lib/cloud-db.ts` + `supabase/mi
 | `talent-desk.sfx-muted` | `'1'` (default) / `'0'` (always local) |
 | `talent-desk.interview-reminders.v1` | `'1'` (default when unset) / `'0'` — interview start alerts |
 | `talent-desk.interview-reminded.v1` | JSON `{ [interviewId]: firedAtMs }` dedupe |
+| `talent-desk.telegram-api.v1` | Optional `{ apiId, apiHash }` when env unset |
+| `talent-desk.telegram-session.v1` | MTProto StringSession for personal Telegram |
 
 Cloud tables (hosted Postgres, shared RLS): `profiles`, `offers`, `candidates`, `interviews`, `earnings`, `activities`. Realtime: `CloudRealtimeSync` invalidates TanStack Query on `postgres_changes`; `refetchOnWindowFocus` is on when cloud is enabled.
 
@@ -176,6 +179,8 @@ src/components/interviews/InterviewReminderWatcher.tsx → OS Notification + in-
 src/lib/interview-reminders.ts         → pref / permission / due window helpers
 src/lib/datetime.ts                    → datetime-local helpers
 src/pages/EarningsPage.tsx
+src/pages/TelegramPage.tsx             → personal MTProto chat (teleproto); dialogs + messages + candidate match
+src/lib/telegram-mtproto.ts            → api creds / session helpers for Telegram user client
 src/pages/SettingsPage.tsx              → Storage row; Cloud sync upload card when flag on; JSON import/export
 src/pages/AdminPage.tsx               → seats KPIs, role Select, Add account, Protected owner
 src/components/layout/AppShell.tsx     → collapsible rail + hover pill + glass tooltip + header (live Intl clock) + InterviewReminderWatcher
