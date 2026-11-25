@@ -22,6 +22,9 @@ const OffersPage = lazy(() =>
 const InterviewsPage = lazy(() =>
   import('@/pages/InterviewsPage').then((m) => ({ default: m.InterviewsPage })),
 )
+const InterviewCalendarPage = lazy(() =>
+  import('@/pages/InterviewCalendarPage').then((m) => ({ default: m.InterviewCalendarPage })),
+)
 const EarningsPage = lazy(() =>
   import('@/pages/EarningsPage').then((m) => ({ default: m.EarningsPage })),
 )
@@ -87,6 +90,14 @@ export default function App() {
                   element={
                     <Lazy>
                       <InterviewsPage />
+                    </Lazy>
+                  }
+                />
+                <Route
+                  path="calendar"
+                  element={
+                    <Lazy>
+                      <InterviewCalendarPage />
                     </Lazy>
                   }
                 />

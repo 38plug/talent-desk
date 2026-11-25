@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Trash2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { CalendarDays, Plus, Trash2 } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -87,7 +88,13 @@ export function InterviewsPage() {
             </button>
           ))}
         </div>
-        <Button className="ml-auto" onClick={() => setOpen(true)}>
+        <Link
+          to="/calendar"
+          className="ml-auto inline-flex h-10 items-center gap-2 rounded-[12px] border border-border px-3 text-sm font-semibold text-ink-muted hover:border-lime/40 hover:text-lime"
+        >
+          <CalendarDays className="h-4 w-4" /> Calendar
+        </Link>
+        <Button onClick={() => setOpen(true)}>
           <Plus className="h-4 w-4" /> Schedule
         </Button>
       </div>

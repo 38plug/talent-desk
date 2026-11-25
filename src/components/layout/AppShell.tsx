@@ -2,6 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import {
   Briefcase,
   Calendar,
+  CalendarDays,
   ChevronsLeft,
   ChevronsRight,
   LayoutDashboard,
@@ -31,6 +32,7 @@ const ICONS = {
   Users,
   Briefcase,
   Calendar,
+  CalendarDays,
   Wallet,
   Settings,
   Shield,
