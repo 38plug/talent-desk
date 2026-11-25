@@ -39,7 +39,7 @@ typography:
     letterSpacing: "-0.02em"
   title:
     fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.125rem"
+    fontSize: "1.25rem"
     fontWeight: 600
     lineHeight: 1.3
     letterSpacing: "-0.015em"
@@ -51,7 +51,7 @@ typography:
     letterSpacing: "normal"
   subtitle:
     fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.875rem"
+    fontSize: "0.9375rem"
     fontWeight: 400
     lineHeight: 1.375
     letterSpacing: "normal"
@@ -142,12 +142,12 @@ components:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
     rounded: "{rounded.card}"
-    padding: "20px"
+    padding: "24px"
   glass-panel:
     backgroundColor: "rgb(20 20 20 / 0.78)"
     textColor: "{colors.ink}"
     rounded: "{rounded.card}"
-    padding: "20px"
+    padding: "24px"
   chip-pill:
     backgroundColor: "rgb(198 244 50 / 0.15)"
     textColor: "{colors.lime}"
@@ -175,7 +175,7 @@ Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach
 
 The room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.
 
-Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius). Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash). Motion is cinematic: GSAP stretchy slide-pill, Framer blur page transitions, spring stagger on the dashboard. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.
+Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill, Framer **opacity + translate** page transitions (no CSS `filter`, so overlays are not trapped), spring stagger on the dashboard. Modals and drawers portal to `document.body`. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.
 
 **Key Characteristics:**
 - Charcoal canvas (`#111111`) with a lime / violet / peach mesh and optional film grain on auth
@@ -235,14 +235,14 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 **Body Font:** Plus Jakarta Sans
 **Label/Mono Font:** JetBrains Mono (with ui-monospace) via `--font-mono` and `.tabular`
 
-**Character:** One geometric sans does the room — extra-bold tracking-tight titles, semibold controls, medium labels. Mono is reserved for money, KPI numerals, and nav indexes (`01`–`07`). There is no serif editorial voice. Dashboard card titles are `text-lg`; subtitles and empty-state body are `text-sm` / `text-base` so glass panels do not look empty.
+**Character:** One geometric sans does the room — extra-bold tracking-tight titles, semibold controls, medium labels. Mono is reserved for money, KPI numerals, and nav indexes (`01`–`07`). There is no serif editorial voice. Dashboard card titles are `text-xl` (`CardTitle`); subtitles are `15px` / `text-base` (`CardSubtitle`); empty panes use `CardEmpty` at `16–18px` so glass does not look empty.
 
 ### Hierarchy
 - **Display** (800, `text-3xl`–`text-4xl`, tracking tight, lime text-glow on auth): Login wordmark, dashboard “Pipeline command center”, live-desk paid figure.
-- **Headline** (800, `text-lg`–`text-xl`): Sticky header page title (`Overview`, `Candidates`, …).
-- **Title** (600, `text-lg` / `CardTitle`): Card titles, operator name, table names. Sized up so glass panes read as occupied.
-- **Subtitle** (400, `text-sm` leading-snug muted / `CardSubtitle`): Supporting line under a card title.
-- **Body** (400–500, `14px`): Forms, descriptions, table cells. Empty-state body and chart axis ticks are `13–16px`, not 11px gray dust.
+- **Headline** (800, `text-lg`–`text-xl`): Sticky header page title (`Overview`, `Candidates`, …). Modal title is `text-lg` / `sm:text-xl` bold in the sticky bar.
+- **Title** (600, `text-xl` / `CardTitle`): Card titles, operator name, table names. Sized up so glass panes read as occupied.
+- **Subtitle** (400, `15px` / `sm:text-base` leading-snug muted / `CardSubtitle`): Supporting line under a card title.
+- **Body** (400–500, `14px`): Forms, descriptions, table cells. `CardEmpty` is `text-base` / `sm:text-lg`. Chart axis ticks are `14px` medium `#cbd5e1`, not 11px gray dust.
 - **Label** (700, `10–11px`, tracking `0.16–0.22em`, uppercase, peach via `.floating-label`): “Desk”, `APP_NAME` kicker, table thead (`0.06em` on thead).
 - **Mono** (500, tabular-nums): `formatMoney`, spark KPI values, nav index digits, `AnimatedNumber`.
 
@@ -251,7 +251,7 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 
 **The Tracked Kicker Rule.** Eyebrows are 10px uppercase with `0.18–0.22em` tracking in **peach** (`.floating-label`). Do not restore a magenta kicker or a lime square badge as the system eyebrow.
 
-**The Occupied Glass Rule.** Card titles are `text-lg`; subtitles `text-sm`; empty-state and chart ticks stay readable (`13px+`). Do not drop supporting copy back to 11px gray on glass.
+**The Occupied Glass Rule.** Card titles are `text-xl`; subtitles `15–16px`; empty-state copy `16–18px`; chart ticks `14px` `#cbd5e1`. Inner padding on glass panes is `p-6` / `sm:p-7`. Do not drop supporting copy back to 11px gray on glass.
 
 ## Layout
 
@@ -259,11 +259,11 @@ The authenticated product is a collapsible rail-plus-canvas command floor.
 
 - **Rail:** Fixed `17rem` expanded / `4.75rem` collapsed (`talent-desk.sidebar-collapsed`). `bg-canvas-raised/95` + `backdrop-blur-xl`, 1px right seam. Width transition `400ms` `cubic-bezier(0.16, 1, 0.3, 1)`. Brand lockup, peach “Desk” kicker, indexed nav with a GSAP lime slide-pill, operator chip (lime/10 wash), ghost Sign out, collapse control. Below `lg` it slides off-canvas (`-translate-x-full`) behind a `bg-black/55` scrim.
 - **Header:** Sticky, `bg-canvas/80` + blur, 12px vertical padding. Page title left; search (md+), sound toggle, lime-ring initials avatar right. Mobile hamburger is a 12px-radius bordered square.
-- **Main:** `px-4 py-6` → `sm:px-6` → `lg:px-8`. Vertical stack `space-y-5` / `gap-4`. Page content swaps through `PageTransition` (blur + scale).
+- **Main:** `px-4 py-6` → `sm:px-6` → `lg:px-8`. Vertical stack `space-y-5` / `gap-4`. Page content swaps through `PageTransition` (opacity + `y: 10` in 0.35s; no CSS `filter` or scale, so `position: fixed` overlays are not clipped).
 - **Auth:** Centered `max-w-md` `.glass-panel.card-glow` on `.bg-mesh` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`). Film-grain overlay. Sound toggle top-right. No rail.
-- **Dashboard:** 5-col hero (`3 + 2`) at `lg`; 4 glass KPI cards; then area + attention, donut + bar + estimated list, recent table. Empty desk shows a lime/10 banner and zeros — never seeded demo income.
-- **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover lime-5%.
-- **Dialogs:** Modal `max-w-lg` (or `max-w-2xl` wide) at 20px radius; candidate detail is a right `max-w-md` drawer.
+- **Dashboard:** 5-col hero (`3 + 2`) at `lg`; 4 glass KPI cards (`!p-4`); then area + attention, donut + bar + estimated list (`p-6 sm:p-7`), recent table (`!p-0`). Empty desk shows a lime/10 banner and zeros — never seeded demo income.
+- **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover lime-5%. Candidates table is `min-w-[860px]` with Location + actions (Edit / Delete).
+- **Dialogs:** Modal and Drawer **portal to `document.body`** at `z-[200]`. Overlay is `bg-black/75` (no backdrop-blur). Dialog shell is `max-h-[min(90vh,calc(100dvh-2rem))]` with a sticky title bar and a scrollable body; wide forms use `max-w-2xl`. Drawer is a right `max-w-md` panel at `100dvh`. Body scroll is locked while either is open. Escape and overlay click close.
 
 Spacing rhythm is 8 / 12 / 16 / 20 / 24 / 32.
 
@@ -289,6 +289,8 @@ Depth is glass plus lime bloom, not Material elevation. Dashboard panes are fros
 
 **The Glass Desk Rule.** Overview panes are `.glass-panel` (`backdrop-filter: blur(20px) saturate(1.25)`). Do not flatten them back to opaque navy steel (`#121622`) or a single un-blurred `#111` slab.
 
+**The Overlay-On-Body Rule.** Modal and Drawer always `createPortal` to `document.body` at `z-[200]`. Page shells must not use CSS `filter` or a transform containing block. Overlay fill is `bg-black/75` without `backdrop-blur` (blur on the overlay was cutting the viewport in half).
+
 ## Shapes
 
 The silhouette is softly rounded charcoal chrome — 12px controls, 20px slabs, full pills for status, a 14px-round clip on the nav pill.
@@ -313,7 +315,7 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 - **Secondary:** Surface-raised, 1px border, hover `border-strong` + surface-hover.
 - **Ghost:** Transparent, muted text; hover ink + `white/5`. Sign out in the rail.
 - **Cyan / Magenta:** Heritage signal fills. Magenta is **not** the register CTA anymore.
-- **Danger:** Rose veil 15% + rose text + rose/30 border.
+- **Danger:** Rose veil 15% + rose text + rose/30 border. Used for **Delete** on the candidates table, detail drawer, and the named confirm modal. Compact table actions are `h-8 px-2`.
 - **Disabled:** 45% opacity, no pointer.
 - **Motion shell:** `MotionButtonShell` scales 1.015 / 0.985 on hover/tap.
 
@@ -323,10 +325,11 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 - Pill toggle (`.pill-toggle`): surface well; active item is solid lime + glow.
 
 ### Cards / Containers
-- **`Card`:** `.card-surface p-5` (settings, forms). Header is title left, actions right.
-- **Dashboard panes:** `.glass-panel` + optional `.card-glow`. KPI cards `!p-4`.
+- **`Card`:** `.card-surface p-6` (settings, forms). Header is title left, actions right (`mb-5`).
+- **Dashboard panes:** `.glass-panel` + optional `.card-glow` + `p-6 sm:p-7`. KPI cards `!p-4`. Recent-candidates table pane `!p-0`.
 - **Dashboard heroes:** `.hero-gradient-violet` is now a charcoal→violet-wash→green-black slab (`#1a1a1a → #2a1848 → #1a2a22`), not a solid violet fill. `.hero-gradient-cyan` is a lime slab (`#c6f432 → #a8d92a → #8bc420`) used as the live-desk companion only if reapplied — current live-desk pane is glass, not that gradient.
 - **Empty:** 20px dashed border, `bg-surface/40`, 64px vertical padding. Eyebrow is still violet-glow (leftover); prefer peach `.floating-label` on new empties.
+- **`CardEmpty`:** Dashed `rounded-[16px]` well, `min-h-[11rem]` / `sm:min-h-[12.5rem]`, `text-base` / `sm:text-lg` medium muted, centered. Used on Needs attention / Pipeline mix / Awaiting confirmation when those lists are empty.
 - **Empty-desk banner:** 16px, lime/10 fill, lime/30 border, 24px lime bloom. Honest zeros, not demo metrics.
 
 ### Inputs / Fields
@@ -340,18 +343,21 @@ Rail: collapsible 17rem / 4.75rem, solid lime TD mark, “Talent Desk” 15px ex
 
 Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Avatar is a 40px lime/20 disc with lime ring.
 
+### Signature: body-portaled dialog
+`Modal` / `Drawer` in `src/components/ui/Modal.tsx`. Portal to `document.body`. Overlay `fixed inset-0 z-[200]` with `overflow-y-auto`, `bg-black/75`, `p-4 sm:p-6`. Dialog: `rounded-[20px]`, `bg-surface`, `max-h-[min(90vh,calc(100dvh-2rem))]`, sticky `px-5 py-4` title bar, scrollable `px-5 py-5` body. Wide candidate form is `max-w-2xl`. Confirm-delete is `max-w-lg` and names the candidate. Body scroll lock compensates for scrollbar width. Do not reintroduce overlay `backdrop-blur` or nest these inside `PageTransition`.
+
 ### Signature: stretchy lime pill
 `src/lib/slide-pill.ts`. The pill is a lime rectangle under the nav; clip-path reveals the active row with a stretchy lead/trail. Reduced motion snaps via `setPillImmediate`. Do not restore a 3px magenta inset bar as the active treatment.
 
 ### Signature: neon charts
-`Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Lime + peach area (estimated series dashed), lime→peach bar gradient, donut palette lime/peach/violet/emerald/amber/rose. Axis ticks 13px muted. Tooltips: `#1A1A1A`, 12px radius, 13px type. Gauge ring on the live-desk pane is peach→lime with a lime drop-shadow. Sparklines sit on KPI cards; they do not replace the TD mark.
+`Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Lime + peach area (estimated series dashed), lime→peach bar gradient, donut palette lime/peach/violet/emerald/amber/rose. Axis ticks `14px` medium `#cbd5e1`. Tooltips: `#1A1A1A`, 12px radius, 14px type. Gauge ring on the live-desk pane is peach→lime with a lime drop-shadow. Sparklines sit on KPI cards; they do not replace the TD mark.
 
 ### Auth card (signature)
 Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`, drifting via Framer). Film grain overlay. Login CTA is primary lime (“Enter Talent Desk”); register is `variant="lime"` (“Join Talent Desk”). Links between them are lime. No “Preview Talent Desk UI”. Sound toggle is top-right on the shell.
 
 ### Motion + SFX
-- **Page:** blur 8px → 0 + scale 0.985 → 1 in 0.45s `[0.16, 1, 0.3, 1]`; exit blur 6px in 0.22s.
-- **Dashboard:** `staggerContainer` 0.07 / 0.08; items `fadeUp` (y 18, blur 6px) with hover lift −2px.
+- **Page:** opacity 0 → 1 + `y: 10` → 0 in 0.35s `[0.16, 1, 0.3, 1]`; exit opacity + `y: -6` in 0.18s. **No CSS `filter`.**
+- **Dashboard:** `staggerContainer` 0.07 / 0.08; items `fadeUp` (y 18, blur 6px) with hover lift −2px. Item-level blur is fine; page-level filter is not.
 - **Numbers:** `AnimatedNumber` tabular.
 - **SFX:** Web Audio `thud` / `bass` / `pop` / `hover` / `tap` / `success` / `whoosh`. Key `talent-desk.sfx-muted`. Default muted. Honors `prefers-reduced-motion`.
 
@@ -366,6 +372,8 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** honor `prefers-reduced-motion` (global 0.01ms, no SFX) and keep chrome transitions at 200ms unless a named motion token applies.
 - **Do** keep auth as a centered glass card with orbs; do not put the rail on `/login` or `/register`.
 - **Do** keep SFX muted by default; never auto-unmute.
+- **Do** portal Modal/Drawer to `document.body`. Keep glass pane padding at `p-6` / `sm:p-7` and `CardTitle` at `text-xl`.
+- **Do** confirm candidate delete in a modal that names the person; cascade interviews and earnings, leave offers.
 
 ### Don't:
 - **Don't** restore the violet-conversion Neon Signal Desk (`#080A10` canvas, `#7C3AED` primary CTA, magenta inset nav bar, gradient TD mark).
@@ -374,4 +382,5 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Don't** treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill.
 - **Don't** add a second product look for Admin — it uses the same cards, tables, and badges.
 - **Don't** seed demo income or restore a demo-preview bypass on the login screen.
+- **Don't** put CSS `filter` or backdrop-blur on `PageTransition` or the modal overlay — that was the half-viewport black cut.
 - **Don't** commit secrets, password hashes, or live account JSON into either design file.

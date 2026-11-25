@@ -1,8 +1,8 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `e365629eb2ace1dd5e35f351f2e19ca447aac112` (2026-11-25, “Merge pull request #8 from 38plug/cursor/dashboard-type-scale-e833” on `main`)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens extracted from `src/index.css` `@theme` (lime-glass rebuild at `a0ef48c`, type-scale at `788ca10`).
+> **Documented from:** `ed508ae6012e38a8b09ac3659d70c58c9196ed69` (2026-11-25, “Merge pull request #13 from 38plug/cursor/delete-candidates-6eba” on `main`)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass at `a0ef48c`). Occupied-glass type/padding from PRs #8–#9 (`788ca10`, `bcb2dad`). Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13.
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from**, leave both docs untouched.
 
 ## What it is
@@ -12,7 +12,7 @@ Operate-mode **forex recruiting command center**: track candidates, scan offers 
 After sign-in:
 
 1. **Overview** (`/`) — KPI heroes, neon charts, estimated list (confirm → Pending), Needs Attention, recent candidates. Empty desk → zeros (no demo seed).
-2. **Candidates** (`/candidates`) — pipeline table, add modal, detail drawer (telegram / sent-by / stage).
+2. **Candidates** (`/candidates`) — pipeline table (name, location, stage, source, offer), Add/Edit modal (`wide`), detail drawer, **Delete** with a named confirm modal. Profile fields: country, age, languages, current location (migrated on load; older rows stay). Delete cascades interviews + earnings linked by candidate id; offers stay.
 3. **Offers** (`/offers`) — forex + Chinese, OCR scan + parse, provision wording, Telegram handle.
 4. **Interviews** (`/interviews`) — schedule against a candidate / offer.
 5. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
@@ -29,7 +29,8 @@ Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome o
 | Register | No session | `src/pages/RegisterPage.tsx` + `AuthShell` |
 | Boot | Session pending | `ProtectedRoute` + `PageLoader` |
 | Desk shell | Session required | `AppShell` |
-| Overview … Settings | Same | lazy pages under `AppShell` + `PageTransition` |
+| Overview … Settings | Same | lazy pages under `AppShell` + `PageTransition` (opacity/y only; no CSS filter) |
+| Overlays | Any desk page | `Modal` / `Drawer` portal to `document.body` (`z-[200]`) |
 | Admin | `canViewAdmin(role)` | `AdminRoute` + `AdminPage` |
 
 Unsigned visitors always go to `/login`. There is no `talent-desk-demo-ui` flag.
@@ -100,7 +101,7 @@ Store: `src/lib/local-db.ts`. App façade: `src/lib/api.ts`. Schema notes: `docs
 | --- | --- |
 | profiles (derived) | From the account row: role `owner \| admin \| moderator \| user` |
 | offers | Forex or Chinese package, commission/salary, telegram, visa/flight flags |
-| candidates | Pipeline stage, offer FK, telegram, sent_by, expected salary |
+| candidates | Pipeline stage, offer FK, telegram, sent_by, country, age, languages, currentLocation, expected salary |
 | interviews | Candidate + optional offer, `scheduled_at`, outcome |
 | earnings | Amount + `Estimated \| Pending \| Paid \| Overdue` |
 | activities | Feed rows (`entity_type`, `message`) |
@@ -110,6 +111,10 @@ Roles: `owner` > `admin` > `moderator` > `user`. Pipeline: Screening → Intervi
 Confirming an estimated earning sets status to **Pending** (`confirmEarning`). Pending + Paid + Overdue count as income; Estimated does not until confirmed.
 
 Import **replaces** accounts + data on that device. Settings download exports hashes+salts (`includePasswords: true` currently means hash/salt, not plaintext). Import also accepts a one-time plaintext `"password"` per account.
+
+`migrateCandidate` fills missing `country` / `age` / `languages` / `currentLocation` with null on load and import — it does not wipe older rows.
+
+`deleteCandidateRow` removes the candidate and any interviews/earnings with that `candidateId` for the same user. Linked offers are not deleted. Confirm UI names the candidate before the mutation runs.
 
 ## Offers pipeline
 
@@ -141,7 +146,7 @@ src/auth/ProtectedRoute.tsx            → session required; AdminRoute
 src/pages/LoginPage.tsx
 src/pages/RegisterPage.tsx
 src/pages/DashboardPage.tsx
-src/pages/CandidatesPage.tsx
+src/pages/CandidatesPage.tsx          → add/edit (wide modal), drawer, named delete confirm
 src/pages/OffersPage.tsx
 src/pages/InterviewsPage.tsx
 src/pages/EarningsPage.tsx
@@ -149,8 +154,8 @@ src/pages/SettingsPage.tsx              → password + JSON import/export
 src/pages/AdminPage.tsx
 src/components/layout/AppShell.tsx     → collapsible rail + header + slide-pill
 src/components/auth/AuthShell.tsx      → orbs + glass card + sound toggle
-src/components/motion/*                → PageTransition, Motion, AnimatedNumber, SoundToggle
-src/components/ui/*                    → Button, Input, Card, Badge, Modal, charts
+src/components/motion/*                → PageTransition (opacity/y, no filter), Motion, AnimatedNumber, SoundToggle
+src/components/ui/*                    → Button, Input, Card (p-6, CardTitle text-xl), Badge, Modal/Drawer (body portal), charts
 src/lib/api.ts                         → app façade over local-db
 src/lib/local-db.ts                    → accounts, CRUD, import/export, PBKDF2
 src/lib/constants.ts                   → APP_NAME, roles, stages, nav
@@ -171,7 +176,7 @@ README.md                              → local setup + Vercel runbook
 | Token | Where |
 | --- | --- |
 | GSAP slide-pill (lead 0.36s `power3.out`, trail 0.55s `power3.inOut`) | Rail active item |
-| Page blur/scale 0.45s in / 0.22s out | `PageTransition` |
+| Page opacity + y 0.35s in / 0.18s out (no CSS filter) | `PageTransition` |
 | `fadeUp` + stagger 0.07 | Dashboard, auth form |
 | `AnimatedNumber` | KPIs, gauge, live-desk money |
 | `thud` | Collapse, mobile menu |
@@ -189,6 +194,7 @@ README.md                              → local setup + Vercel runbook
 - `EmptyState` eyebrow is still `text-violet-glow`; `Spinner` is still violet/cyan. Prefer peach kickers and lime spinners on new work.
 - `button` magenta / cyan variants remain in the API; register is lime, not magenta.
 - `SPARK_SERIES` in `demo-data.ts` is decorative spark shape, not live income.
+- Drawer still allows inline telegram/sent-by/stage patches; full profile edits go through the wide Add/Edit modal.
 
 ## Invariants for the next build
 
@@ -198,11 +204,13 @@ README.md                              → local setup + Vercel runbook
 4. **Confirm estimated → Pending.** `confirmEarning` must not jump straight to Paid. Estimated is not income.
 5. **Empty desk is zeros.** Never invent `DEMO_METRICS` as live money. The Overview banner must stay while the pipeline is empty.
 6. **Friendly auth errors.** Map through `friendlyAuthError`. Do not surface stack traces on login.
-7. **Visual world is The Lime Glass Desk.** New UI goes through `DESIGN.md` (lime conversion, peach kickers, charcoal `#111`, Plus Jakarta / JetBrains Mono, stretchy pill, glass Overview). Do not restore The Neon Signal Desk (violet conversion, `#080A10`, magenta inset nav).
+7. **Visual world is The Lime Glass Desk.** New UI goes through `DESIGN.md` (lime conversion, peach kickers, charcoal `#111`, Plus Jakarta / JetBrains Mono, stretchy pill, glass Overview, occupied type). Do not restore The Neon Signal Desk (violet conversion, `#080A10`, magenta inset nav).
 8. **SFX stay muted by default.** Do not auto-unmute. Honor `prefers-reduced-motion`.
 9. **No backend env.** Do not reintroduce `@supabase/*`, Edge Functions, or `VITE_SUPABASE_*` unless a later rebuild explicitly adds a server.
 10. **Do not commit secrets.** Password hashes, salts, and export JSON with credentials stay out of git. Do not print `OWNER_EMAIL` in docs.
 11. **Vercel is a SPA, not an SSR host.** Keep `vercel.json` rewrites to `index.html`.
+12. **Overlays live on `document.body`.** Do not put CSS `filter` on `PageTransition`. Do not put `backdrop-blur` on the modal overlay.
+13. **Candidate delete is named + cascading.** Confirm modal must show the name. Cascade interviews and earnings; never delete the linked offer. Profile fields migrate; do not wipe older rows.
 
 ## How this documentation stays current
 
