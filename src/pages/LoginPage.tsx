@@ -41,7 +41,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthShell accent="violet">
+    <AuthShell accent="lime">
       <motion.form
         onSubmit={onSubmit}
         className="space-y-4"
@@ -54,7 +54,7 @@ export function LoginPage() {
           variants={reduce ? undefined : fadeUp}
         >
           <h2 className="text-lg font-bold">Sign in</h2>
-          <span className="rounded-full border border-cyan/30 bg-cyan/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-cyan uppercase">
+          <span className="rounded-full border border-lime/35 bg-lime/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-lime uppercase">
             {APP_NAME}
           </span>
         </motion.div>
@@ -113,7 +113,7 @@ export function LoginPage() {
         <motion.p className="text-center text-sm text-ink-muted" variants={reduce ? undefined : fadeUp}>
           New here?{' '}
           <Link
-            className="font-semibold text-cyan hover:underline"
+            className="font-semibold text-lime hover:underline"
             to="/register"
             onMouseEnter={() => playSfx('hover')}
             onClick={() => playSfx('whoosh')}

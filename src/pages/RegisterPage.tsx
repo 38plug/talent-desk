@@ -47,7 +47,7 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthShell accent="magenta">
+    <AuthShell accent="lime">
       <motion.form
         onSubmit={onSubmit}
         className="space-y-4"
@@ -57,8 +57,8 @@ export function RegisterPage() {
       >
         <motion.div variants={reduce ? undefined : fadeUp}>
           <h2 className="text-lg font-bold">Create account</h2>
-          <p className="mt-1 text-xs text-ink-muted">
-            Limited desk — max {MAX_ACCOUNTS} seats (owner excluded) · {APP_NAME}
+          <p className="floating-label mt-1 text-xs">
+            Limited desk — max {MAX_ACCOUNTS} seats · {APP_NAME}
           </p>
         </motion.div>
         <motion.div variants={reduce ? undefined : fadeUp}>
@@ -109,7 +109,7 @@ export function RegisterPage() {
         ) : null}
         <motion.div variants={reduce ? undefined : fadeUp} transition={springSnappy}>
           <MotionButtonShell>
-            <Button type="submit" variant="magenta" className="w-full" disabled={busy}>
+            <Button type="submit" variant="lime" className="w-full" disabled={busy}>
               {busy ? (
                 <>
                   <Spinner className="h-4 w-4" /> Creating account…
@@ -123,7 +123,7 @@ export function RegisterPage() {
         <motion.p className="text-center text-sm text-ink-muted" variants={reduce ? undefined : fadeUp}>
           Already have access?{' '}
           <Link
-            className="font-semibold text-cyan hover:underline"
+            className="font-semibold text-lime hover:underline"
             to="/login"
             onMouseEnter={() => playSfx('hover')}
             onClick={() => playSfx('whoosh')}

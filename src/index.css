@@ -4,15 +4,22 @@
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --color-canvas: #080a10;
-  --color-canvas-raised: #0b0d14;
-  --color-surface: #121622;
-  --color-surface-raised: #171c2b;
-  --color-surface-hover: #1c2235;
+  /* Reel-matched charcoal + glass */
+  --color-canvas: #111111;
+  --color-canvas-raised: #161616;
+  --color-surface: #1a1a1a;
+  --color-surface-raised: #1f1f1f;
+  --color-surface-hover: #262626;
 
   --color-border: rgb(255 255 255 / 0.08);
   --color-border-strong: rgb(255 255 255 / 0.14);
 
+  /* Primary accent from reel */
+  --color-lime: #c6f432;
+  --color-lime-glow: #d9ff6a;
+  --color-peach: #f4b183;
+
+  /* Secondary neon (Talent Desk heritage) */
   --color-violet: #7c3aed;
   --color-violet-glow: #a78bfa;
   --color-cyan: #22d3ee;
@@ -32,6 +39,7 @@
   --radius-control: 0.75rem;
   --radius-pill: 9999px;
 
+  --shadow-glow-lime: 0 0 28px rgb(198 244 50 / 0.35), 0 0 8px rgb(198 244 50 / 0.2);
   --shadow-glow-violet: 0 0 28px rgb(124 58 237 / 0.4), 0 0 8px rgb(124 58 237 / 0.25);
   --shadow-glow-cyan: 0 0 28px rgb(34 211 238 / 0.35), 0 0 8px rgb(34 211 238 / 0.2);
   --shadow-glow-magenta: 0 0 28px rgb(236 72 153 / 0.35), 0 0 8px rgb(236 72 153 / 0.2);
@@ -63,12 +71,12 @@
   }
 
   ::selection {
-    background: rgb(124 58 237 / 0.4);
-    color: white;
+    background: rgb(198 244 50 / 0.35);
+    color: #111;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-cyan);
+    outline: 2px solid var(--color-lime);
     outline-offset: 2px;
   }
 
@@ -84,7 +92,6 @@
     font-family: var(--font-mono);
   }
 
-  /* Soft neon scrollbars */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -93,15 +100,18 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgb(124 58 237 / 0.35);
+    background: rgb(198 244 50 / 0.28);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgb(34 211 238 / 0.45);
+    background: rgb(198 244 50 / 0.45);
   }
 }
 
 @layer utilities {
+  .glow-lime {
+    box-shadow: var(--shadow-glow-lime);
+  }
   .glow-violet {
     box-shadow: var(--shadow-glow-violet);
   }
@@ -111,6 +121,9 @@
   .glow-magenta {
     box-shadow: var(--shadow-glow-magenta);
   }
+  .text-glow-lime {
+    text-shadow: 0 0 18px rgb(198 244 50 / 0.45);
+  }
   .text-glow-cyan {
     text-shadow: 0 0 18px rgb(34 211 238 / 0.55);
   }
@@ -119,43 +132,43 @@
   }
   .bg-mesh {
     background:
-      radial-gradient(ellipse 90% 55% at 12% -8%, rgb(124 58 237 / 0.28), transparent 55%),
-      radial-gradient(ellipse 70% 45% at 92% 8%, rgb(34 211 238 / 0.14), transparent 50%),
-      radial-gradient(ellipse 55% 45% at 78% 95%, rgb(236 72 153 / 0.12), transparent 55%),
-      radial-gradient(circle at 50% 50%, rgb(12 14 24 / 0.4), var(--color-canvas));
+      radial-gradient(ellipse 80% 50% at 10% -5%, rgb(198 244 50 / 0.08), transparent 50%),
+      radial-gradient(ellipse 70% 45% at 92% 8%, rgb(124 58 237 / 0.12), transparent 50%),
+      radial-gradient(ellipse 55% 45% at 78% 95%, rgb(244 177 131 / 0.08), transparent 55%),
+      var(--color-canvas);
   }
   .card-surface {
     background:
-      linear-gradient(165deg, rgb(28 34 52 / 0.92), rgb(18 22 34 / 0.98) 55%),
-      linear-gradient(135deg, rgb(124 58 237 / 0.06), transparent 40%);
+      linear-gradient(165deg, rgb(32 32 32 / 0.95), rgb(22 22 22 / 0.98) 55%),
+      linear-gradient(135deg, rgb(198 244 50 / 0.04), transparent 40%);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-card);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
   }
   .glass-panel {
     background:
-      linear-gradient(160deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.02) 40%, rgb(18 22 34 / 0.72)),
-      linear-gradient(135deg, rgb(124 58 237 / 0.1), transparent 45%);
-    border: 1px solid rgb(255 255 255 / 0.1);
+      linear-gradient(160deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.02) 40%, rgb(20 20 20 / 0.78)),
+      linear-gradient(135deg, rgb(198 244 50 / 0.05), transparent 45%);
+    border: 1px solid rgb(255 255 255 / 0.09);
     border-radius: var(--radius-card);
-    backdrop-filter: blur(18px) saturate(1.35);
-    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    backdrop-filter: blur(20px) saturate(1.25);
+    -webkit-backdrop-filter: blur(20px) saturate(1.25);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.08),
-      0 0 0 1px rgb(124 58 237 / 0.1),
-      0 18px 48px rgb(0 0 0 / 0.4);
+      inset 0 1px 0 rgb(255 255 255 / 0.07),
+      0 0 0 1px rgb(198 244 50 / 0.06),
+      0 18px 48px rgb(0 0 0 / 0.45);
   }
   .card-glow {
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.05),
-      0 0 0 1px rgb(124 58 237 / 0.12),
-      0 12px 40px rgb(0 0 0 / 0.35);
+      0 0 0 1px rgb(198 244 50 / 0.1),
+      0 12px 40px rgb(0 0 0 / 0.4);
   }
   .hero-gradient-violet {
-    background: linear-gradient(135deg, #6d28d9 0%, #a21caf 45%, #db2777 100%);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a1848 45%, #1a2a22 100%);
   }
   .hero-gradient-cyan {
-    background: linear-gradient(135deg, #0e7490 0%, #0891b2 40%, #22d3ee 100%);
+    background: linear-gradient(135deg, #c6f432 0%, #a8d92a 40%, #8bc420 100%);
   }
   .pill-toggle {
     border-radius: var(--radius-pill);
@@ -172,9 +185,9 @@
     transition: all 0.2s ease;
   }
   .pill-toggle-item[data-active="true"] {
-    background: var(--color-violet);
-    color: white;
-    box-shadow: var(--shadow-glow-violet);
+    background: var(--color-lime);
+    color: #111;
+    box-shadow: var(--shadow-glow-lime);
   }
   .data-table {
     width: 100%;
@@ -198,21 +211,29 @@
     transition: background 0.15s ease;
   }
   .data-table tbody tr:hover {
-    background: rgb(124 58 237 / 0.06);
+    background: rgb(198 244 50 / 0.05);
   }
   .auth-orb {
     pointer-events: none;
     position: absolute;
     border-radius: 9999px;
     filter: blur(48px);
-    opacity: 0.55;
+    opacity: 0.45;
   }
-  .nav-active {
-    background: linear-gradient(90deg, rgb(124 58 237 / 0.28), rgb(124 58 237 / 0.08));
-    box-shadow:
-      inset 3px 0 0 var(--color-magenta),
-      inset 0 0 0 1px rgb(124 58 237 / 0.35),
-      0 0 24px rgb(124 58 237 / 0.2);
+  .nav-pill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: var(--color-lime);
+    border-radius: 14px;
+    box-shadow: var(--shadow-glow-lime);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .floating-label {
+    color: var(--color-peach);
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 }
 
