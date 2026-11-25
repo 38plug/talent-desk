@@ -66,7 +66,7 @@ export function AdminPage() {
         description={
           error instanceof Error
             ? error.message
-            : 'Deploy the admin-stats Edge Function (service role) for full aggregates. See README.'
+            : 'Could not load local admin stats.'
         }
         action={
           <Button variant="secondary" onClick={() => void refetch()}>
@@ -108,8 +108,7 @@ export function AdminPage() {
         <div className="rounded-xl border border-rose/30 bg-rose/10 px-3 py-2 text-sm text-rose">
           {actionError}
           <p className="mt-1 text-xs text-ink-muted">
-            Role/password/delete require the <code>admin-account</code> Edge Function with the
-            service role key.
+            Admin actions update accounts stored in this browser.
           </p>
         </div>
       ) : null}
@@ -203,8 +202,8 @@ export function AdminPage() {
         <ul className="list-disc space-y-1 pl-5 text-sm text-ink-muted">
           <li>Owner cannot be demoted or deleted.</li>
           <li>Admins may only manage user/moderator targets.</li>
-          <li>Income stays private per account (RLS); stats show aggregates only.</li>
-          <li>Local SMTP is unconfigured — password reset returns a copyable recovery link.</li>
+          <li>Income stays private per account on this device; stats show aggregates only.</li>
+          <li>Reset generates a temporary password (no email) — copy it immediately.</li>
         </ul>
       </Card>
 

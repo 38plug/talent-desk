@@ -1,64 +1,32 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthProvider'
-import { enableDemoUi } from '@/auth/demoUi'
-import { AuthConnectivityBanner } from '@/components/auth/AuthConnectivityBanner'
 import { Button, Input, Label, Spinner } from '@/components/ui'
+import { loginAccount } from '@/lib/api'
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants'
-import {
-  checkSupabaseHealth,
-  friendlyAuthError,
-  requireSupabaseConfig,
-  supabase,
-  supabaseConfigured,
-} from '@/lib/supabase'
+import { friendlyAuthError } from '@/lib/local-db'
 
 export function LoginPage() {
-  const { session, loading } = useAuth()
+  const { session, loading, notifyAuthChanged } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [hint, setHint] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const [healthTick, setHealthTick] = useState(0)
 
   if (!loading && session) return <Navigate to="/" replace />
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    setHint(null)
-
-    const cfg = requireSupabaseConfig()
-    if (cfg) {
-      setError('Supabase is not configured.')
-      setHint(cfg)
-      setHealthTick((n) => n + 1)
-      return
-    }
-
     setBusy(true)
     try {
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password })
-      if (err) {
-        const friendly = friendlyAuthError(err)
-        setError(friendly.message)
-        if (friendly.hint) {
-          setHint(friendly.hint)
-        } else if (/fetch|network|reach/i.test(friendly.message)) {
-          const health = await checkSupabaseHealth()
-          if (!health.ok) setHint(health.hint)
-        }
-        setHealthTick((n) => n + 1)
-        return
-      }
+      await loginAccount(email, password)
+      notifyAuthChanged()
       navigate('/')
     } catch (err) {
       const friendly = friendlyAuthError(err)
       setError(friendly.message)
-      setHint(friendly.hint ?? null)
-      setHealthTick((n) => n + 1)
     } finally {
       setBusy(false)
     }
@@ -86,11 +54,14 @@ export function LoginPage() {
         >
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-lg font-bold">Sign in</h2>
-            <span className="rounded-full border border-violet/30 bg-violet/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-violet-glow uppercase">
-              Neon desk
+            <span className="rounded-full border border-cyan/30 bg-cyan/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-cyan uppercase">
+              {APP_NAME}
             </span>
           </div>
-          <AuthConnectivityBanner forceCheck={healthTick} />
+          <p className="text-xs leading-relaxed text-ink-muted">
+            Accounts and desk data stay in this browser (localStorage). Empty until you add records
+            or import JSON.
+          </p>
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
@@ -119,7 +90,6 @@ export function LoginPage() {
           {error ? (
             <div className="rounded-[14px] border border-rose/30 bg-rose/10 px-3 py-2.5 text-sm text-rose">
               <p className="font-semibold">{error}</p>
-              {hint ? <p className="mt-1 text-xs leading-relaxed text-ink-muted">{hint}</p> : null}
             </div>
           ) : null}
           <Button type="submit" className="w-full" disabled={busy}>
@@ -137,19 +107,6 @@ export function LoginPage() {
               Create account
             </Link>
           </p>
-          {!supabaseConfigured ? (
-            <Button
-              type="button"
-              variant="secondary"
-              className="w-full"
-              onClick={() => {
-                enableDemoUi()
-                navigate('/')
-              }}
-            >
-              Preview shell only (no fake data)
-            </Button>
-          ) : null}
         </form>
       </div>
     </div>

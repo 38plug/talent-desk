@@ -7,35 +7,35 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
-import { fetchProfile } from '@/lib/api'
-import { clearDemoUi, isDemoUi } from '@/auth/demoUi'
-import { supabase, supabaseConfigured } from '@/lib/supabase'
+import { fetchProfile, logoutAccount } from '@/lib/api'
+import { getSession, type AuthSession } from '@/lib/local-db'
 import type { Profile } from '@/lib/types'
 
-const DEMO_PROFILE: Profile = {
-  id: 'demo',
-  email: 'demo@talentdesk.local',
-  fullName: 'Demo Operator',
-  role: 'owner',
-  createdAt: new Date().toISOString(),
-}
+type AuthUser = { id: string; email: string }
 
 type AuthState = {
-  session: Session | null
-  user: User | null
+  session: { user: AuthUser } | null
+  user: AuthUser | null
   profile: Profile | null
   loading: boolean
   refreshProfile: () => Promise<void>
   signOut: () => Promise<void>
+  /** Call after login/register so UI picks up localStorage session */
+  notifyAuthChanged: () => void
 }
 
 const AuthContext = createContext<AuthState | null>(null)
 
+function sessionFromStore(s: AuthSession | null): { user: AuthUser } | null {
+  if (!s) return null
+  return { user: { id: s.userId, email: s.email } }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null)
+  const [session, setSession] = useState<{ user: AuthUser } | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [tick, setTick] = useState(0)
 
   const loadProfile = useCallback(async (userId: string) => {
     const p = await fetchProfile(userId)
@@ -43,41 +43,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      if (!supabaseConfigured) {
-        setLoading(false)
-        return
-      }
-      try {
-        const { data } = await supabase.auth.getSession()
-        if (!mounted) return
-        setSession(data.session)
-        if (data.session?.user) await loadProfile(data.session.user.id)
-      } catch {
-        // Unreachable Supabase should not blank the auth screens.
-        if (mounted) {
-          setSession(null)
-          setProfile(null)
-        }
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    })()
-
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next)
-      if (next?.user) void loadProfile(next.user.id)
-      else setProfile(null)
-    })
-    return () => {
-      mounted = false
-      sub.subscription.unsubscribe()
+    const s = sessionFromStore(getSession())
+    setSession(s)
+    if (s?.user) {
+      void loadProfile(s.user.id).finally(() => setLoading(false))
+    } else {
+      setProfile(null)
+      setLoading(false)
     }
-  }, [loadProfile])
+  }, [loadProfile, tick])
+
+  const notifyAuthChanged = useCallback(() => {
+    setLoading(true)
+    setTick((n) => n + 1)
+  }, [])
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut()
+    await logoutAccount()
+    setSession(null)
     setProfile(null)
   }, [])
 
@@ -85,20 +68,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (session?.user) await loadProfile(session.user.id)
   }, [loadProfile, session?.user])
 
-  const demo = !session && isDemoUi()
   const value = useMemo(
     () => ({
       session,
       user: session?.user ?? null,
-      profile: profile ?? (demo ? DEMO_PROFILE : null),
+      profile,
       loading,
       refreshProfile,
-      signOut: async () => {
-        clearDemoUi()
-        await signOut()
-      },
+      signOut,
+      notifyAuthChanged,
     }),
-    [session, profile, loading, refreshProfile, signOut, demo],
+    [session, profile, loading, refreshProfile, signOut, notifyAuthChanged],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

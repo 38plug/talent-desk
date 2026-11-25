@@ -85,7 +85,7 @@ export function DashboardPage() {
       {data.candidates === 0 && data.liveOffers === 0 && data.totalIncome === 0 && data.estimated === 0 ? (
         <div className="rounded-[16px] border border-cyan/30 bg-cyan/10 px-4 py-3 text-sm text-cyan shadow-[0_0_24px_rgb(34_211_238/0.12)]">
           <span className="font-semibold">{APP_NAME}</span> has no pipeline rows yet for this account.
-          KPIs stay at zero until your real data is loaded (hosted Supabase) or you add records.
+          KPIs stay at zero until you add records or import JSON from Settings.
         </div>
       ) : null}
 

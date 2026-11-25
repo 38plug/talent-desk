@@ -1,4 +1,32 @@
-import { supabase, supabaseConfigured } from './supabase'
+import {
+  adminDeleteAccountRow,
+  adminListStats,
+  adminResetPasswordRow,
+  adminSetPasswordRow,
+  adminUpdateRoleRow,
+  changePassword as dbChangePassword,
+  confirmEarningRow,
+  deleteCandidateRow,
+  deleteEarningRow,
+  deleteInterviewRow,
+  deleteOfferRow,
+  exportDeskJson,
+  getProfile,
+  importDeskJson,
+  listActivities,
+  listCandidates,
+  listEarnings,
+  listInterviews,
+  listOffers,
+  registerAccount as dbRegister,
+  requireSession,
+  signIn as dbSignIn,
+  signOut as dbSignOut,
+  upsertCandidateRow,
+  upsertEarningRow,
+  upsertInterviewRow,
+  upsertOfferRow,
+} from './local-db'
 import type {
   Activity,
   AdminStats,
@@ -9,7 +37,7 @@ import type {
   Offer,
   Profile,
 } from './types'
-import { ADMIN_VIEW_ROLES, MAX_ACCOUNTS, OWNER_EMAIL, type Role } from './constants'
+import { ADMIN_VIEW_ROLES, type Role } from './constants'
 import { parseNumericInput, stripAtHandle } from './utils'
 
 /** Honest empty desk — never invents fake income/candidates. */
@@ -35,164 +63,33 @@ const EMPTY_METRICS: DashboardMetrics = {
   isDemo: false,
 }
 
-function mapProfile(row: Record<string, unknown>): Profile {
-  return {
-    id: String(row.id),
-    email: String(row.email ?? ''),
-    fullName: (row.full_name as string) ?? (row.fullName as string) ?? null,
-    role: (row.role as Role) ?? 'user',
-    createdAt: String(row.created_at ?? row.createdAt ?? ''),
-  }
-}
-
-function mapOffer(row: Record<string, unknown>): Offer {
-  return {
-    id: String(row.id),
-    userId: String(row.user_id ?? row.userId ?? ''),
-    title: String(row.title ?? ''),
-    company: (row.company as string) ?? null,
-    category: (row.category as Offer['category']) ?? 'forex',
-    status: (row.status as Offer['status']) ?? 'Live',
-    commissionType: (row.commission_type as Offer['commissionType']) ?? 'fixed',
-    commissionValue: num(row.commission_value ?? row.commissionValue),
-    commission: num(row.commission),
-    salaryMin: num(row.salary_min ?? row.salaryMin),
-    salaryMax: num(row.salary_max ?? row.salaryMax),
-    salary: num(row.salary),
-    location: (row.location as string) ?? null,
-    telegram: (row.telegram as string) ?? null,
-    description: (row.description as string) ?? null,
-    roleType: (row.role_type as string) ?? (row.roleType as string) ?? null,
-    accommodation: bool(row.accommodation),
-    visa: bool(row.visa),
-    flight: bool(row.flight),
-    videoCall: bool(row.video_call ?? row.videoCall),
-    createdAt: String(row.created_at ?? ''),
-    updatedAt: String(row.updated_at ?? ''),
-  }
-}
-
-function mapCandidate(row: Record<string, unknown>): Candidate {
-  return {
-    id: String(row.id),
-    userId: String(row.user_id ?? ''),
-    name: String(row.name ?? ''),
-    email: (row.email as string) ?? null,
-    phone: (row.phone as string) ?? null,
-    source: (row.source as string) ?? null,
-    stage: (row.stage as Candidate['stage']) ?? 'Screening',
-    offerId: (row.offer_id as string) ?? (row.offerId as string) ?? null,
-    telegram: (row.telegram as string) ?? null,
-    sentBy: (row.sent_by as string) ?? (row.sentBy as string) ?? null,
-    notes: (row.notes as string) ?? null,
-    expectedSalary: num(row.expected_salary ?? row.expectedSalary),
-    createdAt: String(row.created_at ?? ''),
-    updatedAt: String(row.updated_at ?? ''),
-  }
-}
-
-function mapInterview(row: Record<string, unknown>): Interview {
-  return {
-    id: String(row.id),
-    userId: String(row.user_id ?? ''),
-    candidateId: String(row.candidate_id ?? row.candidateId ?? ''),
-    offerId: (row.offer_id as string) ?? null,
-    scheduledAt: String(row.scheduled_at ?? row.scheduledAt ?? ''),
-    outcome: (row.outcome as string) ?? null,
-    notes: (row.notes as string) ?? null,
-    createdAt: String(row.created_at ?? ''),
-  }
-}
-
-function mapEarning(row: Record<string, unknown>): Earning {
-  return {
-    id: String(row.id),
-    userId: String(row.user_id ?? ''),
-    candidateId: (row.candidate_id as string) ?? null,
-    offerId: (row.offer_id as string) ?? null,
-    amount: num(row.amount) ?? 0,
-    status: (row.status as Earning['status']) ?? 'Estimated',
-    notes: (row.notes as string) ?? null,
-    createdAt: String(row.created_at ?? ''),
-    updatedAt: String(row.updated_at ?? ''),
-  }
-}
-
-function mapActivity(row: Record<string, unknown>): Activity {
-  return {
-    id: String(row.id),
-    userId: String(row.user_id ?? ''),
-    entityType: String(row.entity_type ?? row.entityType ?? ''),
-    entityId: (row.entity_id as string) ?? null,
-    message: String(row.message ?? ''),
-    createdAt: String(row.created_at ?? ''),
-  }
-}
-
-function num(v: unknown): number | null {
-  if (v === null || v === undefined || v === '') return null
-  const n = Number(v)
-  return Number.isFinite(n) ? n : null
-}
-
-function bool(v: unknown): boolean | null {
-  if (v === null || v === undefined) return null
-  return Boolean(v)
-}
-
 export async function fetchProfile(userId: string): Promise<Profile | null> {
-  if (!supabaseConfigured) return null
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
-  if (error || !data) return null
-  return mapProfile(data as Record<string, unknown>)
+  return getProfile(userId)
 }
 
 export async function fetchOffers(): Promise<Offer[]> {
-  if (!supabaseConfigured) return []
-  const { data, error } = await supabase.from('offers').select('*').order('created_at', { ascending: false })
-  if (error || !data) return []
-  return data.map((r) => mapOffer(r as Record<string, unknown>))
+  const { userId } = requireSession()
+  return listOffers(userId)
 }
 
 export async function fetchCandidates(): Promise<Candidate[]> {
-  if (!supabaseConfigured) return []
-  const { data, error } = await supabase
-    .from('candidates')
-    .select('*')
-    .order('updated_at', { ascending: false })
-  if (error || !data) return []
-  return data.map((r) => mapCandidate(r as Record<string, unknown>))
+  const { userId } = requireSession()
+  return listCandidates(userId)
 }
 
 export async function fetchInterviews(): Promise<Interview[]> {
-  if (!supabaseConfigured) return []
-  const { data, error } = await supabase
-    .from('interviews')
-    .select('*')
-    .order('scheduled_at', { ascending: true })
-  if (error || !data) return []
-  return data.map((r) => mapInterview(r as Record<string, unknown>))
+  const { userId } = requireSession()
+  return listInterviews(userId)
 }
 
 export async function fetchEarnings(): Promise<Earning[]> {
-  if (!supabaseConfigured) return []
-  const { data, error } = await supabase
-    .from('earnings')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error || !data) return []
-  return data.map((r) => mapEarning(r as Record<string, unknown>))
+  const { userId } = requireSession()
+  return listEarnings(userId)
 }
 
 export async function fetchActivities(limit = 20): Promise<Activity[]> {
-  if (!supabaseConfigured) return []
-  const { data, error } = await supabase
-    .from('activities')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(limit)
-  if (error || !data) return []
-  return data.map((r) => mapActivity(r as Record<string, unknown>))
+  const { userId } = requireSession()
+  return listActivities(userId, limit)
 }
 
 export async function getDashboardData(): Promise<DashboardMetrics> {
@@ -315,45 +212,29 @@ export async function getDashboardData(): Promise<DashboardMetrics> {
 }
 
 export async function confirmEarning(id: string): Promise<void> {
-  const { error } = await supabase.from('earnings').update({ status: 'Pending' }).eq('id', id)
-  if (error) throw error
+  const { userId } = requireSession()
+  confirmEarningRow(userId, id)
 }
 
 export async function upsertCandidate(
   payload: Partial<Candidate> & { name: string },
   id?: string,
 ): Promise<void> {
-  const row = {
-    name: payload.name,
-    email: payload.email || null,
-    phone: payload.phone || null,
-    source: payload.source || null,
-    stage: payload.stage || 'Screening',
-    offer_id: payload.offerId || null,
-    telegram: payload.telegram ? stripAtHandle(payload.telegram) || null : null,
-    sent_by: payload.sentBy ? stripAtHandle(payload.sentBy) || null : null,
-    notes: payload.notes || null,
-    expected_salary: payload.expectedSalary ?? null,
-    updated_at: new Date().toISOString(),
-  }
-  if (id) {
-    const { error } = await supabase.from('candidates').update(row).eq('id', id)
-    if (error) throw error
-  } else {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    const { error } = await supabase.from('candidates').insert({
-      ...row,
-      user_id: user?.id,
-    })
-    if (error) throw error
-  }
+  const { userId } = requireSession()
+  upsertCandidateRow(
+    userId,
+    {
+      ...payload,
+      telegram: payload.telegram ? stripAtHandle(payload.telegram) || null : null,
+      sentBy: payload.sentBy ? stripAtHandle(payload.sentBy) || null : null,
+    },
+    id,
+  )
 }
 
 export async function deleteCandidate(id: string): Promise<void> {
-  const { error } = await supabase.from('candidates').delete().eq('id', id)
-  if (error) throw error
+  const { userId } = requireSession()
+  deleteCandidateRow(userId, id)
 }
 
 export async function upsertOffer(
@@ -379,42 +260,36 @@ export async function upsertOffer(
   },
   id?: string,
 ): Promise<void> {
-  const row = {
-    title: payload.title,
-    company: payload.company || null,
-    category: payload.category,
-    status: payload.status,
-    commission_type: payload.commissionType,
-    commission_value: parseNumericInput(payload.commissionValue ?? ''),
-    commission: parseNumericInput(payload.commission ?? ''),
-    salary_min: parseNumericInput(payload.salaryMin ?? ''),
-    salary_max: parseNumericInput(payload.salaryMax ?? ''),
-    salary: parseNumericInput(payload.salary ?? ''),
-    location: payload.location || null,
-    telegram: payload.telegram ? stripAtHandle(payload.telegram) || null : null,
-    description: payload.description || null,
-    role_type: payload.roleType || null,
-    accommodation: payload.accommodation ?? null,
-    visa: payload.visa ?? null,
-    flight: payload.flight ?? null,
-    video_call: payload.videoCall ?? null,
-    updated_at: new Date().toISOString(),
-  }
-  if (id) {
-    const { error } = await supabase.from('offers').update(row).eq('id', id)
-    if (error) throw error
-  } else {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    const { error } = await supabase.from('offers').insert({ ...row, user_id: user?.id })
-    if (error) throw error
-  }
+  const { userId } = requireSession()
+  upsertOfferRow(
+    userId,
+    {
+      title: payload.title,
+      company: payload.company || null,
+      category: payload.category,
+      status: payload.status,
+      commissionType: payload.commissionType,
+      commissionValue: parseNumericInput(payload.commissionValue ?? ''),
+      commission: parseNumericInput(payload.commission ?? ''),
+      salaryMin: parseNumericInput(payload.salaryMin ?? ''),
+      salaryMax: parseNumericInput(payload.salaryMax ?? ''),
+      salary: parseNumericInput(payload.salary ?? ''),
+      location: payload.location || null,
+      telegram: payload.telegram ? stripAtHandle(payload.telegram) || null : null,
+      description: payload.description || null,
+      roleType: payload.roleType || null,
+      accommodation: payload.accommodation ?? null,
+      visa: payload.visa ?? null,
+      flight: payload.flight ?? null,
+      videoCall: payload.videoCall ?? null,
+    },
+    id,
+  )
 }
 
 export async function deleteOffer(id: string): Promise<void> {
-  const { error } = await supabase.from('offers').delete().eq('id', id)
-  if (error) throw error
+  const { userId } = requireSession()
+  deleteOfferRow(userId, id)
 }
 
 export async function upsertInterview(
@@ -427,28 +302,13 @@ export async function upsertInterview(
   },
   id?: string,
 ): Promise<void> {
-  const row = {
-    candidate_id: payload.candidateId,
-    offer_id: payload.offerId || null,
-    scheduled_at: payload.scheduledAt,
-    outcome: payload.outcome || null,
-    notes: payload.notes || null,
-  }
-  if (id) {
-    const { error } = await supabase.from('interviews').update(row).eq('id', id)
-    if (error) throw error
-  } else {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    const { error } = await supabase.from('interviews').insert({ ...row, user_id: user?.id })
-    if (error) throw error
-  }
+  const { userId } = requireSession()
+  upsertInterviewRow(userId, payload, id)
 }
 
 export async function deleteInterview(id: string): Promise<void> {
-  const { error } = await supabase.from('interviews').delete().eq('id', id)
-  if (error) throw error
+  const { userId } = requireSession()
+  deleteInterviewRow(userId, id)
 }
 
 export async function upsertEarning(
@@ -461,155 +321,60 @@ export async function upsertEarning(
   },
   id?: string,
 ): Promise<void> {
-  const row = {
-    candidate_id: payload.candidateId || null,
-    offer_id: payload.offerId || null,
-    amount: payload.amount,
-    status: payload.status,
-    notes: payload.notes || null,
-    updated_at: new Date().toISOString(),
-  }
-  if (id) {
-    const { error } = await supabase.from('earnings').update(row).eq('id', id)
-    if (error) throw error
-  } else {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    const { error } = await supabase.from('earnings').insert({ ...row, user_id: user?.id })
-    if (error) throw error
-  }
+  const { userId } = requireSession()
+  upsertEarningRow(userId, payload, id)
 }
 
 export async function deleteEarning(id: string): Promise<void> {
-  const { error } = await supabase.from('earnings').delete().eq('id', id)
-  if (error) throw error
+  const { userId } = requireSession()
+  deleteEarningRow(userId, id)
 }
 
-/** Register via Edge Function (service role + seat cap). Falls back to client signUp if fn missing. */
 export async function registerAccount(email: string, password: string, fullName?: string) {
-  if (email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
-    throw new Error('This email is reserved.')
-  }
+  await dbRegister(email, password, fullName)
+}
 
-  let fnData: { ok?: boolean; error?: string } | null = null
-  try {
-    const invoked = await supabase.functions.invoke('register', {
-      body: { email, password, fullName },
-    })
-    fnData = invoked.data as { ok?: boolean; error?: string } | null
-    // Business errors from the function (seat cap, reserved) should surface.
-    if (fnData?.error && !invoked.error) {
-      throw new Error(String(fnData.error))
-    }
-    if (!invoked.error && fnData?.ok) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
-      return
-    }
-  } catch (err) {
-    // Only rethrow explicit business errors; network / missing-fn falls through to signUp.
-    if (err instanceof Error && /maximum|reserved|4 accounts/i.test(err.message)) {
-      throw err
-    }
-  }
+export async function loginAccount(email: string, password: string) {
+  await dbSignIn(email, password)
+}
 
-  // Fallback: client signUp (DB trigger still enforces seat cap)
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { full_name: fullName || '' } },
-  })
-  if (error) {
-    if (/maximum|account limit|4 accounts/i.test(error.message)) {
-      throw new Error('Maximum of 4 accounts reached. No more registrations allowed.')
-    }
-    throw error
-  }
-  if (!data.session) {
-    const login = await supabase.auth.signInWithPassword({ email, password })
-    if (login.error) throw login.error
-  }
+export async function logoutAccount() {
+  dbSignOut()
 }
 
 export async function changePassword(currentPassword: string, newPassword: string) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user?.email) throw new Error('Not signed in')
-  const { error: verify } = await supabase.auth.signInWithPassword({
-    email: user.email,
-    password: currentPassword,
-  })
-  if (verify) throw new Error('Current password is incorrect')
-  const { error } = await supabase.auth.updateUser({ password: newPassword })
-  if (error) throw error
+  await dbChangePassword(currentPassword, newPassword)
 }
 
 export async function fetchAdminStats(): Promise<AdminStats | null> {
-  const { data, error } = await supabase.functions.invoke('admin-stats')
-  if (!error && data && !data.error) return data as AdminStats
-
-  // Client fallback: aggregate from profiles + counts (RLS may limit)
-  const { data: profiles } = await supabase.from('profiles').select('*')
-  if (!profiles) return null
-  const mapped = profiles.map((p) => mapProfile(p as Record<string, unknown>))
-  const nonOwner = mapped.filter((p) => p.role !== 'owner' && p.email !== OWNER_EMAIL)
-  return {
-    accounts: mapped.length,
-    seatsUsed: nonOwner.length,
-    seatsMax: MAX_ACCOUNTS,
-    candidates: 0,
-    offers: 0,
-    interviews: 0,
-    earnings: 0,
-    estimated: 0,
-    perAccount: mapped.map((p) => ({
-      id: p.id,
-      email: p.email,
-      fullName: p.fullName,
-      role: p.role,
-      candidates: 0,
-      offers: 0,
-      interviews: 0,
-      earnings: 0,
-    })),
-  }
+  return adminListStats()
 }
 
 export async function adminUpdateRole(id: string, role: Role) {
-  const { data, error } = await supabase.functions.invoke('admin-account', {
-    body: { id, action: 'role', role },
-  })
-  if (error) throw error
-  if (data?.error) throw new Error(String(data.error))
+  adminUpdateRoleRow(id, role)
 }
 
 export async function adminDeleteAccount(id: string) {
-  const { data, error } = await supabase.functions.invoke('admin-account', {
-    body: { id, action: 'delete' },
-  })
-  if (error) throw error
-  if (data?.error) throw new Error(String(data.error))
+  adminDeleteAccountRow(id)
 }
 
 export async function adminSetPassword(id: string, password: string) {
-  const { data, error } = await supabase.functions.invoke('admin-account', {
-    body: { id, action: 'password', password },
-  })
-  if (error) throw error
-  if (data?.error) throw new Error(String(data.error))
+  await adminSetPasswordRow(id, password)
 }
 
 export async function adminResetLink(id: string): Promise<string> {
-  const { data, error } = await supabase.functions.invoke('admin-account', {
-    body: { id, action: 'reset' },
-  })
-  if (error) throw error
-  if (data?.error) throw new Error(String(data.error))
-  return String(data?.link ?? '')
+  return adminResetPasswordRow(id)
 }
 
 export function canViewAdmin(role: Role | null | undefined): boolean {
   return !!role && ADMIN_VIEW_ROLES.includes(role)
+}
+
+export function exportDataJson(includeCredentialHashes = false): string {
+  return JSON.stringify(exportDeskJson(includeCredentialHashes), null, 2)
+}
+
+export async function importDataJson(raw: string | unknown): Promise<{ accounts: number; rows: number }> {
+  const parsed = typeof raw === 'string' ? (JSON.parse(raw) as unknown) : raw
+  return importDeskJson(parsed)
 }

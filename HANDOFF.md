@@ -1,25 +1,23 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `b1240d3cffae23bc5ca12ed744ff3f384cbb3ef5` (2026-11-25, “Merge pull request #3 from 38plug/cursor/vercel-deploy-e833” on `main`)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens extracted from `src/index.css` `@theme` (unchanged since `77c73fa`; this artifact is hosting only).
-> **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from**, leave both docs untouched.
+> **Documented from:** strip-supabase localStorage rebuild (2026-11-25)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json)
+> **Refresh this file** whenever the desk is built or rebuilt.
 
 ## What it is
 
-Operate-mode **forex recruiting command center**: track candidates, scan offers (forex + Chinese packages), schedule interviews, and confirm estimated provision into income. One Vite SPA. There is no marketing site and no multi-product shell.
+Operate-mode **forex recruiting command center**: track candidates, scan offers (forex + Chinese packages), schedule interviews, and confirm estimated provision into income. One Vite static SPA on Vercel. No Supabase, no Edge Functions, no backend env.
 
-After sign-in (or demo UI preview):
+After sign-in:
 
-1. **Overview** (`/`) — KPI heroes, neon charts, estimated list (confirm → Pending), Needs Attention, recent candidates.
-2. **Candidates** (`/candidates`) — pipeline table, add modal, detail drawer (telegram / sent-by / stage).
-3. **Offers** (`/offers`) — forex + Chinese, OCR scan + parse, provision wording, Telegram handle.
+1. **Overview** (`/`) — KPI heroes, neon charts, estimated list (confirm → Pending), Needs Attention, recent candidates. Empty desk → zeros (no demo seed).
+2. **Candidates** (`/candidates`) — pipeline table, add modal, detail drawer.
+3. **Offers** (`/offers`) — forex + Chinese, OCR scan + parse, provision wording, Telegram.
 4. **Interviews** (`/interviews`) — schedule against a candidate / offer.
 5. **Earnings** (`/earnings`) — Estimated → Pending (confirm) → Paid / Overdue; CSV export.
-6. **Settings** (`/settings`) — profile + change password; pipeline stages listed as copy.
-7. **Admin** (`/admin`) — role-gated seats console (owner / admin / moderator view; owner / admin manage).
-
-Export is **table CSV**, not a payroll processor. Search in the header is chrome only.
+6. **Settings** (`/settings`) — profile, change password, **JSON import/export**.
+7. **Admin** (`/admin`) — role-gated seats console (local accounts on this device).
 
 ## Surfaces
 
@@ -28,158 +26,43 @@ Export is **table CSV**, not a payroll processor. Search in the header is chrome
 | Login | No session | `src/pages/LoginPage.tsx` |
 | Register | No session | `src/pages/RegisterPage.tsx` |
 | Boot | Session pending | `ProtectedRoute` + `PageLoader` |
-| Desk shell | Session **or** demo UI | `AppShell` |
+| Desk shell | Session required | `AppShell` |
 | Overview … Settings | Same | lazy pages under `AppShell` |
 | Admin | `canViewAdmin(role)` | `AdminRoute` + `AdminPage` |
 
-Unsigned visitors never see the desk unless they click **Preview Talent Desk UI** (only when `VITE_SUPABASE_*` is missing). `ProtectedRoute` waits on `AuthProvider.loading`, then `Navigate` to `/login` unless `session` or `localStorage['talent-desk-demo-ui'] === '1'`.
+Unsigned visitors always go to `/login`. No demo-preview bypass.
 
 ## Runtime topology
 
 ```
 Browser (Vite 8 + React 19 + React Router 7)
-  ├─ Studio accounts  →  supabase.auth (PKCE, persistSession)
-  ├─ App data         →  @supabase/supabase-js + RLS  →  Postgres
-  ├─ Register seats   →  Edge Function `register` (service role) or client signUp + DB trigger
-  ├─ Admin mutations  →  Edge Functions `admin-stats` / `admin-account`
-  ├─ Offer scan       →  tesseract.js in-browser OCR
-  ├─ Offer translate  →  MyMemory (EN/PT stay; CJK/Cyrillic/etc. → PT)
-  └─ Demo preview     →  localStorage + DEMO_METRICS (no writes)
+  ├─ Accounts + session  →  localStorage (PBKDF2 password hashes)
+  ├─ Desk data           →  localStorage (candidates, offers, interviews, earnings, activities)
+  ├─ Import / export     →  Settings JSON (format: talent-desk-export)
+  ├─ Offer scan          →  tesseract.js in-browser OCR
+  └─ Offer translate     →  MyMemory (EN/PT stay; CJK/Cyrillic/etc. → PT)
 ```
 
-- **Framework:** Vite 8, React 19, React Router 7 (`React.lazy` + Suspense), TanStack Query 5, Tailwind 4 (`@import "tailwindcss"` + `@theme` in `src/index.css` — no `tailwind.config`).
-- **Dev server:** `npm run dev` → `http://127.0.0.1:5173` (`vite.config.ts` `host: true`, port 5173).
-- **Build:** `tsc -b && vite build`. Lint: `oxlint`. Output: `dist`.
-- **Host:** Vercel SPA (`vercel.json`: framework `vite`, `npm run build` → `dist`, rewrite `/(.*)` → `/index.html`). `.vercel` is gitignored (local link dir).
-- **Auth:** `@supabase/supabase-js` GoTrue. Email/password. Local Studio auto-confirms (`enable_confirmations = false` in `supabase/config.toml`).
-- **Data:** Postgres via local `npx supabase start` (API `54321`, Studio `54323`) **or** hosted Supabase. RLS on every app table: `auth.uid() = user_id` (profiles: own row). Income is isolated per user.
-- **Public env (build-time):** `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`. Baked in at `vite build`; change them → redeploy. Local Docker `http://127.0.0.1:54321` is not reachable from Vercel. Without these vars the public site still loads; login shows the connectivity banner and **Preview Talent Desk UI** works for browsing.
+- **Framework:** Vite 8, React 19, React Router 7 (`React.lazy` + Suspense), TanStack Query 5, Tailwind 4 (`@theme` in `src/index.css`).
+- **Auth:** email/password against localStorage accounts. First account (or `OWNER_EMAIL`) becomes `owner`. Max 4 non-owner seats.
+- **Data:** per-account rows in `talent-desk.data.v1`. Empty by default.
+- **Hosting:** Vercel static (`vercel.json` → `dist` + SPA rewrites). Project: `leadforge3/talent-desk` → `https://talent-desk-leadforge3.vercel.app`
+- **No env required.** No `VITE_SUPABASE_*`.
 
-## Hosting
+## Key files
 
-Production is a static Vite SPA on Vercel. Client-side routes (`/candidates`, `/offers`, …) need the rewrite in `vercel.json` or they 404 on refresh.
-
-| Path | Notes |
+| Path | Role |
 | --- | --- |
-| GitHub import | Framework **Vite**, root `.`, build `npm run build`, output `dist` |
-| Env | `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` on **production** (and preview if you want live login there) |
-| Path A | Hosted `https://<ref>.supabase.co` + run `supabase/migrations/0001_init.sql`; optional Edge Functions `register`, `admin-stats`, `admin-account` |
-| Path B | Cloudflared tunnel to local `:54321` (not the app). Tunnel hostnames change on restart — update env + redeploy |
-| Claim | An agent may leave a temporary Vercel deploy with a claim link (~60 min). After claim: `vercel link` or dashboard import |
+| `src/lib/local-db.ts` | localStorage accounts, CRUD, import/export, auth helpers |
+| `src/lib/api.ts` | App-facing API wrapping local-db + dashboard metrics |
+| `src/auth/AuthProvider.tsx` | Session from localStorage; `notifyAuthChanged` after login/register |
+| `src/pages/SettingsPage.tsx` | Password + JSON import/export |
+| `vercel.json` | Vite SPA deploy |
 
-`SUPABASE_SERVICE_ROLE_KEY` stays in Edge Function / server env only. Do not put it in Vercel `VITE_*`.
+## Invariants
 
-## Auth
-
-| Route / action | Role |
-| --- | --- |
-| `signInWithPassword` | Issue session (`LoginPage`) |
-| `registerAccount` | Edge `register` then sign-in; fallback `signUp` if the function is down |
-| **Preview Talent Desk UI** | `enableDemoUi()` — localStorage only; fake owner profile |
-| `changePassword` | Re-auth with current password then `updateUser` |
-| `AdminRoute` | `owner` / `admin` / `moderator` may view; `owner` / `admin` may manage |
-
-Password rule: **≥ 8 characters**. Reserved owner email lives in `OWNER_EMAIL` (`src/lib/constants.ts`) and is mirrored in `handle_new_user` / `enforce_account_limit` / the `register` function — do not document the address here; do not let register mint that mailbox as `user`.
-
-`supabaseConfigured` is false when URL/anon are missing or the anon still contains `your-anon`. Session bootstrap **soft-fails**: unreachable Supabase must not blank the auth screens.
-
-Connectivity: `checkSupabaseHealth` probes `{VITE_SUPABASE_URL}/auth/v1/health`. Login/Register never show a raw `fetch failed` — they map through `friendlyAuthError` + `AuthConnectivityBanner`.
-
-Max **4** non-owner seats (`MAX_ACCOUNTS`). The DB trigger is the last line of defense even when the Edge Function is absent.
-
-## Data
-
-Migration: `supabase/migrations/0001_init.sql`.
-
-| Table | Purpose |
-| --- | --- |
-| `profiles` | `id` = `auth.users.id`, role `owner \| admin \| moderator \| user` |
-| `offers` | Forex or Chinese package, commission/salary, telegram, visa/flight flags |
-| `candidates` | Pipeline stage, offer FK, telegram, sent_by, expected salary |
-| `interviews` | Candidate + optional offer, `scheduled_at`, outcome |
-| `earnings` | Amount + `Estimated \| Pending \| Paid \| Overdue` |
-| `activities` | Feed rows (`entity_type`, `message`) |
-
-Roles: `owner` > `admin` > `moderator` > `user`. Pipeline: Screening → Interview → Offer → Accepted → Hired / Rejected. Offer status: Live / Paused / Closed. Offer category: `forex` | `chinese`.
-
-`getDashboardData` returns `DEMO_METRICS` (`isDemo: true`) when candidates, offers, interviews, and earnings are all empty — so a fresh desk still paints. Confirming an estimated earning sets status to **Pending** (`confirmEarning`). Pending + Paid + Overdue count as income; Estimated does not until confirmed.
-
-## Offers pipeline
-
-1. Paste or **Scan** an image (`tesseract.js` worker in `OffersPage`).
-2. `translateOfferText` leaves EN/PT; otherwise MyMemory `autodetect|pt` in ≤450-char chunks.
-3. `parseOfferText` guesses `forex` vs `chinese` (accommodation / visa / flight / video-call hints), title, company, salary, provision, `%` vs fixed.
-4. `upsertOffer` writes numeric fields through `parseNumericInput` (accepts `1.600` / `1,600` / `1.600,50`). Telegram stored **without** `@` (`stripAtHandle`); UI shows `@` via `ensureAtHandle`.
-
-Chinese packages use `salary` + `commission` plus boolean visa / flight / accommodation / videoCall. Forex uses `salaryMin`/`salaryMax` + `commissionValue`.
-
-## Persistence
-
-| Store | What | Where |
-| --- | --- | --- |
-| Postgres | Users, profiles, candidates, offers, interviews, earnings, activities | Supabase |
-| GoTrue session | JWT, PKCE | `localStorage` via supabase-js |
-| `talent-desk-demo-ui` | Preview flag | `localStorage` |
-| Tesseract | OCR WASM | In-browser, ephemeral |
-
-There is no object storage. Header search does not query.
-
-## File map
-
-```
-src/index.css                          → @theme tokens + mesh / card / nav / table CSS
-src/main.tsx                           → StrictMode mount
-src/App.tsx                            → QueryClient + AuthProvider + routes
-src/auth/AuthProvider.tsx              → session, profile, demo owner fallback
-src/auth/ProtectedRoute.tsx            → session | demo UI; AdminRoute
-src/auth/demoUi.ts                     → talent-desk-demo-ui
-src/pages/LoginPage.tsx
-src/pages/RegisterPage.tsx
-src/pages/DashboardPage.tsx
-src/pages/CandidatesPage.tsx
-src/pages/OffersPage.tsx
-src/pages/InterviewsPage.tsx
-src/pages/EarningsPage.tsx
-src/pages/SettingsPage.tsx
-src/pages/AdminPage.tsx
-src/components/layout/AppShell.tsx     → rail + header
-src/components/auth/AuthConnectivityBanner.tsx
-src/components/ui/*                    → Button, Input, Card, Badge, Modal, charts
-src/lib/api.ts                         → all Supabase CRUD + register/admin
-src/lib/supabase.ts                    → client, health, friendly errors
-src/lib/constants.ts                   → APP_NAME, roles, stages, nav
-src/lib/types.ts
-src/lib/demo-data.ts                   → DEMO_METRICS + SPARK_SERIES
-src/lib/parse-offer.ts
-src/lib/utils.ts                       → cn, money, telegram handles
-supabase/migrations/0001_init.sql
-supabase/functions/register/index.ts
-supabase/functions/admin-stats/index.ts
-supabase/functions/admin-account/index.ts
-vercel.json                            → Vite SPA: dist + client rewrites
-README.md                              → local setup + Vercel deploy runbook
-```
-
-## Invariants for the next build
-
-1. **Auth screen first.** Do not put Overview on an anonymous first paint unless demo UI is explicitly enabled.
-2. **Per-user rows only.** RLS `auth.uid() = user_id`. Do not share earnings across seats.
-3. **Four-seat cap.** Non-owner profiles ≤ `MAX_ACCOUNTS`. Owner mailbox stays reserved (`OWNER_EMAIL`).
-4. **Confirm estimated → Pending.** `confirmEarning` must not jump straight to Paid. Estimated is not income.
-5. **Register falls back.** Missing Edge Function still uses `signUp`; the DB trigger still enforces the cap. Do not require functions for a first hire.
-6. **Friendly auth errors.** Never surface raw `fetch failed`. Probe `/auth/v1/health`.
-7. **Soft-fail session bootstrap.** Unreachable Supabase must still render Login/Register.
-8. **Visual world is The Neon Signal Desk.** New UI goes through `DESIGN.md` (violet conversion, cyan focus, magenta register, Plus Jakarta / JetBrains Mono). Do not introduce a second product look.
-9. **Demo metrics are a preview.** Banner must stay while `isDemo`. Do not pretend DEMO_METRICS are live money.
-10. **Do not commit secrets.** `VITE_SUPABASE_ANON_KEY` stays in env. Service role stays in Edge Function env only. The in-repo supabase client may use a placeholder JWT string — never a real key.
-11. **Vercel is a SPA, not an SSR host.** Keep `vercel.json` rewrites to `index.html`. `VITE_*` are build-time; do not assume runtime env injection. Do not point Vercel at local Docker `127.0.0.1:54321`.
-
-## How this documentation stays current
-
-An hourly Cursor automation (“Design and System documentation”) compares `HEAD` on `main` to the **Documented from** SHA above.
-
-- If the SHA matches and `DESIGN.md` / `HANDOFF.md` exist, it reports **No changes**.
-- If the desk was built or rebuilt (new commits touching UI, auth, offers/scan, tokens, shell, or hosting/deploy), it re-extracts the visual system into `DESIGN.md` + `.impeccable/design.json` when visuals moved, and rewrites this handoff from the shipped artifact. Hosting-only commits refresh this file and leave `DESIGN.md` tokens in place.
-- Confirmed incumbent decisions stay; the build wins where they diverge.
-- Track `main`. If a rebuild branch diverges, document the branch that holds the live desk until it is merged.
-- Do not commit secrets, env values, or identity tokens into either file.
+1. Brand is **Talent Desk** (never “Neon desk” / “NEON DESK” as product name).
+2. Empty desk shows zero KPIs — never invent demo income/candidates.
+3. No `@supabase/*`, no connectivity banner, no Edge Functions.
+4. Data is device-local; move desks via Settings JSON export/import.
+5. Keep `vercel.json` SPA rewrites to `index.html`.
