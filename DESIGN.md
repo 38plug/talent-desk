@@ -194,7 +194,8 @@ Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radi
 - Sticky header clock: peach `.floating-label` date + JetBrains Mono live time (`sm+` only)
 - Header notification bell: 40px pill, lime unread badge, 16px glass dropdown of Added candidate/offer activity
 - Interview start toast: body-portaled lime glass bar (`z-[220]`), auto-dismiss 14s; Settings **Interview alerts** card + Interviews lime permission banner
-- Personal Telegram (`/telegram`, nav `07`): amber unofficial-client notice, `.card-surface` login steps, then three-pane chat (dialogs / thread / candidate match)
+- Past interviews: lime **Confirmed** / rose **Declined** (`size="sm"`); Confirmed is emerald `stageTone`, Declined by company is rose
+- Personal Telegram (`/telegram`, nav `07`): amber unofficial-client notice, `.card-surface` login steps, then three-pane chat with lime **Chats / Groups** tab strip (dialogs / thread / candidate match)
 - Settings Account card shows a Storage row; cloud mode adds a `.card-surface` Cloud sync card with a secondary upload button — same desk chrome, not a second look
 
 ## Colors
@@ -216,9 +217,9 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 - **Magenta Glow** (`#F472B6`): Magenta hover.
 
 ### Tertiary
-- **Emerald** (`#10B981`): Hired / Paid / Live. Status only.
+- **Emerald** (`#10B981`): Hired / Paid / Live / **Confirmed**. Status only.
 - **Amber** (`#F59E0B`): Screening / Paused / interviews KPI. Status only.
-- **Rose** (`#F43F5E`): Overdue / Rejected / Closed / form errors. Status and danger buttons only.
+- **Rose** (`#F43F5E`): Overdue / Rejected / Closed / **Declined by company** / form errors. Status and danger buttons only.
 
 ### Neutral
 - **Canvas** (`#111111`): Page ground, `body` fill, lime-on-canvas text.
@@ -328,13 +329,13 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 - **Secondary:** Surface-raised, 1px border, hover `border-strong` + surface-hover.
 - **Ghost:** Transparent, muted text; hover ink + `white/5`. Sign out in the rail.
 - **Cyan / Magenta:** Heritage signal fills. Magenta is **not** the register CTA anymore.
-- **Danger:** Rose veil 15% + rose text + rose/30 border. Used for **Delete** on the candidates table, detail drawer, and the named confirm modal. Compact table actions are `h-8 px-2`.
+- **Danger:** Rose veil 15% + rose text + rose/30 border. Used for **Delete** on the candidates table, detail drawer, and the named confirm modal, and for **Declined** on past interviews (`size="sm"`). Compact table actions are `h-8 px-2`.
 - **Disabled:** 45% opacity, no pointer.
 - **Motion shell:** `MotionButtonShell` scales 1.015 / 0.985 on hover/tap.
 
 ### Chips / Badges
 - Full pill, 11px semibold, 1px tinted border, 15% fill of the tone. Tones: **lime**, violet, cyan, magenta, emerald, amber, rose, muted. Soft rest shadow `0 0 12px rgb(0 0 0 / 0.15)`.
-- `stageTone()` maps Hired/Paid/Live → emerald; Accepted/Pending/Interview → cyan; Offer/Estimated → violet; Overdue/Rejected/Closed → rose; Paused/Screening → amber.
+- `stageTone()` maps Hired/Paid/Live/**Confirmed** → emerald; Accepted/Pending/Interview → cyan; Offer/Estimated → violet; Overdue/Rejected/Closed/**Declined by company** → rose; Paused/Screening → amber.
 - `marketTone()` maps `forex` → lime (“Forex”); `chinese` → cyan (“Chinese”); null → no chip (dim `—`).
 - `genderTone()` maps `male` → cyan (“Male”); `female` → magenta (“Female”); null → no chip. Magenta here is a chip mapping, not a CTA.
 - Admin role badges (not `stageTone`): owner → magenta, admin → lime, moderator/user → violet. Same pill chrome as pipeline chips.
@@ -389,8 +390,11 @@ Account card adds a **Storage** definition (`sm:col-span-2`): “Hosted Supabase
 ### Signature: interview start toast
 `InterviewReminderWatcher` portals to `document.body` at `z-[220]`. Centered `max-w-md` bar: `rounded-[16px]`, `border-lime/35`, `bg-canvas/95`, lime bloom, 12px lime/15 Bell well, lime tracked “Interview starting”, candidate name, offer · time, cyan “Open interviews” (leftover — new work should be lime). Auto-dismiss 14s. Settings **Interview alerts** is a `.card-surface` with a lime-accent checkbox; Interviews shows a lime/10 permission banner (`Allow alerts` primary / `Not now` ghost) when permission is `default`. Do not add a second toast theme or a server push.
 
+### Signature: interview confirm / decline
+Past-interview cards on `/interviews` (tab **past**, outcome undecided) show lime `size="sm"` **Confirmed** (`variant="lime"`, Check icon) and rose **Declined** (`variant="danger"`, X icon) beside the outcome badge. Confirmed maps `stageTone` emerald; Declined by company maps rose. Preview line is dim 12px “Est. commission {money}”. Do not restyle Confirmed as a cyan free-text chip or use magenta for decline.
+
 ### Signature: personal Telegram chat
-`TelegramPage` (`/telegram`, nav `07`). Login: amber unofficial-client notice, then `.card-surface !p-5` steps (api_id/hash, phone, code, 2FA). Ready: lime tracked “Telegram” kicker + secondary Disconnect; `lg` grid `280px / 1fr / 240px` of `.card-surface !p-0` panes. Active dialog is lime/10; unread is a lime/20 pill; outbound bubbles `bg-lime/20 rounded-[14px]`; inbound `bg-canvas-raised` + border. Candidate rail uses a lime kicker. Do not introduce Telegram-blue chrome or a bot-token login.
+`TelegramPage` (`/telegram`, nav `07`). Login: amber unofficial-client notice, then `.card-surface !p-5` steps (api_id/hash, phone, code, 2FA). Ready: lime tracked “Telegram” kicker + secondary Disconnect; `lg` grid `300px / 1fr / 240px` of `.card-surface !p-0` panes. Dialog pane header is a 2-col **Chats / Groups** tab strip (`rounded-[12px]` well, selected `bg-lime/20 text-lime`, counts + `999+` unread pills). Active dialog is lime/10; unread is a lime/20 pill (`formatUnread`); outbound bubbles `bg-lime/20 rounded-[14px]`; inbound `bg-canvas-raised` + border. Candidate rail uses a lime kicker. Do not introduce Telegram-blue chrome or a bot-token login.
 
 ### Signature: icon-only row actions
 Candidates table and offer cards: Schedule / Edit / Delete (and offer Edit / Delete) are `h-8 w-8 px-0` buttons with Lucide icons, `aria-label`, and `title`. Do not restore wordy “Edit” / “Delete” labels in the table. Schedule interview routes to `/calendar?candidate=` (query cleared after the modal opens).
@@ -439,7 +443,8 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** keep the header clock as peach date + mono time on `sm+`; do not hide it behind a badge.
 - **Do** keep the header bell as a 40px lime-badge pill with a 16px glass dropdown of add-activity only.
 - **Do** portal the interview-start toast to `document.body` at `z-[220]` (lime glass, 14s dismiss). Keep alerts as a Settings card + Interviews permission banner.
-- **Do** keep Telegram as lime-glass three-pane chat on `/telegram` (nav `07`); login stays `.card-surface`, not a second product look.
+- **Do** keep Telegram as lime-glass three-pane chat on `/telegram` (nav `07`) with a lime **Chats / Groups** tab strip; login stays `.card-surface`, not a second product look.
+- **Do** keep past-interview **Confirmed** as lime `size="sm"` (emerald badge) and **Declined** as rose danger; map those outcomes through `stageTone`.
 - **Do** keep table/card row actions icon-only (`h-8 w-8`) with aria-label + title; Schedule interview goes to `/calendar?candidate=`.
 - **Do** list linked candidates inside the offer glass preview and deep-link with `/candidates?id=` (hold the param until the drawer closes).
 
@@ -458,5 +463,6 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Don't** drop Interview Calendar from the rail or merge it into the Interviews list.
 - **Don't** promote the offer-preview “Open”, interview-toast, or Telegram candidate cyan links into a second in-page link color — in-page links stay lime.
 - **Don't** put Telegram api_id / api_hash / session strings, project refs, or anon keys into design files.
-- **Don't** restyle `/telegram` as Telegram-blue messenger chrome or replace the user client with a bot token.
+- **Don't** restyle `/telegram` as Telegram-blue messenger chrome, drop the Chats/Groups split, or replace the user client with a bot token.
+- **Don't** treat interview **Confirmed** as a cyan free-text badge or paint **Declined** in magenta.
 - **Don't** mix interview start alerts into the header bell, or drop Telegram from the rail.

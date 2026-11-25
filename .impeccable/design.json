@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-25T19:10:00Z",
+  "generatedAt": "2026-11-25T20:05:00Z",
   "title": "Design System: Talent Desk",
   "extensions": {
     "colorMeta": {
@@ -549,9 +549,9 @@
       "name": "Status Badge",
       "kind": "chip",
       "refersTo": "chip-pill",
-      "description": "stageTone for pipeline. marketTone: lime Forex / cyan Chinese. genderTone: cyan Male / magenta Female. Unset is a dim dash, not a muted chip.",
-      "html": "<div><span class=\"ds-badge ds-badge-lime\">Forex</span><span class=\"ds-badge ds-badge-cyan\">Chinese</span><span class=\"ds-badge ds-badge-cyan\">Male</span><span class=\"ds-badge ds-badge-magenta\">Female</span><span class=\"ds-badge ds-badge-emerald\">Hired</span></div>",
-      "css": ".ds-badge { display: inline-flex; align-items: center; margin-right: 6px; border-radius: 9999px; border: 1px solid; padding: 2px 10px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; box-shadow: 0 0 12px rgb(0 0 0 / 0.15); } .ds-badge-lime { background: rgb(198 244 50 / 0.15); color: #C6F432; border-color: rgb(198 244 50 / 0.30); } .ds-badge-cyan { background: rgb(34 211 238 / 0.15); color: #22D3EE; border-color: rgb(34 211 238 / 0.30); } .ds-badge-magenta { background: rgb(236 72 153 / 0.15); color: #F472B6; border-color: rgb(236 72 153 / 0.30); } .ds-badge-emerald { background: rgb(16 185 129 / 0.15); color: #10B981; border-color: rgb(16 185 129 / 0.30); }"
+      "description": "stageTone for pipeline. Confirmed is emerald; Declined by company is rose. marketTone: lime Forex / cyan Chinese. genderTone: cyan Male / magenta Female. Unset is a dim dash, not a muted chip.",
+      "html": "<div><span class=\"ds-badge ds-badge-lime\">Forex</span><span class=\"ds-badge ds-badge-cyan\">Chinese</span><span class=\"ds-badge ds-badge-cyan\">Male</span><span class=\"ds-badge ds-badge-magenta\">Female</span><span class=\"ds-badge ds-badge-emerald\">Confirmed</span><span class=\"ds-badge ds-badge-rose\">Declined by company</span></div>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; margin-right: 6px; border-radius: 9999px; border: 1px solid; padding: 2px 10px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; box-shadow: 0 0 12px rgb(0 0 0 / 0.15); } .ds-badge-lime { background: rgb(198 244 50 / 0.15); color: #C6F432; border-color: rgb(198 244 50 / 0.30); } .ds-badge-cyan { background: rgb(34 211 238 / 0.15); color: #22D3EE; border-color: rgb(34 211 238 / 0.30); } .ds-badge-magenta { background: rgb(236 72 153 / 0.15); color: #F472B6; border-color: rgb(236 72 153 / 0.30); } .ds-badge-emerald { background: rgb(16 185 129 / 0.15); color: #10B981; border-color: rgb(16 185 129 / 0.30); } .ds-badge-rose { background: rgb(244 63 94 / 0.15); color: #F43F5E; border-color: rgb(244 63 94 / 0.30); }"
     },
     {
       "name": "Glass Panel",
@@ -661,9 +661,9 @@
       "name": "Telegram Chat",
       "kind": "custom",
       "refersTo": "panel-card",
-      "description": "Personal MTProto chat on /telegram. Lime-glass three panes: dialogs, thread, candidate match. Not Telegram-blue chrome and not a bot.",
-      "html": "<section class=\"ds-tg\"><aside class=\"ds-pane\"><button class=\"ds-dlg on\" type=\"button\">Ana K.<small>@ana · see you at 3</small></button></aside><article class=\"ds-pane ds-thread\"><p class=\"ds-bubble in\">Hi</p><p class=\"ds-bubble out\">On my way</p></article></section>",
-      "css": ".ds-tg { display: grid; grid-template-columns: 200px 1fr; gap: 12px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; color: #F8FAFC; min-height: 240px; } .ds-pane { border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.08); background: #1A1A1A; overflow: hidden; } .ds-dlg { display: block; width: 100%; text-align: left; padding: 10px 12px; border: 0; background: transparent; color: #F8FAFC; cursor: pointer; font-size: 14px; font-weight: 600; } .ds-dlg small { display: block; font-size: 12px; font-weight: 400; color: #64748B; } .ds-dlg.on { background: rgb(198 244 50 / 0.10); } .ds-thread { padding: 16px; display: flex; flex-direction: column; gap: 8px; } .ds-bubble { max-width: 85%; margin: 0; padding: 8px 12px; border-radius: 14px; font-size: 14px; } .ds-bubble.in { align-self: flex-start; border: 1px solid rgb(255 255 255 / 0.08); background: #161616; } .ds-bubble.out { align-self: flex-end; background: rgb(198 244 50 / 0.20); }"
+      "description": "Personal MTProto chat on /telegram. Lime Chats/Groups tab strip, then three panes: dialogs, thread, candidate match. Not Telegram-blue chrome and not a bot.",
+      "html": "<section class=\"ds-tg\"><aside class=\"ds-pane\"><div class=\"ds-tabs\" role=\"tablist\"><button class=\"on\" type=\"button\">Chats 12</button><button type=\"button\">Groups 4</button></div><button class=\"ds-dlg on\" type=\"button\">Ana K.<small>@ana · see you at 3</small></button></aside><article class=\"ds-pane ds-thread\"><p class=\"ds-bubble in\">Hi</p><p class=\"ds-bubble out\">On my way</p></article></section>",
+      "css": ".ds-tg { display: grid; grid-template-columns: 220px 1fr; gap: 12px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; color: #F8FAFC; min-height: 240px; } .ds-pane { border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.08); background: #1A1A1A; overflow: hidden; } .ds-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 12px; padding: 4px; border-radius: 12px; border: 1px solid rgb(255 255 255 / 0.08); background: rgb(17 17 17 / 0.60); } .ds-tabs button { border: 0; border-radius: 10px; padding: 6px 8px; background: transparent; color: #64748B; font-size: 12px; font-weight: 600; cursor: pointer; } .ds-tabs button.on { background: rgb(198 244 50 / 0.20); color: #C6F432; } .ds-dlg { display: block; width: 100%; text-align: left; padding: 10px 12px; border: 0; background: transparent; color: #F8FAFC; cursor: pointer; font-size: 14px; font-weight: 600; } .ds-dlg small { display: block; font-size: 12px; font-weight: 400; color: #64748B; } .ds-dlg.on { background: rgb(198 244 50 / 0.10); } .ds-thread { padding: 16px; display: flex; flex-direction: column; gap: 8px; } .ds-bubble { max-width: 85%; margin: 0; padding: 8px 12px; border-radius: 14px; font-size: 14px; } .ds-bubble.in { align-self: flex-start; border: 1px solid rgb(255 255 255 / 0.08); background: #161616; } .ds-bubble.out { align-self: flex-end; background: rgb(198 244 50 / 0.20); }"
     }
   ],
   "narrative": {
@@ -687,7 +687,8 @@
       "Sticky header clock: peach .floating-label date + JetBrains Mono live time (sm+ only)",
       "Header notification bell: 40px pill, lime unread badge, 16px glass dropdown of Added candidate/offer activity",
       "Interview start toast: body-portaled lime glass bar (z-[220]), auto-dismiss 14s; Settings Interview alerts card",
-      "Personal Telegram (/telegram, nav 07): amber unofficial-client notice, card-surface login, then three-pane lime-glass chat"
+      "Personal Telegram (/telegram, nav 07): amber unofficial-client notice, card-surface login, then three-pane lime-glass chat with Chats/Groups tabs",
+      "Past interviews: lime Confirmed / rose Declined (size sm); Confirmed is emerald stageTone, Declined by company is rose"
     ],
     "rules": [
       {
@@ -764,7 +765,8 @@
       "Do list linked candidates inside the offer glass preview and deep-link with /candidates?id= (hold the param until the drawer closes).",
       "Do keep the header bell as a 40px lime-badge pill with a 16px glass dropdown of add-activity only.",
       "Do portal the interview-start toast to document.body at z-[220] (lime glass, 14s dismiss). Keep alerts as a Settings card + Interviews permission banner.",
-      "Do keep Telegram as lime-glass three-pane chat on /telegram (nav 07); login stays .card-surface, not a second product look."
+      "Do keep Telegram as lime-glass three-pane chat on /telegram (nav 07) with a lime Chats / Groups tab strip; login stays .card-surface, not a second product look.",
+      "Do keep past-interview Confirmed as lime size=sm (emerald badge) and Declined as rose danger; map those outcomes through stageTone."
     ],
     "donts": [
       "Don't restore the violet-conversion Neon Signal Desk (#080A10 canvas, #7C3AED primary CTA, magenta inset nav bar, gradient TD mark).",
@@ -781,7 +783,8 @@
       "Don't drop Interview Calendar from the rail or merge it into the Interviews list.",
       "Don't promote the offer-preview Open, interview-toast, or Telegram candidate cyan links into a second in-page link color — in-page links stay lime.",
       "Don't put Telegram api_id / api_hash / session strings, project refs, or anon keys into design files.",
-      "Don't restyle /telegram as Telegram-blue messenger chrome or replace the user client with a bot token.",
+      "Don't restyle /telegram as Telegram-blue messenger chrome, drop the Chats/Groups split, or replace the user client with a bot token.",
+      "Don't treat interview Confirmed as a cyan free-text badge or paint Declined in magenta.",
       "Don't mix interview start alerts into the header bell, or drop Telegram from the rail."
     ]
   }
