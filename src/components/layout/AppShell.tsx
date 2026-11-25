@@ -48,11 +48,17 @@ export function AppShell() {
       return false
     }
   })
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null)
+  const [tip, setTip] = useState<{ key: string; top: number; left: number; open: boolean } | null>(
+    null,
+  )
   const location = useLocation()
   const reduce = useReducedMotion()
   const navRef = useRef<HTMLElement>(null)
   const pillRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Map<string, HTMLAnchorElement>>(new Map())
+  const tipTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const tipHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const items = [...NAV_ITEMS, ...(canViewAdmin(profile?.role) ? [ADMIN_NAV] : [])]
 
@@ -66,6 +72,8 @@ export function AppShell() {
       i.to === '/' ? location.pathname === '/' : location.pathname.startsWith(i.to),
     )?.to ?? '/'
 
+  const focusKey = hoveredKey ?? activeKey
+
   useEffect(() => {
     try {
       localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0')
@@ -77,7 +85,7 @@ export function AppShell() {
   useLayoutEffect(() => {
     const box = navRef.current
     const pill = pillRef.current
-    const el = itemRefs.current.get(activeKey)
+    const el = itemRefs.current.get(focusKey)
     if (!box || !pill || !el) return
     const run = () => {
       if (reduce) setPillImmediate(pill, el, box)
@@ -87,11 +95,43 @@ export function AppShell() {
     const ro = new ResizeObserver(run)
     ro.observe(box)
     return () => ro.disconnect()
-  }, [activeKey, collapsed, mobileOpen, reduce, items.length])
+  }, [focusKey, collapsed, mobileOpen, reduce, items.length])
+
+  useEffect(() => {
+    return () => {
+      if (tipTimer.current) clearTimeout(tipTimer.current)
+      if (tipHideTimer.current) clearTimeout(tipHideTimer.current)
+    }
+  }, [])
 
   function toggleCollapse() {
     playSfx('thud')
     setCollapsed((c) => !c)
+    setTip(null)
+  }
+
+  function showTip(key: string) {
+    if (!collapsed) return
+    if (tipTimer.current) clearTimeout(tipTimer.current)
+    if (tipHideTimer.current) clearTimeout(tipHideTimer.current)
+    tipTimer.current = setTimeout(() => {
+      const el = itemRefs.current.get(key)
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      setTip({ key, top: rect.top + rect.height / 2, left: rect.right + 10, open: false })
+      requestAnimationFrame(() => {
+        setTip((cur) => (cur?.key === key ? { ...cur, open: true } : cur))
+      })
+    }, 70)
+  }
+
+  function hideTip(key: string) {
+    if (tipTimer.current) clearTimeout(tipTimer.current)
+    setTip((cur) => (cur?.key === key ? { ...cur, open: false } : cur))
+    if (tipHideTimer.current) clearTimeout(tipHideTimer.current)
+    tipHideTimer.current = setTimeout(() => {
+      setTip((cur) => (cur?.key === key && !cur.open ? null : cur))
+    }, 180)
   }
 
   return (
@@ -131,7 +171,17 @@ export function AppShell() {
           </button>
         </div>
 
-        <nav ref={navRef} className="relative flex-1 space-y-1 overflow-y-auto px-2 py-4">
+        <nav
+          ref={navRef}
+          className="relative flex-1 space-y-1 overflow-y-auto overflow-x-visible px-2 py-4"
+          onMouseLeave={() => {
+            setHoveredKey(null)
+            if (tipTimer.current) clearTimeout(tipTimer.current)
+            setTip((cur) => (cur ? { ...cur, open: false } : null))
+            if (tipHideTimer.current) clearTimeout(tipHideTimer.current)
+            tipHideTimer.current = setTimeout(() => setTip(null), 180)
+          }}
+        >
           <div ref={pillRef} className="nav-pill" aria-hidden />
           {!collapsed ? (
             <p className="floating-label relative z-10 mb-2 px-3 text-[10px] tracking-[0.18em] uppercase">
@@ -144,6 +194,7 @@ export function AppShell() {
               item.to === '/'
                 ? location.pathname === '/'
                 : location.pathname.startsWith(item.to)
+            const isFocused = focusKey === item.to
             return (
               <NavLink
                 key={item.to}
@@ -156,22 +207,55 @@ export function AppShell() {
                 onClick={() => {
                   playSfx('bass')
                   setMobileOpen(false)
+                  setTip(null)
                 }}
-                onMouseEnter={() => playSfx('pop')}
-                title={collapsed ? item.label : undefined}
+                onMouseEnter={() => {
+                  setHoveredKey(item.to)
+                  if (!isActive) playSfx('pop')
+                  showTip(item.to)
+                }}
+                onMouseLeave={() => hideTip(item.to)}
+                onFocus={() => {
+                  setHoveredKey(item.to)
+                  showTip(item.to)
+                }}
+                onBlur={() => {
+                  setHoveredKey((cur) => (cur === item.to ? null : cur))
+                  hideTip(item.to)
+                }}
+                aria-label={collapsed ? item.label : undefined}
                 className={cn(
-                  'relative z-10 flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-sm font-medium transition-colors',
+                  'nav-item group relative z-10 flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-sm font-medium',
                   collapsed && 'justify-center px-0',
-                  isActive ? 'text-canvas' : 'text-ink-muted hover:text-ink',
+                  isFocused && isActive
+                    ? 'text-canvas'
+                    : isFocused
+                      ? 'text-ink'
+                      : 'text-ink-muted',
                 )}
               >
                 {!collapsed ? (
-                  <span className="tabular w-5 text-[10px] text-ink-dim/80">{item.index}</span>
+                  <span
+                    className={cn(
+                      'tabular w-5 text-[10px] transition-opacity duration-200',
+                      isFocused && isActive ? 'text-canvas/70' : 'text-ink-dim/80',
+                      isFocused ? 'opacity-100' : 'opacity-70',
+                    )}
+                  >
+                    {item.index}
+                  </span>
                 ) : null}
-                <Icon className="h-4 w-4 shrink-0" />
+                <Icon
+                  className={cn(
+                    'nav-item-icon h-4 w-4 shrink-0',
+                    isFocused && 'is-focused',
+                    isActive && isFocused && 'is-active',
+                  )}
+                  aria-hidden
+                />
                 <span
                   className={cn(
-                    'truncate transition-opacity duration-300',
+                    'truncate transition-[opacity,transform] duration-300',
                     collapsed ? 'sr-only opacity-0' : 'opacity-100',
                   )}
                 >
@@ -219,6 +303,16 @@ export function AppShell() {
           </Button>
         </div>
       </aside>
+
+      {collapsed && tip ? (
+        <span
+          role="tooltip"
+          className={cn('nav-tooltip', tip.open && 'is-open')}
+          style={{ top: tip.top, left: tip.left }}
+        >
+          {items.find((i) => i.to === tip.key)?.label}
+        </span>
+      ) : null}
 
       {mobileOpen ? (
         <button

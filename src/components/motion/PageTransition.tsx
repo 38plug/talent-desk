@@ -1,9 +1,11 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useLocation, Outlet } from 'react-router-dom'
+import { springSoft } from '@/lib/motion'
 
 /**
- * Page enter/exit without CSS `filter` / heavy transforms that create a
- * containing block and break nested `position: fixed` (modals).
+ * Page enter/exit with opacity + y only.
+ * Intentionally avoids CSS `filter` / blur on this wrapper so nested
+ * `position: fixed` portals (modals) keep working against the viewport.
  */
 export function PageTransition() {
   const location = useLocation()
@@ -12,20 +14,21 @@ export function PageTransition() {
   if (reduce) return <Outlet />
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={location.pathname}
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 14 }}
         animate={{
           opacity: 1,
           y: 0,
-          transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
+          transition: springSoft,
         }}
         exit={{
           opacity: 0,
-          y: -6,
-          transition: { duration: 0.18, ease: [0.7, 0, 0.84, 0] },
+          y: -8,
+          transition: { duration: 0.2, ease: [0.4, 0, 1, 1] },
         }}
+        style={{ willChange: 'opacity, transform' }}
       >
         <Outlet />
       </motion.div>
