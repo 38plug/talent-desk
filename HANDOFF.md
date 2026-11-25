@@ -1,9 +1,10 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `a672efcad173c0de100e204e13e5dafd1f8514ca` (2026-11-25, “Merge pull request #17 from 38plug/cursor/candidate-gender-98a7” on `main`)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass at `a0ef48c`). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17.
-> **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from**, leave both docs untouched.
+> **Documented from:** `30f9fd07e5e945f3a39ce76dfb740e3d0352a6ac` (2026-11-25, docs tip on `main` after PR #17 gender chips; product = Vite SPA + localStorage)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17.
+> **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md)
+> **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
 
 ## What it is
 
@@ -166,9 +167,11 @@ src/lib/motion.ts                      → springSoft, springSnappy, fadeUp, fad
 src/lib/slide-pill.ts                  → GSAP stretchy lime pill (hover+active, killTweens)
 src/lib/sfx.ts                         → Web Audio, muted by default
 src/lib/utils.ts                       → cn, money, telegram handles
-docs/local-data.md                     → localStorage keys + export JSON
+docs/local-data.md                     → localStorage keys + export JSON + candidate fields
 vercel.json                            → Vite SPA: dist + client rewrites
 README.md                              → local setup + Vercel runbook
+PRODUCT.md                             → users, purpose, capabilities, constraints
+AGENTS.md                              → Vite SPA contributor / agent guardrails
 ```
 
 ## Motion / SFX (shipped)
