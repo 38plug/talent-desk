@@ -2,20 +2,20 @@ import { useEffect, useState } from 'react'
 import type { CreateGlassOptions } from '@/lib/liquid-glass.js'
 
 /**
- * Desktop Pattern C optics — soft rim bend, tiny chroma, restrained specular.
- * (liquidglass.dev “glass card over photo” band)
+ * Desktop backdrop-lens optics — Chromium `backdrop-filter: url(#…)`;
+ * other engines fall back to CSS frost. Soft rim bend, tiny chroma.
  */
 export const DESK_GLASS: CreateGlassOptions = {
   fit: true,
   clip: true,
   radius: 20,
-  refraction: 18,
-  bezel: 0.28,
-  curvature: 4,
+  refraction: 24,
+  bezel: 0.34,
+  curvature: 4.4,
   chroma: 0.06,
-  blur: 2.2,
-  specular: 0.35,
-  specularWidth: 1.05,
+  blur: 2.8,
+  specular: 0.4,
+  specularWidth: 1.15,
   lightAngle: -125,
 }
 

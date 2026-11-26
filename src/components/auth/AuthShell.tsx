@@ -1,9 +1,10 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 import { SoundToggle } from '@/components/motion/SoundToggle'
 import { GlassPanel } from '@/components/ui/GlassPanel'
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants'
-import { fadeScale, fadeUp, springSoft, staggerContainer } from '@/lib/motion'
+import { fadeScale, fadeUp, staggerContainer } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 export function AuthShell({
@@ -17,7 +18,7 @@ export function AuthShell({
 
   return (
     <div
-      className="bg-mesh relative flex min-h-screen items-center justify-center overflow-hidden p-4"
+      className="bg-mesh relative flex min-h-dvh items-center justify-center overflow-hidden p-4"
       data-td-glass-stage
     >
       <motion.div
@@ -53,14 +54,9 @@ export function AuthShell({
         animate="show"
       >
         <motion.div className="mb-8 text-center" variants={reduce ? undefined : fadeUp}>
-          <motion.div
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[18px] bg-lime text-xl font-black text-canvas glow-lime"
-            variants={reduce ? undefined : fadeScale}
-            whileHover={reduce ? undefined : { scale: 1.06, rotate: -2 }}
-            transition={springSoft}
-          >
-            TD
-          </motion.div>
+          <div className="mx-auto mb-4 flex justify-center">
+            <BrandLogo size="md" pulse />
+          </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-ink text-glow-lime">{APP_NAME}</h1>
           <p className="floating-label mt-2 text-sm">{APP_TAGLINE}</p>
         </motion.div>
@@ -68,7 +64,7 @@ export function AuthShell({
         <motion.div variants={reduce ? undefined : fadeScale}>
           <GlassPanel
             className="card-glow relative overflow-hidden p-7 shadow-[0_0_80px_rgb(198_244_50/0.12)]"
-            optics={{ refraction: 20, bezel: 0.3, chroma: 0.07, specular: 0.4, blur: 2 }}
+            optics={{ refraction: 24, bezel: 0.34, chroma: 0.06, specular: 0.4, blur: 2.8 }}
           >
             <div className="pointer-events-none absolute -top-24 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full bg-lime/15 blur-3xl" />
             <div className="relative">{children}</div>

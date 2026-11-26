@@ -25,14 +25,13 @@ export function Sparkline({
   const series = data.map((v, i) => ({ i, v }))
   const filterId = `sparkGlow-${color.replace('#', '')}`
   return (
-    <div className="h-12 w-28 shrink-0">
+    <div className="h-7 w-16 shrink-0 overflow-hidden sm:h-12 sm:w-28">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={series}>
+        <LineChart data={series} margin={{ top: 4, right: 2, left: 2, bottom: 4 }}>
           <defs>
-            <filter id={filterId} x="-60%" y="-60%" width="220%" height="220%">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+            <filter id={filterId} x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
               <feMerge>
-                <feMergeNode in="coloredBlur" />
                 <feMergeNode in="coloredBlur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
@@ -42,7 +41,7 @@ export function Sparkline({
             type="monotone"
             dataKey="v"
             stroke={color}
-            strokeWidth={2.75}
+            strokeWidth={2.25}
             dot={false}
             filter={`url(#${filterId})`}
             isAnimationActive
@@ -55,6 +54,8 @@ export function Sparkline({
   )
 }
 
+const axisTick = { fill: '#cbd5e1', fontSize: 12, fontWeight: 500 as const }
+
 export function NeonAreaChart({
   data,
   aKey = 'income',
@@ -65,9 +66,9 @@ export function NeonAreaChart({
   bKey?: string
 }) {
   return (
-    <div className="h-64 w-full">
+    <div className="h-48 w-full min-w-0 sm:h-64">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data}>
+        <AreaChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="gCyan" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#C6F432" stopOpacity={0.45} />
@@ -82,19 +83,20 @@ export function NeonAreaChart({
           <XAxis
             dataKey="label"
             stroke="#cbd5e1"
-            fontSize={14}
-            tick={{ fill: '#cbd5e1', fontSize: 14, fontWeight: 500 }}
+            fontSize={12}
+            tick={axisTick}
             tickLine={false}
             axisLine={false}
             dy={6}
+            interval="preserveStartEnd"
           />
           <YAxis
             stroke="#cbd5e1"
-            fontSize={14}
-            tick={{ fill: '#cbd5e1', fontSize: 14, fontWeight: 500 }}
+            fontSize={12}
+            tick={axisTick}
             tickLine={false}
             axisLine={false}
-            width={44}
+            width={36}
           />
           <Tooltip
             contentStyle={{
@@ -141,9 +143,9 @@ export function NeonBarChart({
   dataKey?: string
 }) {
   return (
-    <div className="h-56 w-full">
+    <div className="h-48 w-full min-w-0 sm:h-56">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
+        <BarChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#C6F432" />
@@ -154,19 +156,20 @@ export function NeonBarChart({
           <XAxis
             dataKey="label"
             stroke="#cbd5e1"
-            fontSize={14}
-            tick={{ fill: '#cbd5e1', fontSize: 14, fontWeight: 500 }}
+            fontSize={12}
+            tick={axisTick}
             tickLine={false}
             axisLine={false}
             dy={6}
+            interval="preserveStartEnd"
           />
           <YAxis
             stroke="#cbd5e1"
-            fontSize={14}
-            tick={{ fill: '#cbd5e1', fontSize: 14, fontWeight: 500 }}
+            fontSize={12}
+            tick={axisTick}
             tickLine={false}
             axisLine={false}
-            width={44}
+            width={36}
           />
           <Tooltip
             contentStyle={{
@@ -198,8 +201,8 @@ export function NeonDonut({
   data: Array<{ name: string; value: number }>
 }) {
   return (
-    <div className="flex h-56 items-center gap-4">
-      <div className="h-full w-1/2">
+    <div className="flex min-h-0 flex-col items-stretch gap-3 sm:h-56 sm:flex-row sm:items-center sm:gap-4">
+      <div className="mx-auto h-40 w-full max-w-[11rem] sm:mx-0 sm:h-full sm:w-1/2 sm:max-w-none">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -228,17 +231,17 @@ export function NeonDonut({
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <ul className="flex flex-1 flex-col gap-2.5 text-[15px]">
+      <ul className="grid flex-1 grid-cols-2 gap-x-3 gap-y-2 text-sm sm:flex sm:flex-col sm:gap-2.5 sm:text-[15px]">
         {data.map((d, i) => (
           <li key={d.name} className="flex items-center justify-between gap-2">
-            <span className="flex items-center gap-2.5 text-ink-muted">
+            <span className="flex min-w-0 items-center gap-2 text-ink-muted sm:gap-2.5">
               <span
-                className="h-3 w-3 shrink-0 rounded-full"
+                className="h-2.5 w-2.5 shrink-0 rounded-full sm:h-3 sm:w-3"
                 style={{ background: DONUT_COLORS[i % DONUT_COLORS.length] }}
               />
-              {d.name}
+              <span className="truncate">{d.name}</span>
             </span>
-            <span className="tabular font-semibold text-ink">{d.value}</span>
+            <span className="tabular shrink-0 font-semibold text-ink">{d.value}</span>
           </li>
         ))}
       </ul>
