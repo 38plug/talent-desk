@@ -24,7 +24,8 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 ## Do
 
 - Keep brand **Talent Desk** and lime `#C6F432` as conversion on `#111` charcoal.
-- Portal `Modal` / `Drawer` to `document.body`. Do not put CSS `filter` on `PageTransition`.
+- Keep the liquid-glass **BrandLogo** lockup (`public/brand/td-mark-*.png`) with glow / depth / hover sheen — not a flat lime “TD” square.
+- Portal `Modal` / `Drawer` / header notifications panel to `document.body`. Do not put CSS `filter` on `PageTransition`.
 - Keep SFX muted by default; honor `prefers-reduced-motion`.
 - Migrate missing candidate fields to `null` on load/import — do not wipe older rows.
 - Confirm candidate delete by name; cascade interviews + earnings; leave linked offers.
@@ -35,7 +36,8 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 - Shared desk: all authenticated teammates CRUD the full pipeline; `user_id` is creator attribution only.
 - Route interview writes through `upsertInterview` so stage sync stays: schedule → Interview; Confirmed → Accepted; Declined by company → Rejected.
 - Past interviews: lime **Confirmed** (Estimated commission via `estimateOfferCommission`) and rose **Declined**.
-- Header bell: Added candidate/offer only (1s poll); do not fold interview reminders into it.
+- Header bell: Added candidate/offer only (1s poll); clamp the panel to viewport + safe-area; do not fold interview reminders into it.
+- Mobile shell: `viewport-fit=cover`; `.header-pad` / `.page-pad` own gutters so Tailwind `py`/`px` cannot clobber `env(safe-area-inset-*)`.
 - Telegram: Chats vs Groups; never commit api_id / api_hash / session strings.
 
 ## Don't
@@ -49,6 +51,7 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 - Do not invent extra market/gender options beyond `forex`/`chinese` and `male`/`female`.
 - Do not replace personal Telegram with a bot-token flow or Telegram-blue chrome.
 - Do not leave Confirmed as a cyan free-text badge or paint Declined in magenta.
+- Do not restore the flat lime TD text square or nest notifications as `absolute right-0` with near-`100vw` width under header blur.
 
 ## PR hygiene
 

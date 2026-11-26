@@ -27,14 +27,14 @@ Provision/commission lives on the **offer** (fixed fee or percent of expected sa
 
 | Module | What it does |
 |--------|----------------|
-| Overview | KPI heroes, charts, estimated confirm → Pending, needs attention, recent candidates |
+| Overview | KPI heroes, charts, estimated confirm → Pending, needs attention, recent candidates; phones densify KPIs / Live Desk / charts (~390px, no horizontal scroll) |
 | Candidates | CRUD table + drawer; languages / market / gender; filters; schedule → calendar; named delete (cascades interviews + earnings); stage reconciles from latest interview on load |
 | Offers | Card grid with glass preview (linked candidates by `offerId`); OCR scan (tesseract.js); MyMemory translate; provision + Telegram |
 | Interviews | Upcoming / past lists; schedule against candidate / optional offer; past **Confirmed** (Estimated commission + Accepted) / **Declined** (Rejected); start alerts (~1 min before) |
 | Interview Calendar | Month / week / day of `scheduledAt`; deep-link `?candidate=` from Candidates |
 | Earnings | Estimated → Pending → Paid / Overdue; per-row status select; CSV export; interview Confirmed seeds Estimated awaiting |
 | Telegram | Personal MTProto chat (teleproto, not a bot); Chats vs Groups; candidate match panel; optional `VITE_TELEGRAM_*` or paste api_id/hash |
-| Header | Live clock + notification bell (Added candidate / Added offer, 1s poll) |
+| Header | Live clock (`sm+`) + notification bell (Added candidate / Added offer, 1s poll; body-portaled panel, safe-area clamped) |
 | Settings | Profile, password, interview alerts, JSON desk import/export, cloud upload |
 | Admin | Role-gated seats console |
 
@@ -51,7 +51,8 @@ Provision/commission lives on the **offer** (fixed fee or percent of expected sa
 
 - Name: **Talent Desk**
 - Descriptor: Forex Recruiting Command Center
-- Visual SoT: [`DESIGN.md`](./DESIGN.md) — charcoal `#111`, lime `#C6F432` conversion, peach kickers, Plus Jakarta Sans + JetBrains Mono, glass Overview, stretchy lime nav pill
+- Lockup: liquid-glass **TD** mark (`BrandLogo` + `/brand/td-mark-*.png`) — depth shadow, lime glow, hover sheen (auth may idle-pulse)
+- Visual SoT: [`DESIGN.md`](./DESIGN.md) — charcoal `#111`, lime `#C6F432` conversion, peach kickers, Plus Jakarta Sans + JetBrains Mono, glass Overview, stretchy lime nav pill, mobile safe-area shell
 
 ## Product principles
 

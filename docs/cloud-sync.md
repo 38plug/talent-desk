@@ -61,3 +61,7 @@ Personal MTProto client (not cloud sync). Optional `VITE_TELEGRAM_API_ID` + `VIT
 - **Never** put `service_role` in `VITE_*` or Vercel client env.
 - Do not commit export JSON with password hashes.
 - Do not commit Telegram api_id / api_hash / session strings.
+
+## Related
+
+UI / brand / mobile shell are not configured here — see [`DESIGN.md`](../DESIGN.md) (BrandLogo, safe-area gutters, notifications portal) and [`HANDOFF.md`](../HANDOFF.md). Local fallback keys: [`local-data.md`](./local-data.md).

@@ -2,7 +2,7 @@
 
 Forex recruiting command center — **Vite + React 19 + TypeScript + Tailwind CSS v4** static SPA.
 
-Charcoal lime-glass UI (`#111` canvas, lime `#C6F432` conversion, peach kickers). Brand name **Talent Desk** everywhere.
+Charcoal lime-glass UI (`#111` canvas, lime `#C6F432` conversion, peach kickers). Brand name **Talent Desk** everywhere. Lockup is the liquid-glass **TD** mark (`BrandLogo` — depth shadow, lime glow, hover sheen).
 
 **Production:** [talent-desk-leadforge3.vercel.app](https://talent-desk-leadforge3.vercel.app) (Vercel static SPA).
 
@@ -79,7 +79,7 @@ Settings → **Import / export desk data**, or **Upload this browser’s local d
 
 | Route | Module |
 |-------|--------|
-| `/` | Overview — KPI heroes, neon charts, estimated confirm, needs attention |
+| `/` | Overview — KPI heroes, neon charts, estimated confirm, needs attention (phone densified ~390px) |
 | `/candidates` | Pipeline table — languages / market / gender; schedule → calendar; stage sync from interviews |
 | `/offers` | Forex + Chinese cards — glass preview (linked candidates); OCR scan, provision, Telegram |
 | `/interviews` | Upcoming / past; Confirmed → Estimated commission + Accepted; Declined → Rejected; start alerts |
@@ -89,7 +89,7 @@ Settings → **Import / export desk data**, or **Upload this browser’s local d
 | `/settings` | Profile, password, interview alerts, JSON import/export, cloud upload |
 | `/admin` | Role-gated seats console |
 
-Header: live clock + notification bell (new offer / candidate activity).
+Header: live clock (`sm+`) + notification bell (new offer / candidate activity; panel portals to `document.body`, viewport-clamped on phones). Shell gutters honor `env(safe-area-inset-*)` via `.header-pad` / `.page-pad`.
 
 Roles: `owner` > `admin` > `moderator` > `user`. Max **4** non-owner seats. Cloud mode shares the full desk across authenticated teammates.
 

@@ -205,7 +205,7 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 ### Primary
 - **Signal Lime** (`#C6F432`): Conversion. Primary CTA, “Join Talent Desk”, active nav pill, selection (`rgb(198 244 50 / 0.35)` on `#111`), scrollbar rest, in-page links, confirm buttons. Keep large fills rare — the lime hero CTA and the stretchy pill are the exceptions.
 - **Lime Glow** (`#D9FF6A`): Primary hover, gauge end-stop.
-- **Lime Bloom** (`0 0 28px rgb(198 244 50 / 0.35)`): Primary button rest, TD mark, active pill, dashboard lime CTA.
+- **Lime Bloom** (`0 0 28px rgb(198 244 50 / 0.35)`): Primary button rest, BrandLogo bloom, active pill, dashboard lime CTA.
 
 ### Secondary
 - **Peach** (`#F4B183`): `.floating-label` kickers (“Desk”, `APP_NAME`, auth tagline), estimated chart series (dashed), bar-chart end-stop, auth orb, gauge start-stop. Peach is voice, not conversion.
@@ -286,7 +286,7 @@ Spacing rhythm is 8 / 12 / 16 / 20 / 24 / 32.
 Depth is glass plus lime bloom, not Material elevation. Dashboard panes are frosted (blur 20px, saturate 1.25) with an inset 1px white highlight and a 6% lime seam. Forms stay opaque charcoal. The page mesh and auth orbs supply atmosphere.
 
 ### Shadow Vocabulary
-- **Lime glow** (`0 0 28px rgb(198 244 50 / 0.35), 0 0 8px rgb(198 244 50 / 0.2)`): Primary CTA, TD mark, active pill, confirm lime.
+- **Lime glow** (`0 0 28px rgb(198 244 50 / 0.35), 0 0 8px rgb(198 244 50 / 0.2)`): Primary CTA, BrandLogo, active pill, confirm lime.
 - **Violet glow** (`0 0 28px rgb(124 58 237 / 0.4)`): Heritage CTA variant only.
 - **Cyan glow** (`0 0 28px rgb(34 211 238 / 0.35)`): Cyan CTA variant.
 - **Magenta glow** (`0 0 28px rgb(236 72 153 / 0.35)`): Magenta CTA variant.
@@ -358,7 +358,7 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 ### Navigation
 Rail: collapsible 17rem / 4.75rem, liquid-glass TD mark (`BrandLogo` sm), “Talent Desk” 15px extrabold + 10px dim tagline. “Desk” kicker in peach. Rows are 14px radius; inactive muted; hover ink. The GSAP `.nav-pill` follows the **focused** row (hovered, else active). Active+focused text is canvas (`#111`); hover-only is ink. Lead 0.32s `power3.out`, trail 0.52s `power3.inOut`; other edges 0.38s. Rapid hover kills in-flight tweens. Icons (`.nav-item-icon`) opacity 0.72 rest → 1 focused, scale `1.08` focused / `1.06` active. Collapsed rail: labels `sr-only`; a `.nav-tooltip` glass chip (`10px` radius, 12px type, 70ms show / 180ms hide) sits `left: row.right + 10px`. Indexes are 10px mono dim (hidden when collapsed). Operator chip is a lime-tinted well. Collapse plays `thud`; nav click plays `bass`; nav hover plays `pop` (skipped on the already-active row). Mobile: hamburger + scrim.
 
-Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Nav indexes: Overview `01` … Earnings `06`, Telegram `07` (`MessageCircle`), Settings `08`, Admin `09`. Interview Calendar is `05` (`CalendarDays`). Avatar is a 40px lime/20 disc with lime ring. HeaderClock sits between the title cluster and search; the notification bell sits between search and the sound toggle.
+Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Nav indexes: Overview `01` … Earnings `06`, Telegram `07` (`MessageCircle`), Settings `08`, Admin `09`. Interview Calendar is `05` (`CalendarDays`). Avatar is a 36px lime/20 disc on phones (`40px` from `sm+`) with lime ring. HeaderClock sits between the title cluster and search (`sm+` only); the notification bell sits between search and the sound toggle. Mobile shell: `viewport-fit=cover`, `.header-pad` / `.page-pad` own all shell padding (so Tailwind `py`/`px` cannot clobber `env(safe-area-inset-*)`), title truncates, header actions stay `shrink-0` so the avatar is never clipped. Overview phones use a 2-col KPI grid, denser Live Desk tiles, smaller sparklines, stack Pipeline mix donut above its legend, and keep chart panes `min-w-0` so ~390px widths do not scroll horizontally.
 
 ### Signature: body-portaled dialog
 `Modal` / `Drawer` in `src/components/ui/Modal.tsx`. Portal to `document.body`. Overlay `fixed inset-0 z-[200]` with `overflow-y-auto`, `bg-black/75`, `p-4 sm:p-6`, opacity fade 0.2s (`AnimatePresence`). Dialog: `rounded-[20px]`, `bg-surface` (or `.glass-panel` + lime/20 when `glass`), `max-h-[min(90vh,calc(100dvh-2rem))]`, sticky `px-5 py-4` title bar, scrollable `px-5 py-5` body. Open/exit uses `springSnappy` (stiffness 380 / damping 28 / mass 0.7) on the panel only: scale `0.94`, `blur(8px)`, `y: 12` → rest; exit scale `0.96`, `blur(6px)`, `y: 8`. Wide candidate form and offer preview are `max-w-2xl`. Confirm-delete is `max-w-lg` and names the candidate. Drawer scrim `bg-black/60`; panel `x: 28` + `blur(6px)`. Body scroll lock compensates for scrollbar width. Reduced motion is opacity-only at 0.01s. Do not reintroduce overlay `backdrop-blur` or nest these inside `PageTransition`.
@@ -384,8 +384,11 @@ Account card adds a **Storage** definition (`sm:col-span-2`): “Hosted Supabase
 ### Signature: header clock
 `src/components/layout/HeaderClock.tsx`. Right of the page title, before search. Peach `.floating-label` date (`weekday short` + `month short` + day via `Intl`) over JetBrains Mono `text-sm` time with seconds, ticking every 1s. Browser locale + local timezone. Hidden below `sm`. Do not use a second conversion color or a pill chrome around the clock.
 
+### Signature: BrandLogo
+`src/components/brand/BrandLogo.tsx` + `/public/brand/td-mark-{64,128,256,512}.png` (Pedro’s liquid-glass TD mark). Sizes: `sm` 44px (rail), `md` 64px (auth), `lg` 80px. Depth via stacked `drop-shadow` (dark lift + lime bloom); hover lifts (`scale` ~1.08, slight rotate), brightens glow, and runs a lime sheen sweep (`.brand-logo-shine`). Auth may set `pulse` for a slow idle glow breathe. `prefers-reduced-motion` kills pulse/sheen. Favicon-32 + apple-touch-icon use the same mark. Do not restore the flat lime “TD” text square.
+
 ### Signature: header notification bell
-`src/components/layout/HeaderNotifications.tsx`. 40px rounded-full pill (`border-border bg-surface/80`), Bell icon, hover lime. Unread count is a lime disc (`h-4`, `9+` cap, lime bloom). Dropdown is `rounded-[16px]` `bg-canvas-raised/95` blur, lime tracked “Notifications” kicker, 20-row list of Added candidate / Added offer activity (new rows `bg-lime/[0.06]`). Polls `activities` every 1s (cloud realtime also invalidates). Watermark is per-browser. `pop` SFX when unread rises. Do not fold interview reminders into this menu.
+`src/components/layout/HeaderNotifications.tsx`. 40px rounded-full pill on `sm+` (`36px` on phones; `border-border bg-surface/80`), Bell icon, hover lime. Unread count is a lime disc (`h-4`, `9+` cap, lime bloom). Panel portals to `document.body` as `position: fixed` (header `backdrop-blur` would otherwise trap fixed coords), right-aligned under the bell when it fits, otherwise left-clamped to ≥20px / `safe-area-inset-*` so ~390px phones never clip “Notifications” or list copy; width `min(22rem, 100vw − 2×margin)`. Glass `rounded-[16px]` `bg-canvas-raised/95` blur, lime tracked “Notifications” kicker + Mark read, 20-row list of Added candidate / Added offer activity (new rows `bg-lime/[0.06]`). Polls `activities` every 1s (cloud realtime also invalidates). Watermark is per-browser. `pop` SFX when unread rises. Do not fold interview reminders into this menu or restore `absolute right-0` with `100vw` width (that clipped the left edge under the bell).
 
 ### Signature: interview start toast
 `InterviewReminderWatcher` portals to `document.body` at `z-[220]`. Centered `max-w-md` bar: `rounded-[16px]`, `border-lime/35`, `bg-canvas/95`, lime bloom, 12px lime/15 Bell well, lime tracked “Interview starting”, candidate name, offer · time, cyan “Open interviews” (leftover — new work should be lime). Auto-dismiss 14s. Settings **Interview alerts** is a `.card-surface` with a lime-accent checkbox; Interviews shows a lime/10 permission banner (`Allow alerts` primary / `Not now` ghost) when permission is `default`. Do not add a second toast theme or a server push.
@@ -406,7 +409,7 @@ Candidates table and offer cards: Schedule / Edit / Delete (and offer Edit / Del
 `.nav-tooltip` in `src/index.css`. Fixed, `z-60`, 10px radius glass chip, 12px semibold, 70ms delay in / 180ms out, `translateX(-4px) scale(0.96)` → rest. 8px diamond caret on the left. Only when the rail is collapsed. Do not use a native `title` attribute as the collapsed label.
 
 ### Signature: neon charts
-`Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Lime + peach area (estimated series dashed), lime→peach bar gradient, donut palette lime/peach/violet/emerald/amber/rose. Axis ticks `14px` medium `#cbd5e1`. Tooltips: `#1A1A1A`, 12px radius, 14px type. Gauge ring on the live-desk pane is peach→lime with a lime drop-shadow. Sparklines sit on KPI cards; they do not replace the TD mark.
+`Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Lime + peach area (estimated series dashed), lime→peach bar gradient, donut palette lime/peach/violet/emerald/amber/rose. Axis ticks ~12px medium `#cbd5e1` (readable on phones). Tooltips: `#1A1A1A`, 12px radius, 14px type. Gauge ring on the live-desk pane is peach→lime with a lime drop-shadow. Sparklines sit on KPI cards (compact on phones); they do not replace BrandLogo. On mobile, Pipeline mix stacks the donut above a 2-col legend.
 
 ### Auth card (signature)
 Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`, drifting via Framer). Film grain overlay. Login CTA is primary lime (“Enter Talent Desk”); register is `variant="lime"` (“Join Talent Desk”). A `text-xs text-ink-muted` helper states whether cloud sync is on. Links between them are lime. No “Preview Talent Desk UI”. Sound toggle is top-right on the shell.
@@ -450,7 +453,8 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Do** list linked candidates inside the offer glass preview and deep-link with `/candidates?id=` (hold the param until the drawer closes).
 
 ### Don't:
-- **Don't** restore the violet-conversion Neon Signal Desk (`#080A10` canvas, `#7C3AED` primary CTA, magenta inset nav bar, gradient TD mark).
+- **Don't** restore the violet-conversion Neon Signal Desk (`#080A10` canvas, `#7C3AED` primary CTA, magenta inset nav bar, gradient TD mark) or the flat solid-lime “TD” text square.
+- **Don't** nest the notifications panel under header `backdrop-blur` with `absolute right-0` + near-viewport width (clips “Notifications” on ~390px).
 - **Don't** introduce Inter, Roboto, a serif display, or a light/cream canvas. The build is Plus Jakarta Sans on `#111111`.
 - **Don't** sharpen chrome to 2px rectangles or fill working cards with solid lime, violet, cyan, or magenta.
 - **Don't** treat emerald / amber / rose as brand fills. Don't treat peach as a primary button fill. Don't treat Female's magenta chip as a conversion color.

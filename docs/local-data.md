@@ -86,3 +86,7 @@ The full desk is **shared** across every account on this device. `listOffers` / 
 Accounts may include a plaintext `"password"` instead of hash/salt when preparing a one-time restore for another browser. UI export with passwords currently means hash + salt, not plaintext.
 
 Do not commit export JSON with credentials into git. Do not commit Telegram session / api hash values.
+
+## Related
+
+Brand lockup, mobile shell gutters, and notification UI live in [`DESIGN.md`](../DESIGN.md) / [`HANDOFF.md`](../HANDOFF.md) — not in these keys. Cloud setup: [`cloud-sync.md`](./cloud-sync.md).
