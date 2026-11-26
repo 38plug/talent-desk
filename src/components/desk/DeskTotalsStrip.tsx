@@ -56,7 +56,7 @@ export function DeskTotalsStrip() {
       className="relative overflow-hidden !p-4 sm:!px-5 sm:!py-4"
       aria-live="polite"
       aria-atomic="true"
-      optics={{ refraction: 20, bezel: 0.3 }}
+      optics={{ refraction: 18, bezel: 0.3, chroma: 0.06, specular: 0.38, blur: 2 }}
     >
       <div className="relative z-10 grid gap-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border">
         {stats.map((stat) => (

@@ -85,8 +85,10 @@ export function Modal({
 
     const ctrl = createGlass(layer, {
       ...DESK_GLASS,
-      refraction: 24,
-      bezel: 0.32,
+      refraction: 20,
+      bezel: 0.3,
+      chroma: 0.07,
+      specular: 0.4,
     })
     glassCtrl.current = ctrl
 

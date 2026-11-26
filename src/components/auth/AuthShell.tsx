@@ -68,7 +68,7 @@ export function AuthShell({
         <motion.div variants={reduce ? undefined : fadeScale}>
           <GlassPanel
             className="card-glow relative overflow-hidden p-7 shadow-[0_0_80px_rgb(198_244_50/0.12)]"
-            optics={{ refraction: 24, bezel: 0.32, chroma: 0.12, specular: 0.6 }}
+            optics={{ refraction: 20, bezel: 0.3, chroma: 0.07, specular: 0.4, blur: 2 }}
           >
             <div className="pointer-events-none absolute -top-24 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full bg-lime/15 blur-3xl" />
             <div className="relative">{children}</div>
