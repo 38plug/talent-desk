@@ -45,7 +45,7 @@ function GaugeRing({
   const offset = c - (pct / 100) * c
 
   return (
-    <div className="relative mx-auto flex h-36 w-36 items-center justify-center">
+    <div className="relative mx-auto flex h-28 w-28 items-center justify-center sm:h-36 sm:w-36">
       <svg viewBox="0 0 128 128" className="h-full w-full -rotate-90">
         <circle cx="64" cy="64" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10" />
         <motion.circle
@@ -71,7 +71,7 @@ function GaugeRing({
         </defs>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <AnimatedNumber value={pct} className="text-2xl font-extrabold tabular text-ink" />
+        <AnimatedNumber value={pct} className="text-xl font-extrabold tabular text-ink sm:text-2xl" />
         <span className="text-[10px] font-semibold tracking-wide text-ink-dim uppercase">{label}</span>
       </div>
     </div>
@@ -148,7 +148,7 @@ export function DashboardPage() {
   ]
 
   return (
-    <MotionStagger className="space-y-5">
+    <MotionStagger className="space-y-4 sm:space-y-5">
       {data.candidates === 0 && data.liveOffers === 0 && data.totalIncome === 0 && data.estimated === 0 ? (
         <MotionItem className="rounded-[16px] border border-lime/30 bg-lime/10 px-4 py-3 text-sm text-lime shadow-[0_0_24px_rgb(198_244_50/0.12)]">
           <span className="font-semibold">{APP_NAME}</span> has no pipeline rows yet for this account.
@@ -156,10 +156,10 @@ export function DashboardPage() {
         </MotionItem>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-5">
-        <MotionItem className="hero-gradient-violet relative overflow-hidden rounded-[20px] p-6 text-white shadow-[0_0_48px_rgb(198_244_50/0.15)] lg:col-span-3">
+      <div className="grid gap-3 sm:gap-4 lg:grid-cols-5">
+        <MotionItem className="hero-gradient-violet relative overflow-hidden rounded-[20px] p-5 text-white shadow-[0_0_48px_rgb(198_244_50/0.15)] sm:p-6 lg:col-span-3">
           <p className="floating-label text-[11px] tracking-[0.22em] uppercase">{APP_NAME}</p>
-          <h2 className="mt-2 max-w-lg text-3xl font-extrabold tracking-tight sm:text-4xl">
+          <h2 className="mt-2 max-w-lg text-2xl font-extrabold tracking-tight sm:text-4xl">
             Pipeline command center
           </h2>
           <p className="mt-2 max-w-md text-sm text-white/85">
@@ -169,7 +169,7 @@ export function DashboardPage() {
             to="/candidates"
             onMouseEnter={() => playSfx('pop')}
             onClick={() => playSfx('bass')}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-lime px-4 py-2.5 text-sm font-semibold text-canvas glow-lime transition hover:bg-lime-glow"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-lime px-4 py-2.5 text-sm font-semibold text-canvas glow-lime transition hover:bg-lime-glow sm:mt-6"
           >
             Open candidates <ArrowUpRight className="h-4 w-4" />
           </Link>
@@ -182,21 +182,21 @@ export function DashboardPage() {
         </MotionItem>
 
         <MotionItem className="lg:col-span-2">
-          <GlassPanel className="relative h-full overflow-hidden rounded-[20px] p-5">
-            <div className="flex items-start justify-between">
-              <div>
+          <GlassPanel className="relative h-full overflow-hidden rounded-[20px] p-4 sm:p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
                 <p className="text-[11px] font-semibold tracking-[0.16em] text-lime uppercase">
                   Live desk
                 </p>
                 <p className="mt-1 text-sm text-ink-muted">Paid provision</p>
-                <p className="mt-1 text-3xl font-extrabold tabular text-ink">
+                <p className="mt-1 text-2xl font-extrabold tabular text-ink sm:text-3xl">
                   <AnimatedNumber value={data.paidEarnings} money />
                 </p>
               </div>
-              <Briefcase className="h-7 w-7 text-lime/70" />
+              <Briefcase className="h-6 w-6 shrink-0 text-lime/70 sm:h-7 sm:w-7" />
             </div>
             <GaugeRing value={data.totalIncome} max={incomeCap} label="booked" />
-            <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
+            <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
               {[
                 { label: 'Pending', value: data.pendingEarnings, money: true },
                 { label: 'Overdue', value: data.overdueEarnings, money: true },
@@ -204,16 +204,18 @@ export function DashboardPage() {
               ].map((cell) => (
                 <div
                   key={cell.label}
-                  className="rounded-[12px] border border-white/5 bg-white/[0.04] px-2 py-2 backdrop-blur"
+                  className="min-w-0 rounded-[12px] border border-white/5 bg-white/[0.04] px-2 py-2.5 backdrop-blur"
                 >
-                  <p className="tabular text-base font-bold text-ink">
+                  <p className="text-[10px] font-semibold tracking-wide text-ink-dim uppercase">
+                    {cell.label}
+                  </p>
+                  <p className="tabular mt-1 truncate text-sm font-bold text-ink sm:text-base">
                     {cell.money ? (
                       <AnimatedNumber value={cell.value} money />
                     ) : (
                       <AnimatedNumber value={cell.value} />
                     )}
                   </p>
-                  <p className="text-[10px] text-ink-dim">{cell.label}</p>
                 </div>
               ))}
             </div>
@@ -221,38 +223,38 @@ export function DashboardPage() {
         </MotionItem>
       </div>
 
-      <MotionStagger fast className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <MotionStagger fast className="grid grid-cols-2 gap-2.5 sm:gap-3 xl:grid-cols-4">
         {kpis.map((k) => (
           <MotionItem key={k.label} hoverSfx>
-            <GlassPanel className="card-glow !p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div
-                    className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-[12px]"
-                    style={{ background: `${k.color}22`, boxShadow: `0 0 18px ${k.color}33` }}
-                  >
-                    <k.icon className="h-4 w-4" style={{ color: k.color }} />
-                  </div>
-                  <p className="text-sm text-ink-muted">{k.label}</p>
-                  <p className="mt-1 text-2xl font-extrabold tracking-tight tabular text-ink">
-                    <AnimatedNumber value={k.value} money={k.money} />
-                  </p>
-                  <p className="mt-1 text-xs leading-snug text-ink-muted">{k.delta}</p>
+            <GlassPanel className="card-glow !p-3 sm:!p-4">
+              <div className="flex items-start justify-between gap-1.5">
+                <div
+                  className="flex h-7 w-7 items-center justify-center rounded-[9px] sm:h-9 sm:w-9 sm:rounded-[12px]"
+                  style={{ background: `${k.color}22`, boxShadow: `0 0 18px ${k.color}33` }}
+                >
+                  <k.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: k.color }} />
                 </div>
                 <Sparkline data={k.spark} color={k.color} />
               </div>
+              <p className="mt-2 text-[11px] text-ink-muted sm:text-sm">{k.label}</p>
+              <p className="mt-0.5 text-lg font-extrabold tracking-tight tabular text-ink sm:text-2xl">
+                <AnimatedNumber value={k.value} money={k.money} />
+              </p>
+              <p className="mt-1 text-[10px] leading-snug text-ink-muted sm:text-xs">{k.delta}</p>
             </GlassPanel>
           </MotionItem>
         ))}
       </MotionStagger>
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 xl:grid-cols-3">
         <MotionItem className="xl:col-span-2">
-          <GlassPanel className="card-glow p-6 sm:p-7">
-            <CardHeader>
-              <div>
-                <CardTitle>Income vs estimated</CardTitle>
-                <CardSubtitle>Glowing neon series · last 7 days</CardSubtitle>
+          <GlassPanel className="card-glow min-w-0 p-4 sm:p-7">
+            <CardHeader className="mb-3 sm:mb-5">
+              <div className="min-w-0">
+                <CardTitle className="text-lg sm:text-xl">Income vs estimated</CardTitle>
+                <CardSubtitle className="text-sm sm:text-[15px]">
+                  Glowing neon series · last 7 days
+                </CardSubtitle>
               </div>
               <Badge tone="lime">7 days</Badge>
             </CardHeader>
@@ -260,15 +262,19 @@ export function DashboardPage() {
           </GlassPanel>
         </MotionItem>
         <MotionItem>
-          <GlassPanel className="card-glow flex h-full flex-col p-6 sm:p-7">
-            <CardHeader>
-              <div>
-                <CardTitle>Needs attention</CardTitle>
-                <CardSubtitle>Flags that need a decision today</CardSubtitle>
+          <GlassPanel className="card-glow flex h-full flex-col p-4 sm:p-7">
+            <CardHeader className="mb-3 sm:mb-5">
+              <div className="min-w-0">
+                <CardTitle className="text-lg sm:text-xl">Needs attention</CardTitle>
+                <CardSubtitle className="text-sm sm:text-[15px]">
+                  Flags that need a decision today
+                </CardSubtitle>
               </div>
             </CardHeader>
             {data.attention.length === 0 ? (
-              <CardEmpty className="flex-1">Nothing urgent — desk is clear.</CardEmpty>
+              <CardEmpty className="flex-1 !min-h-[8rem] !py-8 sm:!min-h-[12.5rem]">
+                Nothing urgent — desk is clear.
+              </CardEmpty>
             ) : (
               <ul className="space-y-2.5">
                 {data.attention.map((item, i) => (
@@ -281,12 +287,12 @@ export function DashboardPage() {
                     onMouseEnter={() => playSfx('hover')}
                   >
                     <div className="min-w-0">
-                      <p className="text-[15px] font-semibold text-ink">{item.title}</p>
-                      <p className="truncate text-[15px] text-ink-muted">{item.subtitle}</p>
+                      <p className="text-sm font-semibold text-ink sm:text-[15px]">{item.title}</p>
+                      <p className="truncate text-sm text-ink-muted sm:text-[15px]">{item.subtitle}</p>
                     </div>
                     <Link
                       to={item.href}
-                      className="shrink-0 text-[15px] font-semibold text-lime hover:underline"
+                      className="shrink-0 text-sm font-semibold text-lime hover:underline sm:text-[15px]"
                       onClick={() => playSfx('pop')}
                     >
                       Review
@@ -299,43 +305,47 @@ export function DashboardPage() {
         </MotionItem>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 lg:grid-cols-3">
         <MotionItem>
-          <GlassPanel className="card-glow flex h-full flex-col p-6 sm:p-7">
-            <CardHeader>
-              <div>
-                <CardTitle>Pipeline mix</CardTitle>
-                <CardSubtitle>Candidates by stage</CardSubtitle>
+          <GlassPanel className="card-glow flex h-full min-w-0 flex-col p-4 sm:p-7">
+            <CardHeader className="mb-3 sm:mb-5">
+              <div className="min-w-0">
+                <CardTitle className="text-lg sm:text-xl">Pipeline mix</CardTitle>
+                <CardSubtitle className="text-sm sm:text-[15px]">Candidates by stage</CardSubtitle>
               </div>
             </CardHeader>
             {stageData.length ? (
               <NeonDonut data={stageData} />
             ) : (
-              <CardEmpty className="flex-1">No stage data yet.</CardEmpty>
+              <CardEmpty className="flex-1 !min-h-[8rem] !py-8 sm:!min-h-[12.5rem]">
+                No stage data yet.
+              </CardEmpty>
             )}
           </GlassPanel>
         </MotionItem>
         <MotionItem>
-          <GlassPanel className="card-glow p-6 sm:p-7">
-            <CardHeader>
-              <div>
-                <CardTitle>Daily income</CardTitle>
-                <CardSubtitle>Booked provision by day</CardSubtitle>
+          <GlassPanel className="card-glow min-w-0 p-4 sm:p-7">
+            <CardHeader className="mb-3 sm:mb-5">
+              <div className="min-w-0">
+                <CardTitle className="text-lg sm:text-xl">Daily income</CardTitle>
+                <CardSubtitle className="text-sm sm:text-[15px]">Booked provision by day</CardSubtitle>
               </div>
             </CardHeader>
             <NeonBarChart data={barData} />
           </GlassPanel>
         </MotionItem>
         <MotionItem>
-          <GlassPanel className="card-glow flex h-full flex-col p-6 sm:p-7">
-            <CardHeader>
-              <div>
-                <CardTitle>Awaiting confirmation</CardTitle>
-                <CardSubtitle>Estimated → Pending</CardSubtitle>
+          <GlassPanel className="card-glow flex h-full min-w-0 flex-col p-4 sm:p-7">
+            <CardHeader className="mb-3 sm:mb-5">
+              <div className="min-w-0">
+                <CardTitle className="text-lg sm:text-xl">Awaiting confirmation</CardTitle>
+                <CardSubtitle className="text-sm sm:text-[15px]">Estimated → Pending</CardSubtitle>
               </div>
             </CardHeader>
             {data.estimatedList.length === 0 ? (
-              <CardEmpty className="flex-1">No estimated rows waiting.</CardEmpty>
+              <CardEmpty className="flex-1 !min-h-[8rem] !py-8 sm:!min-h-[12.5rem]">
+                No estimated rows waiting.
+              </CardEmpty>
             ) : (
               <ul className="space-y-2">
                 {data.estimatedList.slice(0, 6).map((e, i) => (
@@ -344,11 +354,15 @@ export function DashboardPage() {
                     initial={reduce ? false : { opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ ...springSoft, delay: 0.04 * i }}
-                    className="flex items-center justify-between gap-2 rounded-[14px] border border-border px-3.5 py-3"
+                    className="flex items-center justify-between gap-2 rounded-[14px] border border-border px-3 py-2.5 sm:px-3.5 sm:py-3"
                   >
-                    <div>
-                      <p className="text-[15px] font-medium">{e.candidateName ?? 'Candidate'}</p>
-                      <p className="tabular text-[15px] text-ink-muted">{formatMoney(e.amount)}</p>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium sm:text-[15px]">
+                        {e.candidateName ?? 'Candidate'}
+                      </p>
+                      <p className="tabular text-sm text-ink-muted sm:text-[15px]">
+                        {formatMoney(e.amount)}
+                      </p>
                     </div>
                     <Button
                       size="sm"
@@ -368,10 +382,12 @@ export function DashboardPage() {
 
       <MotionItem>
         <GlassPanel className="card-glow overflow-hidden !p-0">
-          <div className="flex items-center justify-between border-b border-border px-6 py-5 sm:px-7">
-            <div>
-              <CardTitle>Recent candidates</CardTitle>
-              <CardSubtitle>Dense register · Telegram under name</CardSubtitle>
+          <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-7 sm:py-5">
+            <div className="min-w-0">
+              <CardTitle className="text-lg sm:text-xl">Recent candidates</CardTitle>
+              <CardSubtitle className="text-sm sm:text-[15px]">
+                Dense register · Telegram under name
+              </CardSubtitle>
             </div>
             <Link
               to="/candidates"

@@ -4,7 +4,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { X } from 'lucide-react'
 import {
   DESK_GLASS,
-  isCompactGlassViewport,
   prefersReducedTransparency,
   useCompactGlassViewport,
 } from '@/hooks/useLiquidGlass'
@@ -12,14 +11,6 @@ import { createGlass, type GlassController } from '@/lib/liquid-glass.js'
 import { springSnappy } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { Button } from './Button'
-
-const BG_KEYS = [
-  'backgroundColor',
-  'backgroundImage',
-  'backgroundSize',
-  'backgroundPosition',
-  'backgroundRepeat',
-] as const
 
 function lockBodyScroll(lock: boolean) {
   if (typeof document === 'undefined') return
@@ -56,10 +47,10 @@ export function Modal({
   const reduce = useReducedMotion()
   const compact = useCompactGlassViewport()
   const panelRef = useRef<HTMLDivElement | null>(null)
-  const layerRef = useRef<HTMLDivElement | null>(null)
-  const copyRef = useRef<HTMLDivElement | null>(null)
   const glassCtrl = useRef<GlassController | null>(null)
-  const useRefraction = Boolean(glass && !compact && !reduce)
+  const useRefraction = Boolean(
+    glass && !compact && !reduce && !prefersReducedTransparency(),
+  )
 
   useEffect(() => {
     if (!open) return
@@ -75,63 +66,30 @@ export function Modal({
   }, [open, onClose])
 
   useEffect(() => {
-    if (!open || !glass || reduce || prefersReducedTransparency()) return
-    if (isCompactGlassViewport()) return
-    const layer = layerRef.current
-    const copy = copyRef.current
-    if (!layer || !copy) return
+    if (!open || !useRefraction) return
+    const host = panelRef.current
+    if (!host) return
 
-    const stage = document.querySelector('[data-td-glass-stage]') as HTMLElement | null
-    if (stage) {
-      const cs = getComputedStyle(stage)
-      for (const k of BG_KEYS) copy.style[k] = cs[k]
-      copy.classList.remove('td-glass-silk')
-    } else {
-      for (const k of BG_KEYS) copy.style[k] = ''
-      copy.classList.add('td-glass-silk')
-    }
-
-    const ctrl = createGlass(layer, {
+    const ctrl = createGlass(host, {
+      mode: 'backdrop',
       ...DESK_GLASS,
       refraction: 16,
       bezel: 0.26,
       chroma: 0.05,
       specular: 0.32,
+      fallback: 'blur(28px) saturate(1.7)',
     })
     glassCtrl.current = ctrl
-
-    let alignKey = ''
-    const align = () => {
-      if (!stage) {
-        copy.style.width = '100%'
-        copy.style.height = '100%'
-        copy.style.transform = ''
-        return
-      }
-      const sr = stage.getBoundingClientRect()
-      const lr = layer.getBoundingClientRect()
-      const key = `${sr.width}|${sr.height}|${sr.left - lr.left}|${sr.top - lr.top}`
-      if (key === alignKey) return
-      alignKey = key
-      copy.style.width = `${sr.width}px`
-      copy.style.height = `${sr.height}px`
-      copy.style.transform = `translate(${sr.left - lr.left}px, ${sr.top - lr.top}px)`
-      copy.style.backgroundSize = `${sr.width}px ${sr.height}px`
-      copy.style.backgroundPosition = '0 0'
-    }
-    align()
     ctrl.flush()
-    const onScroll = () => align()
-    window.addEventListener('scroll', onScroll, true)
-    window.addEventListener('resize', onScroll)
+    const ro = new ResizeObserver(() => ctrl.flush())
+    ro.observe(host)
 
     return () => {
       ctrl.destroy()
       glassCtrl.current = null
-      window.removeEventListener('scroll', onScroll, true)
-      window.removeEventListener('resize', onScroll)
+      ro.disconnect()
     }
-  }, [open, glass, reduce])
+  }, [open, useRefraction])
 
   if (typeof document === 'undefined') return null
 
@@ -183,7 +141,7 @@ export function Modal({
               glass &&
                 cn(
                   'liquid-glass-host isolate overflow-hidden border-lime/25 bg-transparent shadow-[0_0_0_1px_rgb(198_244_50/0.12),0_24px_64px_rgb(0_0_0/0.55)]',
-                  compact && 'liquid-glass-host--frost',
+                  (compact || !useRefraction) && 'liquid-glass-host--frost',
                 ),
               wide ? 'max-w-2xl' : 'max-w-lg',
               className,
@@ -192,11 +150,6 @@ export function Modal({
           >
             {glass ? (
               <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
-                {useRefraction ? (
-                  <div ref={layerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]">
-                    <div ref={copyRef} className="td-glass-copy absolute top-0 left-0" />
-                  </div>
-                ) : null}
                 <div className="td-glass-tint absolute inset-0 rounded-[inherit]" />
                 <div className="td-glass-rim absolute inset-0 rounded-[inherit]" />
               </div>
