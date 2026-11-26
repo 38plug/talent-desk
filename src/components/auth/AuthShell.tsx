@@ -16,7 +16,10 @@ export function AuthShell({
   const reduce = useReducedMotion()
 
   return (
-    <div className="bg-mesh relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+    <div
+      className="bg-mesh relative flex min-h-screen items-center justify-center overflow-hidden p-4"
+      data-td-glass-stage
+    >
       <motion.div
         className={cn(
           'auth-orb -top-24 -left-16 h-80 w-80',

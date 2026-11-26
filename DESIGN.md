@@ -301,7 +301,7 @@ Depth is glass plus lime bloom, not Material elevation. Dashboard panes are fros
 ### Named Rules
 **The Glow-Is-Signal Rule.** Bloom belongs on conversion, brand mark, the stretchy pill, and charts. Rest forms use `.card-surface` only (inset highlight, no outer bloom). Dashboard KPIs may take `.card-glow` on glass.
 
-**The Glass Desk Rule.** Overview panes are `<GlassPanel>` / `.glass-panel` with **liquid refraction** (`createGlass` from `src/lib/liquid-glass.js`, `mode: 'backdrop'`): Chromium bends the live backdrop; Safari/Firefox keep frost `blur(20px) saturate(1.25)`. Do not flatten them back to opaque navy steel (`#121622`) or a single un-blurred `#111` slab. Never put `filter: url(...)` on `PageTransition`. Glass chrome buttons use `Button variant="glass"`.
+**The Glass Desk Rule.** Overview panes are `<GlassPanel>` over `[data-td-glass-stage]` (Pattern C): an aligned copy of the lime/violet silk mesh is bent with `filter: url(#…)` so refraction reads in Chrome, Safari/iOS, and Firefox. Do not flatten panes to opaque slabs. Never put `filter: url(...)` on `PageTransition`. Glass chrome buttons use `Button variant="glass"`.
 
 **The Overlay-On-Body Rule.** Modal and Drawer always `createPortal` to `document.body` at `z-[200]`. Page shells must not use CSS `filter` or a transform containing block. Overlay fill is `bg-black/75` without `backdrop-blur` (blur on the overlay was cutting the viewport in half). Framer `filter: blur` on the **dialog panel** during open/exit is the preview motion — keep it off the overlay and off `PageTransition`.
 
