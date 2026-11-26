@@ -142,7 +142,7 @@ export function AppShell() {
   }
 
   return (
-    <div className="bg-mesh flex min-h-screen">
+    <div className="bg-mesh flex min-h-screen" data-td-glass-stage>
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-canvas-raised/95 backdrop-blur-xl transition-[width,transform] duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:static lg:translate-x-0',

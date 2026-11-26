@@ -2,11 +2,19 @@ import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { DESK_GLASS } from '@/hooks/useLiquidGlass'
+import { DESK_GLASS, prefersReducedTransparency } from '@/hooks/useLiquidGlass'
 import { createGlass, type GlassController } from '@/lib/liquid-glass.js'
 import { springSnappy } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { Button } from './Button'
+
+const BG_KEYS = [
+  'backgroundColor',
+  'backgroundImage',
+  'backgroundSize',
+  'backgroundPosition',
+  'backgroundRepeat',
+] as const
 
 function lockBodyScroll(lock: boolean) {
   if (typeof document === 'undefined') return
@@ -42,6 +50,8 @@ export function Modal({
 }) {
   const reduce = useReducedMotion()
   const panelRef = useRef<HTMLDivElement | null>(null)
+  const layerRef = useRef<HTMLDivElement | null>(null)
+  const copyRef = useRef<HTMLDivElement | null>(null)
   const glassCtrl = useRef<GlassController | null>(null)
 
   useEffect(() => {
@@ -58,22 +68,58 @@ export function Modal({
   }, [open, onClose])
 
   useEffect(() => {
-    if (!open || !glass || reduce) return
-    const el = panelRef.current
-    if (!el) return
-    if (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-transparency: reduce)').matches) {
-      return
+    if (!open || !glass || reduce || prefersReducedTransparency()) return
+    const layer = layerRef.current
+    const copy = copyRef.current
+    if (!layer || !copy) return
+
+    const stage = document.querySelector('[data-td-glass-stage]') as HTMLElement | null
+    if (stage) {
+      const cs = getComputedStyle(stage)
+      for (const k of BG_KEYS) copy.style[k] = cs[k]
+      copy.classList.remove('td-glass-silk')
+    } else {
+      for (const k of BG_KEYS) copy.style[k] = ''
+      copy.classList.add('td-glass-silk')
     }
-    const ctrl = createGlass(el, {
+
+    const ctrl = createGlass(layer, {
       ...DESK_GLASS,
-      refraction: 20,
-      bezel: 0.3,
-      fallback: 'blur(20px) saturate(1.25)',
+      refraction: 24,
+      bezel: 0.32,
     })
     glassCtrl.current = ctrl
+
+    let alignKey = ''
+    const align = () => {
+      if (!stage) {
+        copy.style.width = '100%'
+        copy.style.height = '100%'
+        copy.style.transform = ''
+        return
+      }
+      const sr = stage.getBoundingClientRect()
+      const lr = layer.getBoundingClientRect()
+      const key = `${sr.width}|${sr.height}|${sr.left - lr.left}|${sr.top - lr.top}`
+      if (key === alignKey) return
+      alignKey = key
+      copy.style.width = `${sr.width}px`
+      copy.style.height = `${sr.height}px`
+      copy.style.transform = `translate(${sr.left - lr.left}px, ${sr.top - lr.top}px)`
+      copy.style.backgroundSize = `${sr.width}px ${sr.height}px`
+      copy.style.backgroundPosition = '0 0'
+    }
+    align()
+    ctrl.flush()
+    const onScroll = () => align()
+    window.addEventListener('scroll', onScroll, true)
+    window.addEventListener('resize', onScroll)
+
     return () => {
       ctrl.destroy()
       glassCtrl.current = null
+      window.removeEventListener('scroll', onScroll, true)
+      window.removeEventListener('resize', onScroll)
     }
   }, [open, glass, reduce])
 
@@ -125,20 +171,31 @@ export function Modal({
               'relative my-auto flex w-full flex-col rounded-[20px] border border-border bg-surface shadow-2xl',
               'max-h-[min(90vh,calc(100dvh-2rem))]',
               glass &&
-                'glass-panel liquid-glass border-lime/20 shadow-[0_0_0_1px_rgb(198_244_50/0.12),0_24px_64px_rgb(0_0_0/0.55)]',
+                'liquid-glass-host isolate overflow-hidden border-lime/25 bg-transparent shadow-[0_0_0_1px_rgb(198_244_50/0.12),0_24px_64px_rgb(0_0_0/0.55)]',
               wide ? 'max-w-2xl' : 'max-w-lg',
               className,
             )}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-5 py-4 sm:px-6">
-              <h2 className="text-lg font-bold text-ink sm:text-xl">{title}</h2>
-              <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-6 sm:py-6">
-              {children}
+            {glass ? (
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
+                <div ref={layerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                  <div ref={copyRef} className="td-glass-copy absolute top-0 left-0" />
+                </div>
+                <div className="td-glass-tint absolute inset-0 rounded-[inherit]" />
+                <div className="td-glass-rim absolute inset-0 rounded-[inherit]" />
+              </div>
+            ) : null}
+            <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-5 py-4 sm:px-6">
+                <h2 className="text-lg font-bold text-ink sm:text-xl">{title}</h2>
+                <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-6 sm:py-6">
+                {children}
+              </div>
             </div>
           </motion.div>
         </motion.div>
