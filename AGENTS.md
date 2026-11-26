@@ -25,6 +25,7 @@ This is a **Vite + React 19** static SPA, not Next.js. Ignore Next.js App Router
 
 - Keep brand **Talent Desk** and lime `#C6F432` as conversion on `#111` charcoal.
 - Portal `Modal` / `Drawer` to `document.body`. Do not put CSS `filter` on `PageTransition`.
+- Liquid glass lives on leaf panes/buttons only (`GlassPanel`, `Button variant="glass"`, glass `Modal`) via `src/lib/liquid-glass.js` — never on page shells.
 - Keep SFX muted by default; honor `prefers-reduced-motion`.
 - Migrate missing candidate fields to `null` on load/import — do not wipe older rows.
 - Confirm candidate delete by name; cascade interviews + earnings; leave linked offers.

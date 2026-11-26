@@ -133,7 +133,7 @@ export function InterviewCalendarPage() {
         <div className="flex items-center gap-1">
           <Button
             type="button"
-            variant="secondary"
+            variant="glass"
             size="sm"
             className="h-9 w-9 px-0"
             aria-label="Previous"
@@ -141,12 +141,12 @@ export function InterviewCalendarPage() {
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button type="button" variant="secondary" size="sm" onClick={() => setCursor(startOfDay(new Date()))}>
+          <Button type="button" variant="glass" size="sm" onClick={() => setCursor(startOfDay(new Date()))}>
             Today
           </Button>
           <Button
             type="button"
-            variant="secondary"
+            variant="glass"
             size="sm"
             className="h-9 w-9 px-0"
             aria-label="Next"

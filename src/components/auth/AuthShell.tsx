@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import { SoundToggle } from '@/components/motion/SoundToggle'
+import { GlassPanel } from '@/components/ui/GlassPanel'
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants'
 import { fadeScale, fadeUp, springSoft, staggerContainer } from '@/lib/motion'
 import { cn } from '@/lib/utils'
@@ -61,12 +62,14 @@ export function AuthShell({
           <p className="floating-label mt-2 text-sm">{APP_TAGLINE}</p>
         </motion.div>
 
-        <motion.div
-          variants={reduce ? undefined : fadeScale}
-          className="glass-panel card-glow relative overflow-hidden p-7 shadow-[0_0_80px_rgb(198_244_50/0.12)]"
-        >
-          <div className="pointer-events-none absolute -top-24 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full bg-lime/15 blur-3xl" />
-          <div className="relative">{children}</div>
+        <motion.div variants={reduce ? undefined : fadeScale}>
+          <GlassPanel
+            className="card-glow relative overflow-hidden p-7 shadow-[0_0_80px_rgb(198_244_50/0.12)]"
+            optics={{ refraction: 24, bezel: 0.32, chroma: 0.12, specular: 0.6 }}
+          >
+            <div className="pointer-events-none absolute -top-24 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full bg-lime/15 blur-3xl" />
+            <div className="relative">{children}</div>
+          </GlassPanel>
         </motion.div>
       </motion.div>
     </div>
