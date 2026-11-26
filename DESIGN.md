@@ -144,10 +144,16 @@ components:
     rounded: "{rounded.card}"
     padding: "24px"
   glass-panel:
-    backgroundColor: "rgb(20 20 20 / 0.78)"
+    backgroundColor: "transparent"
     textColor: "{colors.ink}"
     rounded: "{rounded.card}"
     padding: "24px"
+  button-glass:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.control}"
+    padding: "0 16px"
+    height: "40px"
   chip-pill:
     backgroundColor: "rgb(198 244 50 / 0.15)"
     textColor: "{colors.lime}"
@@ -173,21 +179,22 @@ components:
 
 **Creative North Star: "The Lime Glass Desk"**
 
-Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel — not a marketing site and not a Next.js app. Persistence is hosted Supabase when `VITE_SUPABASE_*` is set, otherwise device-local `localStorage`; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on `sm+`, lime notification bell, sound toggle) hold the desk; the working canvas is glass KPI heroes, a glowing **DeskTotalsStrip** on Candidates / Offers / Interviews, an Interview Calendar at `/calendar`, a personal Telegram chat at `/telegram`, glowing Recharts, and data tables — never a photo-led landing. Interview start alerts portal a lime toast to `document.body` (`z-[220]`) while the desk is open.
+Talent Desk is a charcoal operating floor: `#111` canvas, lime `#C6F432` conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel — not a marketing site and not a Next.js app. Persistence is hosted Supabase when `VITE_SUPABASE_*` is set, otherwise device-local `localStorage`; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on `sm+`, lime notification bell, sound toggle) hold the desk; the working canvas is Pattern C liquid-glass KPI heroes (`<GlassPanel>` over `[data-td-glass-stage]`), a glowing **DeskTotalsStrip** on Candidates / Offers / Interviews, an Interview Calendar at `/calendar`, a personal Telegram chat at `/telegram`, glowing Recharts, and data tables — never a photo-led landing. Interview start alerts portal a lime toast to `document.body` (`z-[220]`) while the desk is open.
 
 The room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, and leftover field-focus — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only.
 
-Density is operational. Dashboard panes use `.glass-panel` (20px blur, 20px radius) with `p-6` / `sm:p-7` inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard, a slow lime orb pulse on the totals strip. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview that lists linked candidates. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms, silences SFX, and stills the totals-strip orb. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.
+Density is operational. Dashboard panes, the auth card, and DeskTotalsStrip use `<GlassPanel>` — Pattern C liquid glass from vendored `src/lib/liquid-glass.js`: an aligned copy of the desk mesh is bent with `filter: url(#…)` so rim refraction reads in Chrome, Safari/iOS, and Firefox. Host chrome is `.liquid-glass-host` (20px radius, transparent fill, inset highlight + 6% lime seam). Optics stay restrained (`chroma` ≤ 0.08, `specular` ≈ 0.4) so rims do not oil. Inner padding stays `p-6` / `sm:p-7` so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`). Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard, a slow lime orb pulse on the totals strip. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay); `glass` modals skip that Framer `filter` because the SVG lens already lives on the panel. Offer cards open a wide liquid-glass preview that lists linked candidates. Chrome actions (CSV export, calendar Today/prev/next, Scan offer, Edit offer) may use `Button variant="glass"`. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` and `prefers-reduced-transparency` skip refraction (tint + rim only), collapse animations to 0.01ms, silence SFX, and still the totals-strip orb. The leftover `.glass-panel` CSS frost utility is unused by live panes — do not revive it as the working surface. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.
 
 **Key Characteristics:**
-- Charcoal canvas (`#111111`) with a lime / violet / peach mesh and optional film grain on auth
+- Charcoal canvas (`#111111`) with a soft lime / violet / peach orb mesh (no hard stripes) and optional film grain on auth
 - Lime (`#C6F432`) as conversion; peach (`#F4B183`) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only
 - Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips
 - Plus Jakarta Sans for all UI; JetBrains Mono only for money, counts, and the header clock (`.tabular`)
 - Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)
 - GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips
-- Glass dashboard panels (`.glass-panel`) as the working signature; neon Recharts (lime + peach)
-- Auth glass card on orbs — no rail until session; no demo-preview bypass
+- Pattern C liquid-glass panes (`<GlassPanel>` over `[data-td-glass-stage]`) as the working signature; neon Recharts (lime + peach)
+- `Button variant="glass"` for quiet chrome (export, calendar, scan, offer edit) — not conversion
+- Auth liquid-glass card on orbs — no rail until session; no demo-preview bypass
 - Offer cards click into a wide glass preview modal with a linked-candidates list; Edit/Delete stay independent
 - Candidates / Offers / Interviews open with a lime **DeskTotalsStrip** (unfiltered shared counts, `AnimatedNumber`)
 - Interview Calendar (`/calendar`, nav `05`) is month / week / day on `.card-surface`; today is a lime disc
@@ -240,7 +247,7 @@ A lime-primary charcoal palette. Neutrals are warm-black, not cool navy.
 
 **The Market-Chip Rule.** Candidate market uses the same values as offer categories (`forex` | `chinese`). Forex is lime (`marketTone`); Chinese is cyan. Unset is a dim em-dash, never a muted fake badge.
 
-**The Mesh-Is-Atmosphere Rule.** `.bg-mesh` orbs are ground lighting, not a fill token for cards. Dashboard panes stay on `.glass-panel`; forms stay on `.card-surface`.
+**The Mesh-Is-Atmosphere Rule.** `.bg-mesh` is a soft atmospheric wash of lime / violet / peach orbs (no hard repeating stripes — those turned into oily glare bands under the displacement map). It is ground lighting **and** the Pattern C backdrop copy, not a fill token for cards. Dashboard panes stay on `<GlassPanel>`; forms stay on `.card-surface`.
 
 ## Typography
 
@@ -273,17 +280,17 @@ The authenticated product is a collapsible rail-plus-canvas command floor.
 - **Rail:** Fixed `17rem` expanded / `4.75rem` collapsed (`talent-desk.sidebar-collapsed`). `bg-canvas-raised/95` + `backdrop-blur-xl`, 1px right seam. Width transition `400ms` `cubic-bezier(0.16, 1, 0.3, 1)`. Brand lockup, peach “Desk” kicker, indexed nav with a GSAP lime slide-pill that tracks **hover or active** (`focusKey = hoveredKey ?? activeKey`). Icons scale `1.08` focused / `1.06` active. Collapsed rail shows a fixed glass tooltip 10px right of the row. Operator chip (lime/10 wash), ghost Sign out, collapse control. Below `lg` it slides off-canvas (`-translate-x-full`) behind a `bg-black/55` scrim.
 - **Header:** Sticky, `bg-canvas/80` + blur, 12px vertical padding. Page title left; **HeaderClock** (peach date + mono time, `hidden sm:flex`), search (md+), **HeaderNotifications** (40px pill + lime badge), sound toggle, lime-ring initials avatar right. Mobile hamburger is a 12px-radius bordered square. Do not crowd the clock next to the search well.
 - **Main:** `px-4 py-6` → `sm:px-6` → `lg:px-8`. Vertical stack `space-y-5` / `gap-4`. Page content swaps through `PageTransition` (`springSoft` opacity + `y: 14` in; exit opacity + `y: -8` in 0.2s). **No CSS `filter` or scale on this wrapper**, so `position: fixed` overlays are not clipped.
-- **Auth:** Centered `max-w-md` `.glass-panel.card-glow` on `.bg-mesh` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`). Film-grain overlay. Sound toggle top-right. No rail.
+- **Auth:** Centered `max-w-md` `<GlassPanel className="card-glow">` (optics: refraction 20 / bezel 0.3 / chroma 0.07 / specular 0.4 / blur 2) on `.bg-mesh` with `data-td-glass-stage` and three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`). Film-grain overlay. Sound toggle top-right. No rail.
 - **Dashboard:** 5-col hero (`3 + 2`) at `lg`; 4 glass KPI cards (`!p-4`); then area + attention, donut + bar + estimated list (`p-6 sm:p-7`), recent table (`!p-0`). Empty desk shows a lime/10 banner and zeros — never seeded demo income.
 - **Working tables:** `.data-table` full width, 14px body, 11px uppercase thead, 13.6×16px cells, hover lime-5%. Candidates table is `min-w-[1040px]` with Languages, Market, Gender, Location, and **icon-only** actions (Schedule / Edit / Delete — `h-8 w-8`, aria-label + title). Overview recent-candidates table shows Name / Market / Gender / Stage / Source / Telegram.
 - **Interview Calendar:** `/calendar` (nav index `05`). Toolbar is a `.pill-toggle` (month / week / day) + secondary prev/Today/next + extrabold heading + lime **Schedule**. Month grid is `.card-surface !p-0`, Monday-start, today a lime disc with glow; event chips are 8px lime/10 wells. Week/day is a 08–20 hour grid (`min-w-[640px]`). Empty hour cells schedule at that slot.
-- **Dialogs:** Modal and Drawer **portal to `document.body`** at `z-[200]`. Overlay is `bg-black/75` (no backdrop-blur) fading 0.2s. Dialog shell is `max-h-[min(90vh,calc(100dvh-2rem))]` with a sticky title bar and a scrollable body; wide forms use `max-w-2xl`. Open uses `springSnappy` on the panel: scale `0.94` → `1`, `blur(8px)` → `0`, `y: 12` → `0`. `glass` variant applies `.glass-panel` + lime/20 seam (offer preview). Drawer is a right `max-w-md` panel at `100dvh` sliding `x: 28` with a 6px blur. Body scroll is locked while either is open. Escape and overlay click close.
+- **Dialogs:** Modal and Drawer **portal to `document.body`** at `z-[200]`. Overlay is `bg-black/75` (no backdrop-blur) fading 0.2s. Dialog shell is `max-h-[min(90vh,calc(100dvh-2rem))]` with a sticky title bar and a scrollable body; wide forms use `max-w-2xl`. Opaque modals open with `springSnappy` on the panel: scale `0.94` → `1`, `blur(8px)` → `0`, `y: 12` → `0`. `glass` variant is `.liquid-glass-host` Pattern C (lime/25 seam, SVG lens, **no** Framer `filter` on the panel — offer preview). Drawer is a right `max-w-md` panel at `100dvh` sliding `x: 28` with a 6px blur. Body scroll is locked while either is open. Escape and overlay click close.
 
 Spacing rhythm is 8 / 12 / 16 / 20 / 24 / 32.
 
 ## Elevation & Depth
 
-Depth is glass plus lime bloom, not Material elevation. Dashboard panes are frosted (blur 20px, saturate 1.25) with an inset 1px white highlight and a 6% lime seam. Forms stay opaque charcoal. The page mesh and auth orbs supply atmosphere.
+Depth is Pattern C liquid glass plus lime bloom, not Material elevation. Working panes are a transparent `.liquid-glass-host` that refracts an aligned copy of `[data-td-glass-stage]` through an SVG displacement filter (`src/lib/liquid-glass.js`). Default desk optics (`DESK_GLASS`): radius 20, refraction 22, bezel 0.32, curvature 4, chroma 0.08, blur 2, specular 0.42, specularWidth 1.15, lightAngle −125. Compact chrome (`DESK_GLASS_BUTTON`): radius 12, refraction 12, bezel 0.55, chroma 0.06, specular 0.4. A denser `.td-glass-tint` + quieter `.td-glass-rim` sit over the bent copy so labels stay readable and specular cannot wash the centre. Forms stay opaque charcoal. The page mesh and auth orbs supply atmosphere **and** the lens source. Reduced motion / reduced transparency skip `createGlass` and leave tint + rim. Do not raise chroma above 0.08 or specular much above 0.4 — that was the oily rainbow glare.
 
 ### Shadow Vocabulary
 - **Lime glow** (`0 0 28px rgb(198 244 50 / 0.35), 0 0 8px rgb(198 244 50 / 0.2)`): Primary CTA, TD mark, active pill, confirm lime.
@@ -293,7 +300,8 @@ Depth is glass plus lime bloom, not Material elevation. Dashboard panes are fros
 - **Card glow** (`inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(198 244 50 / 0.1), 0 12px 40px rgb(0 0 0 / 0.4)`): Auth / KPI `.card-glow`.
 - **Auth bloom** (`0 0 80px rgb(198 244 50 / 0.12)`): Login glass extra bloom.
 - **Hero lime** (`0 0 48px rgb(198 244 50 / 0.15)`): Dashboard command-center slab.
-- **Glass panel** (`inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(198 244 50 / 0.06), 0 18px 48px rgb(0 0 0 / 0.45)`): Dashboard working panes.
+- **Liquid-glass host** (`inset 0 1px 0 rgb(255 255 255 / 0.1), 0 0 0 1px rgb(198 244 50 / 0.06), 0 16px 40px rgb(0 0 0 / 0.45)`): `<GlassPanel>` / `.liquid-glass-host` working panes.
+- **Glass button** (`0 8px 24px rgb(0 0 0 / 0.35)`): `Button variant="glass"` rest; hover lime/40 border.
 - **Focus (global)** (`outline: 2px solid #C6F432; outline-offset: 2px`).
 - **Focus (fields, leftover):** `ring-2 ring-violet/30` + `border-violet/70`. Search uses lime (`border-lime/50` + `ring-lime/20`).
 - **Badge** (`0 0 12px rgb(0 0 0 / 0.15)`): Soft rest under pills.
@@ -301,7 +309,7 @@ Depth is glass plus lime bloom, not Material elevation. Dashboard panes are fros
 ### Named Rules
 **The Glow-Is-Signal Rule.** Bloom belongs on conversion, brand mark, the stretchy pill, and charts. Rest forms use `.card-surface` only (inset highlight, no outer bloom). Dashboard KPIs may take `.card-glow` on glass.
 
-**The Glass Desk Rule.** Overview panes are `<GlassPanel>` over `[data-td-glass-stage]` (Pattern C): an aligned copy of the soft lime/violet mesh is bent with `filter: url(#…)`. Optics stay restrained (`chroma` ≤ 0.08, `specular` ≈ 0.4, soft orbs — no hard stripes) so rims read as glass without oily rainbow glare. Do not flatten panes to opaque slabs. Never put `filter: url(...)` on `PageTransition`. Glass chrome buttons use `Button variant="glass"`.
+**The Glass Desk Rule.** Overview, auth, totals, and `Modal glass` are `<GlassPanel>` / `.liquid-glass-host` over `[data-td-glass-stage]` (Pattern C): an aligned copy of the soft lime/violet/peach mesh is bent with `filter: url(#…)` so refraction reads in Chrome, Safari/iOS, and Firefox. Optics stay restrained (`chroma` ≤ 0.08, `specular` ≈ 0.4, soft orbs — no hard stripes) so rims read as glass without oily rainbow glare. Do not flatten panes to opaque slabs. Never put `filter: url(...)` on `PageTransition` or the modal overlay. Glass chrome buttons use `Button variant="glass"`. Honor `prefers-reduced-transparency` by skipping refraction. The leftover `.glass-panel` CSS frost class is not a live surface.
 
 **The Overlay-On-Body Rule.** Modal and Drawer always `createPortal` to `document.body` at `z-[200]`. Page shells must not use CSS `filter` or a transform containing block. Overlay fill is `bg-black/75` without `backdrop-blur` (blur on the overlay was cutting the viewport in half). Framer `filter: blur` on the **dialog panel** during open/exit is the preview motion — keep it off the overlay and off `PageTransition`.
 
@@ -328,6 +336,7 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 - **Lime (alias):** Same fill; used for “Join Talent Desk” and “Confirmed”.
 - **Secondary:** Surface-raised, 1px border, hover `border-strong` + surface-hover.
 - **Ghost:** Transparent, muted text; hover ink + `white/5`. Sign out in the rail.
+- **Glass:** Transparent `.liquid-glass-host` capsule, ink text, white/15 border, 8px black rest shadow; hover lime/40 border. Pattern C rim refraction over the desk mesh (`DESK_GLASS_BUTTON`). Used for quiet chrome — CSV export, calendar Today/prev/next, Scan offer, Edit offer in the preview. Not conversion (that stays lime fill).
 - **Cyan / Magenta:** Heritage signal fills. Magenta is **not** the register CTA anymore.
 - **Danger:** Rose veil 15% + rose text + rose/30 border. Used for **Delete** on the candidates table, detail drawer, and the named confirm modal, and for **Declined** on past interviews (`size="sm"`). Compact table actions are `h-8 px-2`.
 - **Disabled:** 45% opacity, no pointer.
@@ -343,7 +352,7 @@ Borders are 1px white at 8% rest, 14% on fields. Active filters and badges pick 
 
 ### Cards / Containers
 - **`Card`:** `.card-surface p-6` (settings, forms). Header is title left, actions right (`mb-5`).
-- **Dashboard panes:** `.glass-panel` + optional `.card-glow` + `p-6 sm:p-7`. KPI cards `!p-4`. Recent-candidates table pane `!p-0`.
+- **Dashboard panes:** `<GlassPanel>` (`.liquid-glass-host`) + optional `.card-glow` + `p-6 sm:p-7`. KPI cards `!p-4`. Recent-candidates table pane `!p-0`. Default `DESK_GLASS` optics.
 - **Dashboard heroes:** `.hero-gradient-violet` is now a charcoal→violet-wash→green-black slab (`#1a1a1a → #2a1848 → #1a2a22`), not a solid violet fill. `.hero-gradient-cyan` is a lime slab (`#c6f432 → #a8d92a → #8bc420`) used as the live-desk companion only if reapplied — current live-desk pane is glass, not that gradient.
 - **Empty:** 20px dashed border, `bg-surface/40`, 64px vertical padding. Eyebrow is still violet-glow (leftover); prefer peach `.floating-label` on new empties.
 - **`CardEmpty`:** Dashed `rounded-[16px]` well, `min-h-[11rem]` / `sm:min-h-[12.5rem]`, `text-base` / `sm:text-lg` medium muted, centered. Used on Needs attention / Pipeline mix / Awaiting confirmation when those lists are empty.
@@ -360,8 +369,11 @@ Rail: collapsible 17rem / 4.75rem, solid lime TD mark, “Talent Desk” 15px ex
 
 Header kicker is peach uppercase `APP_NAME`; title is the current nav label. Nav indexes: Overview `01` … Earnings `06`, Telegram `07` (`MessageCircle`), Settings `08`, Admin `09`. Interview Calendar is `05` (`CalendarDays`). Avatar is a 40px lime/20 disc with lime ring. HeaderClock sits between the title cluster and search; the notification bell sits between search and the sound toggle.
 
+### Signature: Pattern C liquid glass
+`src/components/ui/GlassPanel.tsx` + `src/hooks/useLiquidGlass.ts` + vendored `src/lib/liquid-glass.js`. Host is `.liquid-glass-host`. Inside: a pointer-events-none layer copies `[data-td-glass-stage]` background (`AppShell` / `AuthShell` `.bg-mesh`), `createGlass` applies `filter: url(#…)` with `fit` + `clip`, then `.td-glass-tint` and `.td-glass-rim` overlay. Fallback silk (`.td-glass-silk`) if no stage. Skip `createGlass` when `liquid={false}`, `prefers-reduced-motion`, or `prefers-reduced-transparency`. **Never** put this filter on `PageTransition` or the modal overlay — leaf panes and chrome only. `.glass-panel` CSS (backdrop-filter frost) remains in `src/index.css` unused by live TSX; do not revive it.
+
 ### Signature: body-portaled dialog
-`Modal` / `Drawer` in `src/components/ui/Modal.tsx`. Portal to `document.body`. Overlay `fixed inset-0 z-[200]` with `overflow-y-auto`, `bg-black/75`, `p-4 sm:p-6`, opacity fade 0.2s (`AnimatePresence`). Dialog: `rounded-[20px]`, `bg-surface` (or `.glass-panel` + lime/20 when `glass`), `max-h-[min(90vh,calc(100dvh-2rem))]`, sticky `px-5 py-4` title bar, scrollable `px-5 py-5` body. Open/exit uses `springSnappy` (stiffness 380 / damping 28 / mass 0.7) on the panel only: scale `0.94`, `blur(8px)`, `y: 12` → rest; exit scale `0.96`, `blur(6px)`, `y: 8`. Wide candidate form and offer preview are `max-w-2xl`. Confirm-delete is `max-w-lg` and names the candidate. Drawer scrim `bg-black/60`; panel `x: 28` + `blur(6px)`. Body scroll lock compensates for scrollbar width. Reduced motion is opacity-only at 0.01s. Do not reintroduce overlay `backdrop-blur` or nest these inside `PageTransition`.
+`Modal` / `Drawer` in `src/components/ui/Modal.tsx`. Portal to `document.body`. Overlay `fixed inset-0 z-[200]` with `overflow-y-auto`, `bg-black/75`, `p-4 sm:p-6`, opacity fade 0.2s (`AnimatePresence`). Dialog: `rounded-[20px]`, `bg-surface` (or `.liquid-glass-host` Pattern C + lime/25 when `glass`, optics refraction 20 / bezel 0.3 / chroma 0.07 / specular 0.4), `max-h-[min(90vh,calc(100dvh-2rem))]`, sticky `px-5 py-4` title bar, scrollable `px-5 py-5` body. Opaque modals open/exit with `springSnappy` (stiffness 380 / damping 28 / mass 0.7) on the panel: scale `0.94`, `blur(8px)`, `y: 12` → rest; exit scale `0.96`, `blur(6px)`, `y: 8`. **Glass** modals keep scale/y but drop Framer `filter` so it does not fight the SVG lens. Wide candidate form and offer preview are `max-w-2xl`. Confirm-delete is `max-w-lg` and names the candidate. Drawer scrim `bg-black/60`; panel `x: 28` + `blur(6px)` (drawer is opaque surface, not liquid glass). Body scroll lock compensates for scrollbar width. Reduced motion is opacity-only at 0.01s. Do not reintroduce overlay `backdrop-blur` or nest these inside `PageTransition`.
 
 ### Signature: stretchy lime pill
 `src/lib/slide-pill.ts`. The pill is a lime rectangle under the nav; clip-path reveals the **hovered or active** row with a stretchy lead/trail. Lead 0.32s `power3.out`, trail 0.52s `power3.inOut`. `gsap.killTweensOf` on both the anim state and the pill node before every move so rapid hover never stacks. Reduced motion snaps via `setPillImmediate`. Do not restore a 3px magenta inset bar as the active treatment.
@@ -379,7 +391,7 @@ Account card adds a **Storage** definition (`sm:col-span-2`): “Hosted Supabase
 `OffersPage` cards are `.card-surface !p-4` in a 2/3-col grid. Click / Enter / Space opens a wide `Modal glass` titled “Offer preview”: title `text-xl`, provision/salary tiles, package lime badges, description well, **Candidates** list (rows whose `offerId` matches — name, stage chip, market chip, Open → `/candidates?id=`), Edit offer / Delete. Empty copy: “No candidates linked to this offer.” Card Edit and Delete are icon-only (`h-8 w-8`) and `stopPropagation`. Hover: lime/25 border + 12% lime ring. Do not make the card itself a modal.
 
 ### Signature: DeskTotalsStrip
-`src/components/desk/DeskTotalsStrip.tsx`. Tops Candidates, Offers, and Interviews. One `.glass-panel !p-4` with three cells (Total candidates / Total offers / Total interviews): 14px lime/15 icon well + `glow-lime`, 11px lime tracked label, `text-3xl` / `sm:text-4xl` lime `AnimatedNumber`, 12px dim “All desk rows · live shared total”. Counts are **unfiltered** shared-desk lengths (not the page’s search/filter). A slow lime orb pulses unless `prefers-reduced-motion`. Do not restyle this as Overview KPI cards or add a fourth money cell.
+`src/components/desk/DeskTotalsStrip.tsx`. Tops Candidates, Offers, and Interviews. One `<GlassPanel className="!p-4">` (optics refraction 18 / bezel 0.3 / chroma 0.06 / specular 0.38 / blur 2) with three cells (Total candidates / Total offers / Total interviews): 14px lime/15 icon well + `glow-lime`, 11px lime tracked label, `text-3xl` / `sm:text-4xl` lime `AnimatedNumber`, 12px dim “All desk rows · live shared total”. Counts are **unfiltered** shared-desk lengths (not the page’s search/filter). A slow lime orb pulses unless `prefers-reduced-motion`. Do not restyle this as Overview KPI cards or add a fourth money cell.
 
 ### Signature: header clock
 `src/components/layout/HeaderClock.tsx`. Right of the page title, before search. Peach `.floating-label` date (`weekday short` + `month short` + day via `Intl`) over JetBrains Mono `text-sm` time with seconds, ticking every 1s. Browser locale + local timezone. Hidden below `sm`. Do not use a second conversion color or a pill chrome around the clock.
@@ -409,7 +421,7 @@ Candidates table and offer cards: Schedule / Edit / Delete (and offer Edit / Del
 `Sparkline`, `NeonAreaChart`, `NeonBarChart`, `NeonDonut` in `src/components/ui/charts.tsx`. Lime + peach area (estimated series dashed), lime→peach bar gradient, donut palette lime/peach/violet/emerald/amber/rose. Axis ticks `14px` medium `#cbd5e1`. Tooltips: `#1A1A1A`, 12px radius, 14px type. Gauge ring on the live-desk pane is peach→lime with a lime drop-shadow. Sparklines sit on KPI cards; they do not replace the TD mark.
 
 ### Auth card (signature)
-Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`, drifting via Framer). Film grain overlay. Login CTA is primary lime (“Enter Talent Desk”); register is `variant="lime"` (“Join Talent Desk”). A `text-xs text-ink-muted` helper states whether cloud sync is on. Links between them are lime. No “Preview Talent Desk UI”. Sound toggle is top-right on the shell.
+Centered `max-w-md` `<GlassPanel className="card-glow">` (optics refraction 20 / bezel 0.3 / chroma 0.07 / specular 0.4 / blur 2) on `.bg-mesh` `data-td-glass-stage` with three `.auth-orb` blobs (lime, peach, violet; `blur(48px)`, drifting via Framer). Film grain overlay. Login CTA is primary lime (“Enter Talent Desk”); register is `variant="lime"` (“Join Talent Desk”). A `text-xs text-ink-muted` helper states whether cloud sync is on. Links between them are lime. No “Preview Talent Desk UI”. Sound toggle is top-right on the shell.
 
 ### Motion + SFX
 - **Page:** `springSoft` (stiffness 260 / damping 26 / mass 0.85) opacity + `y: 14` → 0; exit opacity + `y: -8` in 0.2s `[0.4, 0, 1, 1]`. **No CSS `filter` on this wrapper.**
@@ -425,7 +437,9 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 ### Do:
 - **Do** keep canvas / canvas-raised / surface as the charcoal ground family and `#C6F432` as the primary conversion color.
 - **Do** set titles in extra-bold Plus Jakarta Sans; money and indexes in JetBrains Mono (`.tabular`).
-- **Do** build the Overview from `.glass-panel` + `.data-table`; build Settings/forms from `.card-surface`.
+- **Do** build the Overview from `<GlassPanel>` + `.data-table`; build Settings/forms from `.card-surface`.
+- **Do** keep Pattern C liquid glass on leaf panes/buttons only (`GlassPanel`, `Button variant="glass"`, `Modal glass`) via `src/lib/liquid-glass.js`. Never put `filter: url(...)` on `PageTransition` or the modal overlay.
+- **Do** skip refraction when `prefers-reduced-motion` or `prefers-reduced-transparency` match — tint + rim only.
 - **Do** map pipeline and earning states through `stageTone` — emerald / cyan / violet / rose / amber.
 - **Do** keep the solid lime TD mark + glow as the lockup; keep the stretchy lime nav pill.
 - **Do** honor `prefers-reduced-motion` (global 0.01ms, no SFX) and keep chrome transitions at 200ms unless a named motion token applies.
@@ -457,7 +471,10 @@ Centered `max-w-md` `.glass-panel.card-glow` with three `.auth-orb` blobs (lime,
 - **Don't** add a second product look for Admin or for cloud sync — both use the same cards, tables, and badges. Owner/admin/moderator role chips stay magenta/lime/violet heritage, not a new brand. Cloud is not a dashboard banner.
 - **Don't** put project refs, anon keys, or service-role values into design files.
 - **Don't** seed demo income or restore a demo-preview bypass on the login screen.
-- **Don't** put CSS `filter` or backdrop-blur on `PageTransition` or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed.
+- **Don't** put CSS `filter`, SVG `filter: url(...)`, or backdrop-blur on `PageTransition` or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed on **opaque** modals only; `glass` modals skip it.
+- **Don't** revive the leftover `.glass-panel` CSS frost class as a working pane — live glass is `<GlassPanel>` / `.liquid-glass-host`.
+- **Don't** restore hard repeating-stripe mesh or raise `chroma` above 0.08 / `specular` much above 0.4 — that was the oily rainbow glare.
+- **Don't** use `Button variant="glass"` as a conversion CTA. Conversion stays lime fill.
 - **Don't** let GSAP pill tweens stack on rapid hover. Don't use a native `title` tooltip for collapsed nav labels.
 - **Don't** commit secrets, password hashes, or live account JSON into either design file.
 - **Don't** restyle DeskTotalsStrip as Overview KPI tiles or add earnings into that strip.
