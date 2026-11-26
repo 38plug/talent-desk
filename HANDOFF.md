@@ -266,7 +266,7 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 4. **Confirm estimated → Pending.** `confirmEarning` must not jump straight to Paid. Estimated is not income.
 5. **Empty desk is zeros.** Never invent `DEMO_METRICS` as live money. The Overview banner must stay while the pipeline is empty.
 6. **Friendly auth errors.** Map through `friendlyAuthError`. Do not surface stack traces on login.
-7. **Visual world is The Lime Glass Desk.** New UI goes through `DESIGN.md` (lime conversion, peach kickers, charcoal `#111`, Plus Jakarta / JetBrains Mono, stretchy pill, glass Overview, occupied type). Do not restore The Neon Signal Desk (violet conversion, `#080A10`, magenta inset nav).
+7. **Visual world is The Lime Glass Desk.** New UI goes through `DESIGN.md` (lime conversion, peach kickers, charcoal `#111`, Plus Jakarta / JetBrains Mono, stretchy pill, glass Overview, occupied type). Overview / auth / totals / glass modals use `<GlassPanel>` + `src/lib/liquid-glass.js` (real refraction in Chromium; frost fallback elsewhere). Chrome actions may use `Button variant="glass"`. Do not restore The Neon Signal Desk (violet conversion, `#080A10`, magenta inset nav).
 8. **SFX stay muted by default.** Do not auto-unmute. Honor `prefers-reduced-motion`.
 9. **Cloud sync is opt-in via env.** Hosted Supabase with `VITE_SUPABASE_*` is supported; keep localStorage fallback when unset. Never require Docker. Never expose `service_role` to the client.
 10. **Do not commit secrets.** Password hashes, salts, and export JSON with credentials stay out of git. Do not print `OWNER_EMAIL` in docs.

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Briefcase, Calendar, Users, type LucideIcon } from 'lucide-react'
 import { AnimatedNumber } from '@/components/motion/AnimatedNumber'
+import { GlassPanel } from '@/components/ui/GlassPanel'
 import { fetchCandidates, fetchInterviews, fetchOffers } from '@/lib/api'
 
 type Stat = {
@@ -51,10 +52,11 @@ export function DeskTotalsStrip() {
   ]
 
   return (
-    <div
-      className="glass-panel relative overflow-hidden !p-4 sm:!px-5 sm:!py-4"
+    <GlassPanel
+      className="relative overflow-hidden !p-4 sm:!px-5 sm:!py-4"
       aria-live="polite"
       aria-atomic="true"
+      optics={{ refraction: 20, bezel: 0.3 }}
     >
       <div className="relative z-10 grid gap-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border">
         {stats.map((stat) => (
@@ -73,6 +75,6 @@ export function DeskTotalsStrip() {
         className="pointer-events-none absolute -bottom-10 left-1/3 h-24 w-40 rounded-full bg-lime/10 blur-2xl"
         aria-hidden
       />
-    </div>
+    </GlassPanel>
   )
 }

@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { X } from 'lucide-react'
+import { DESK_GLASS } from '@/hooks/useLiquidGlass'
+import { createGlass, type GlassController } from '@/lib/liquid-glass.js'
 import { springSnappy } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { Button } from './Button'
@@ -39,6 +41,8 @@ export function Modal({
   glass?: boolean
 }) {
   const reduce = useReducedMotion()
+  const panelRef = useRef<HTMLDivElement | null>(null)
+  const glassCtrl = useRef<GlassController | null>(null)
 
   useEffect(() => {
     if (!open) return
@@ -53,7 +57,45 @@ export function Modal({
     }
   }, [open, onClose])
 
+  useEffect(() => {
+    if (!open || !glass || reduce) return
+    const el = panelRef.current
+    if (!el) return
+    if (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-transparency: reduce)').matches) {
+      return
+    }
+    const ctrl = createGlass(el, {
+      ...DESK_GLASS,
+      refraction: 20,
+      bezel: 0.3,
+      fallback: 'blur(20px) saturate(1.25)',
+    })
+    glassCtrl.current = ctrl
+    return () => {
+      ctrl.destroy()
+      glassCtrl.current = null
+    }
+  }, [open, glass, reduce])
+
   if (typeof document === 'undefined') return null
+
+  const enterExit = glass
+    ? {
+        initial: reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 12 },
+        animate: reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 },
+        exit: reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 8 },
+      }
+    : {
+        initial: reduce
+          ? { opacity: 0 }
+          : { opacity: 0, scale: 0.94, filter: 'blur(8px)', y: 12 },
+        animate: reduce
+          ? { opacity: 1 }
+          : { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0 },
+        exit: reduce
+          ? { opacity: 0 }
+          : { opacity: 0, scale: 0.96, filter: 'blur(6px)', y: 8 },
+      }
 
   return createPortal(
     <AnimatePresence>
@@ -71,30 +113,19 @@ export function Modal({
           }}
         >
           <motion.div
+            ref={panelRef}
             role="dialog"
             aria-modal="true"
             aria-label={title}
-            initial={
-              reduce
-                ? { opacity: 0 }
-                : { opacity: 0, scale: 0.94, filter: 'blur(8px)', y: 12 }
-            }
-            animate={
-              reduce
-                ? { opacity: 1 }
-                : { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0 }
-            }
-            exit={
-              reduce
-                ? { opacity: 0 }
-                : { opacity: 0, scale: 0.96, filter: 'blur(6px)', y: 8 }
-            }
+            initial={enterExit.initial}
+            animate={enterExit.animate}
+            exit={enterExit.exit}
             transition={reduce ? { duration: 0.01 } : springSnappy}
             className={cn(
               'relative my-auto flex w-full flex-col rounded-[20px] border border-border bg-surface shadow-2xl',
               'max-h-[min(90vh,calc(100dvh-2rem))]',
               glass &&
-                'glass-panel border-lime/20 shadow-[0_0_0_1px_rgb(198_244_50/0.12),0_24px_64px_rgb(0_0_0/0.55)]',
+                'glass-panel liquid-glass border-lime/20 shadow-[0_0_0_1px_rgb(198_244_50/0.12),0_24px_64px_rgb(0_0_0/0.55)]',
               wide ? 'max-w-2xl' : 'max-w-lg',
               className,
             )}

@@ -12,6 +12,7 @@ import {
   CardSubtitle,
   CardTitle,
   EmptyState,
+  GlassPanel,
   NeonAreaChart,
   NeonBarChart,
   NeonDonut,
@@ -180,247 +181,263 @@ export function DashboardPage() {
           <div className="pointer-events-none absolute top-6 right-10 h-20 w-20 rounded-full bg-peach/20 blur-2xl" />
         </MotionItem>
 
-        <MotionItem className="glass-panel relative overflow-hidden rounded-[20px] p-5 lg:col-span-2">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-[11px] font-semibold tracking-[0.16em] text-lime uppercase">
-                Live desk
-              </p>
-              <p className="mt-1 text-sm text-ink-muted">Paid provision</p>
-              <p className="mt-1 text-3xl font-extrabold tabular text-ink">
-                <AnimatedNumber value={data.paidEarnings} money />
-              </p>
-            </div>
-            <Briefcase className="h-7 w-7 text-lime/70" />
-          </div>
-          <GaugeRing value={data.totalIncome} max={incomeCap} label="booked" />
-          <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
-            {[
-              { label: 'Pending', value: data.pendingEarnings, money: true },
-              { label: 'Overdue', value: data.overdueEarnings, money: true },
-              { label: 'Live', value: data.liveOffers, money: false },
-            ].map((cell) => (
-              <div
-                key={cell.label}
-                className="rounded-[12px] border border-white/5 bg-white/[0.04] px-2 py-2 backdrop-blur"
-              >
-                <p className="tabular text-base font-bold text-ink">
-                  {cell.money ? (
-                    <AnimatedNumber value={cell.value} money />
-                  ) : (
-                    <AnimatedNumber value={cell.value} />
-                  )}
+        <MotionItem className="lg:col-span-2">
+          <GlassPanel className="relative h-full overflow-hidden rounded-[20px] p-5">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[11px] font-semibold tracking-[0.16em] text-lime uppercase">
+                  Live desk
                 </p>
-                <p className="text-[10px] text-ink-dim">{cell.label}</p>
+                <p className="mt-1 text-sm text-ink-muted">Paid provision</p>
+                <p className="mt-1 text-3xl font-extrabold tabular text-ink">
+                  <AnimatedNumber value={data.paidEarnings} money />
+                </p>
               </div>
-            ))}
-          </div>
+              <Briefcase className="h-7 w-7 text-lime/70" />
+            </div>
+            <GaugeRing value={data.totalIncome} max={incomeCap} label="booked" />
+            <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
+              {[
+                { label: 'Pending', value: data.pendingEarnings, money: true },
+                { label: 'Overdue', value: data.overdueEarnings, money: true },
+                { label: 'Live', value: data.liveOffers, money: false },
+              ].map((cell) => (
+                <div
+                  key={cell.label}
+                  className="rounded-[12px] border border-white/5 bg-white/[0.04] px-2 py-2 backdrop-blur"
+                >
+                  <p className="tabular text-base font-bold text-ink">
+                    {cell.money ? (
+                      <AnimatedNumber value={cell.value} money />
+                    ) : (
+                      <AnimatedNumber value={cell.value} />
+                    )}
+                  </p>
+                  <p className="text-[10px] text-ink-dim">{cell.label}</p>
+                </div>
+              ))}
+            </div>
+          </GlassPanel>
         </MotionItem>
       </div>
 
       <MotionStagger fast className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((k) => (
-          <MotionItem key={k.label} hoverSfx className="glass-panel card-glow !p-4">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <div
-                  className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-[12px]"
-                  style={{ background: `${k.color}22`, boxShadow: `0 0 18px ${k.color}33` }}
-                >
-                  <k.icon className="h-4 w-4" style={{ color: k.color }} />
+          <MotionItem key={k.label} hoverSfx>
+            <GlassPanel className="card-glow !p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div
+                    className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-[12px]"
+                    style={{ background: `${k.color}22`, boxShadow: `0 0 18px ${k.color}33` }}
+                  >
+                    <k.icon className="h-4 w-4" style={{ color: k.color }} />
+                  </div>
+                  <p className="text-sm text-ink-muted">{k.label}</p>
+                  <p className="mt-1 text-2xl font-extrabold tracking-tight tabular text-ink">
+                    <AnimatedNumber value={k.value} money={k.money} />
+                  </p>
+                  <p className="mt-1 text-xs leading-snug text-ink-muted">{k.delta}</p>
                 </div>
-                <p className="text-sm text-ink-muted">{k.label}</p>
-                <p className="mt-1 text-2xl font-extrabold tracking-tight tabular text-ink">
-                  <AnimatedNumber value={k.value} money={k.money} />
-                </p>
-                <p className="mt-1 text-xs leading-snug text-ink-muted">{k.delta}</p>
+                <Sparkline data={k.spark} color={k.color} />
               </div>
-              <Sparkline data={k.spark} color={k.color} />
-            </div>
+            </GlassPanel>
           </MotionItem>
         ))}
       </MotionStagger>
 
       <div className="grid gap-4 xl:grid-cols-3">
-        <MotionItem className="glass-panel card-glow p-6 sm:p-7 xl:col-span-2">
-          <CardHeader>
-            <div>
-              <CardTitle>Income vs estimated</CardTitle>
-              <CardSubtitle>Glowing neon series · last 7 days</CardSubtitle>
-            </div>
-            <Badge tone="lime">7 days</Badge>
-          </CardHeader>
-          <NeonAreaChart data={data.incomeSeries} />
+        <MotionItem className="xl:col-span-2">
+          <GlassPanel className="card-glow p-6 sm:p-7">
+            <CardHeader>
+              <div>
+                <CardTitle>Income vs estimated</CardTitle>
+                <CardSubtitle>Glowing neon series · last 7 days</CardSubtitle>
+              </div>
+              <Badge tone="lime">7 days</Badge>
+            </CardHeader>
+            <NeonAreaChart data={data.incomeSeries} />
+          </GlassPanel>
         </MotionItem>
-        <MotionItem className="glass-panel card-glow flex flex-col p-6 sm:p-7">
-          <CardHeader>
-            <div>
-              <CardTitle>Needs attention</CardTitle>
-              <CardSubtitle>Flags that need a decision today</CardSubtitle>
-            </div>
-          </CardHeader>
-          {data.attention.length === 0 ? (
-            <CardEmpty className="flex-1">Nothing urgent — desk is clear.</CardEmpty>
-          ) : (
-            <ul className="space-y-2.5">
-              {data.attention.map((item, i) => (
-                <motion.li
-                  key={item.id}
-                  initial={reduce ? false : { opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...springSoft, delay: 0.05 * i }}
-                  className="flex items-start justify-between gap-3 rounded-[14px] border border-border bg-canvas-raised/70 px-3.5 py-3"
-                  onMouseEnter={() => playSfx('hover')}
-                >
-                  <div className="min-w-0">
-                    <p className="text-[15px] font-semibold text-ink">{item.title}</p>
-                    <p className="truncate text-[15px] text-ink-muted">{item.subtitle}</p>
-                  </div>
-                  <Link
-                    to={item.href}
-                    className="shrink-0 text-[15px] font-semibold text-lime hover:underline"
-                    onClick={() => playSfx('pop')}
+        <MotionItem>
+          <GlassPanel className="card-glow flex h-full flex-col p-6 sm:p-7">
+            <CardHeader>
+              <div>
+                <CardTitle>Needs attention</CardTitle>
+                <CardSubtitle>Flags that need a decision today</CardSubtitle>
+              </div>
+            </CardHeader>
+            {data.attention.length === 0 ? (
+              <CardEmpty className="flex-1">Nothing urgent — desk is clear.</CardEmpty>
+            ) : (
+              <ul className="space-y-2.5">
+                {data.attention.map((item, i) => (
+                  <motion.li
+                    key={item.id}
+                    initial={reduce ? false : { opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ ...springSoft, delay: 0.05 * i }}
+                    className="flex items-start justify-between gap-3 rounded-[14px] border border-border bg-canvas-raised/70 px-3.5 py-3"
+                    onMouseEnter={() => playSfx('hover')}
                   >
-                    Review
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          )}
+                    <div className="min-w-0">
+                      <p className="text-[15px] font-semibold text-ink">{item.title}</p>
+                      <p className="truncate text-[15px] text-ink-muted">{item.subtitle}</p>
+                    </div>
+                    <Link
+                      to={item.href}
+                      className="shrink-0 text-[15px] font-semibold text-lime hover:underline"
+                      onClick={() => playSfx('pop')}
+                    >
+                      Review
+                    </Link>
+                  </motion.li>
+                ))}
+              </ul>
+            )}
+          </GlassPanel>
         </MotionItem>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <MotionItem className="glass-panel card-glow flex flex-col p-6 sm:p-7">
-          <CardHeader>
-            <div>
-              <CardTitle>Pipeline mix</CardTitle>
-              <CardSubtitle>Candidates by stage</CardSubtitle>
-            </div>
-          </CardHeader>
-          {stageData.length ? (
-            <NeonDonut data={stageData} />
-          ) : (
-            <CardEmpty className="flex-1">No stage data yet.</CardEmpty>
-          )}
+        <MotionItem>
+          <GlassPanel className="card-glow flex h-full flex-col p-6 sm:p-7">
+            <CardHeader>
+              <div>
+                <CardTitle>Pipeline mix</CardTitle>
+                <CardSubtitle>Candidates by stage</CardSubtitle>
+              </div>
+            </CardHeader>
+            {stageData.length ? (
+              <NeonDonut data={stageData} />
+            ) : (
+              <CardEmpty className="flex-1">No stage data yet.</CardEmpty>
+            )}
+          </GlassPanel>
         </MotionItem>
-        <MotionItem className="glass-panel card-glow p-6 sm:p-7">
-          <CardHeader>
-            <div>
-              <CardTitle>Daily income</CardTitle>
-              <CardSubtitle>Booked provision by day</CardSubtitle>
-            </div>
-          </CardHeader>
-          <NeonBarChart data={barData} />
+        <MotionItem>
+          <GlassPanel className="card-glow p-6 sm:p-7">
+            <CardHeader>
+              <div>
+                <CardTitle>Daily income</CardTitle>
+                <CardSubtitle>Booked provision by day</CardSubtitle>
+              </div>
+            </CardHeader>
+            <NeonBarChart data={barData} />
+          </GlassPanel>
         </MotionItem>
-        <MotionItem className="glass-panel card-glow flex flex-col p-6 sm:p-7">
-          <CardHeader>
-            <div>
-              <CardTitle>Awaiting confirmation</CardTitle>
-              <CardSubtitle>Estimated → Pending</CardSubtitle>
-            </div>
-          </CardHeader>
-          {data.estimatedList.length === 0 ? (
-            <CardEmpty className="flex-1">No estimated rows waiting.</CardEmpty>
-          ) : (
-            <ul className="space-y-2">
-              {data.estimatedList.slice(0, 6).map((e, i) => (
-                <motion.li
-                  key={e.id}
-                  initial={reduce ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...springSoft, delay: 0.04 * i }}
-                  className="flex items-center justify-between gap-2 rounded-[14px] border border-border px-3.5 py-3"
-                >
-                  <div>
-                    <p className="text-[15px] font-medium">{e.candidateName ?? 'Candidate'}</p>
-                    <p className="tabular text-[15px] text-ink-muted">{formatMoney(e.amount)}</p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="lime"
-                    disabled={confirm.isPending}
-                    onClick={() => confirm.mutate(e.id)}
+        <MotionItem>
+          <GlassPanel className="card-glow flex h-full flex-col p-6 sm:p-7">
+            <CardHeader>
+              <div>
+                <CardTitle>Awaiting confirmation</CardTitle>
+                <CardSubtitle>Estimated → Pending</CardSubtitle>
+              </div>
+            </CardHeader>
+            {data.estimatedList.length === 0 ? (
+              <CardEmpty className="flex-1">No estimated rows waiting.</CardEmpty>
+            ) : (
+              <ul className="space-y-2">
+                {data.estimatedList.slice(0, 6).map((e, i) => (
+                  <motion.li
+                    key={e.id}
+                    initial={reduce ? false : { opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ ...springSoft, delay: 0.04 * i }}
+                    className="flex items-center justify-between gap-2 rounded-[14px] border border-border px-3.5 py-3"
                   >
-                    Confirmed
-                  </Button>
-                </motion.li>
-              ))}
-            </ul>
-          )}
+                    <div>
+                      <p className="text-[15px] font-medium">{e.candidateName ?? 'Candidate'}</p>
+                      <p className="tabular text-[15px] text-ink-muted">{formatMoney(e.amount)}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="lime"
+                      disabled={confirm.isPending}
+                      onClick={() => confirm.mutate(e.id)}
+                    >
+                      Confirmed
+                    </Button>
+                  </motion.li>
+                ))}
+              </ul>
+            )}
+          </GlassPanel>
         </MotionItem>
       </div>
 
-      <MotionItem className="glass-panel card-glow overflow-hidden !p-0">
-        <div className="flex items-center justify-between border-b border-border px-6 py-5 sm:px-7">
-          <div>
-            <CardTitle>Recent candidates</CardTitle>
-            <CardSubtitle>Dense register · Telegram under name</CardSubtitle>
+      <MotionItem>
+        <GlassPanel className="card-glow overflow-hidden !p-0">
+          <div className="flex items-center justify-between border-b border-border px-6 py-5 sm:px-7">
+            <div>
+              <CardTitle>Recent candidates</CardTitle>
+              <CardSubtitle>Dense register · Telegram under name</CardSubtitle>
+            </div>
+            <Link
+              to="/candidates"
+              className="text-sm font-semibold text-lime hover:underline"
+              onMouseEnter={() => playSfx('pop')}
+            >
+              View all
+            </Link>
           </div>
-          <Link
-            to="/candidates"
-            className="text-sm font-semibold text-lime hover:underline"
-            onMouseEnter={() => playSfx('pop')}
-          >
-            View all
-          </Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="data-table min-w-[720px]">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Market</th>
-                <th>Gender</th>
-                <th>Stage</th>
-                <th>Source</th>
-                <th>Telegram</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.recentCandidates.length === 0 ? (
+          <div className="overflow-x-auto">
+            <table className="data-table min-w-[720px]">
+              <thead>
                 <tr>
-                  <td colSpan={6} className="!py-10 text-center text-base text-ink-muted">
-                    No candidates yet for this account.
-                  </td>
+                  <th>Name</th>
+                  <th>Market</th>
+                  <th>Gender</th>
+                  <th>Stage</th>
+                  <th>Source</th>
+                  <th>Telegram</th>
                 </tr>
-              ) : (
-                data.recentCandidates.map((c, i) => (
-                  <motion.tr
-                    key={c.id}
-                    initial={reduce ? false : { opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ ...springSoft, delay: 0.035 * i }}
-                    onMouseEnter={() => playSfx('hover')}
-                  >
-                    <td className="font-semibold">{c.name}</td>
-                    <td>
-                      {c.market ? (
-                        <Badge tone={marketTone(c.market)}>{marketLabel(c.market)}</Badge>
-                      ) : (
-                        <span className="text-ink-dim">—</span>
-                      )}
+              </thead>
+              <tbody>
+                {data.recentCandidates.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="!py-10 text-center text-base text-ink-muted">
+                      No candidates yet for this account.
                     </td>
-                    <td>
-                      {c.gender ? (
-                        <Badge tone={genderTone(c.gender)}>{genderLabel(c.gender)}</Badge>
-                      ) : (
-                        <span className="text-ink-dim">—</span>
-                      )}
-                    </td>
-                    <td>
-                      <Badge tone={stageTone(c.stage)}>{c.stage}</Badge>
-                    </td>
-                    <td className="text-ink-muted">{c.source ?? '—'}</td>
-                    <td className="text-ink-muted">
-                      {c.telegram ? `@${c.telegram.replace(/^@/, '')}` : '—'}
-                    </td>
-                  </motion.tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                  </tr>
+                ) : (
+                  data.recentCandidates.map((c, i) => (
+                    <motion.tr
+                      key={c.id}
+                      initial={reduce ? false : { opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ ...springSoft, delay: 0.035 * i }}
+                      onMouseEnter={() => playSfx('hover')}
+                    >
+                      <td className="font-semibold">{c.name}</td>
+                      <td>
+                        {c.market ? (
+                          <Badge tone={marketTone(c.market)}>{marketLabel(c.market)}</Badge>
+                        ) : (
+                          <span className="text-ink-dim">—</span>
+                        )}
+                      </td>
+                      <td>
+                        {c.gender ? (
+                          <Badge tone={genderTone(c.gender)}>{genderLabel(c.gender)}</Badge>
+                        ) : (
+                          <span className="text-ink-dim">—</span>
+                        )}
+                      </td>
+                      <td>
+                        <Badge tone={stageTone(c.stage)}>{c.stage}</Badge>
+                      </td>
+                      <td className="text-ink-muted">{c.source ?? '—'}</td>
+                      <td className="text-ink-muted">
+                        {c.telegram ? `@${c.telegram.replace(/^@/, '')}` : '—'}
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </GlassPanel>
       </MotionItem>
     </MotionStagger>
   )

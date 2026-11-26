@@ -168,7 +168,7 @@ export function EarningsPage() {
             </option>
           ))}
         </Select>
-        <Button variant="secondary" onClick={exportCsv}>
+        <Button variant="glass" onClick={exportCsv}>
           <Download className="h-4 w-4" /> Export CSV
         </Button>
         <Button className="ml-auto" onClick={() => setOpen(true)}>

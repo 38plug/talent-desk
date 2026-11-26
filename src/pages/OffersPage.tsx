@@ -201,7 +201,7 @@ export function OffersPage() {
         </Select>
         {canEdit ? (
           <div className="ml-auto flex gap-2">
-            <Button variant="secondary" onClick={() => setScanOpen(true)}>
+            <Button variant="glass" onClick={() => setScanOpen(true)}>
               <ScanLine className="h-4 w-4" /> Scan offer
             </Button>
             <Button
@@ -510,7 +510,7 @@ function OfferPreview({
 
       {canEdit ? (
         <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
-          <Button variant="secondary" onClick={onEdit}>
+          <Button variant="glass" onClick={onEdit}>
             Edit offer
           </Button>
           <Button variant="danger" onClick={onDelete}>
