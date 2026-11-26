@@ -1,8 +1,8 @@
 # Talent Desk — System Handoff
 
 > Ground truth is the shipped code, not prior intent.
-> **Documented from:** `35da3539b0796c51a9bbb88bf9508369735a758f` (docs refresh after Pattern C liquid glass + oily-specular refine at `29c1275`; product = Vite SPA + optional cloud)
-> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag + Settings storage/upload chrome) from PR #22. Languages column + icon-only row actions from PR #23. Glowing DeskTotalsStrip from PRs #24 + #28. Interview Calendar (`/calendar`) from PR #25. HeaderClock from PR #27. Offer-preview linked candidates + `?id=` drawer hold from PR #26. Interview start toast + OS Notification from PR #29. Personal Telegram (`/telegram`, teleproto) from PR #31. Header activity bell from PR #32. 1s live poll of bell + open Telegram thread from PR #33. Telegram Chats vs Groups + unread cap from PR #34. Past-interview Confirmed/Declined + Estimated commission from PR #35. Candidate stage auto-sync from interviews from PR #36. **Pattern C liquid glass** (`<GlassPanel>`, `Button variant="glass"`, glass `Modal`, vendored `src/lib/liquid-glass.js`) from `fe180685` (2026-11-26), then **restrained optics** (chroma ≤ 0.08, specular ≈ 0.4, soft orb mesh, denser tint) from `29c1275`. `@theme` color/type tokens unchanged.
+> **Documented from:** `1a972ead3630f487ee04170ff926c773d9524706` (merge `cursor/liquid-glass-mobile-757c` — compact frost; product = Vite SPA + optional cloud)
+> **Visual system:** [`DESIGN.md`](./DESIGN.md) + [`.impeccable/design.json`](./.impeccable/design.json) — tokens from `src/index.css` `@theme` (lime-glass). Occupied-glass type/padding from PRs #8–#9. Overlay portal from PRs #10–#11. Candidate profile + delete from PRs #12–#13. Offer glass preview from PR #14. Hover pill, collapsed tooltip, spring page enter from PR #15. Candidate Forex/Chinese market chips from PR #16. Male/Female gender chips from PR #17. Admin accounts table + role badges from PRs #19–#20 (no token rebuild). Full shared desk (no `forUser`; seat delete keeps rows) from PR #21. Cloud sync (hosted Supabase feature flag + Settings storage/upload chrome) from PR #22. Languages column + icon-only row actions from PR #23. Glowing DeskTotalsStrip from PRs #24 + #28. Interview Calendar (`/calendar`) from PR #25. HeaderClock from PR #27. Offer-preview linked candidates + `?id=` drawer hold from PR #26. Interview start toast + OS Notification from PR #29. Personal Telegram (`/telegram`, teleproto) from PR #31. Header activity bell from PR #32. 1s live poll of bell + open Telegram thread from PR #33. Telegram Chats vs Groups + unread cap from PR #34. Past-interview Confirmed/Declined + Estimated commission from PR #35. Candidate stage auto-sync from interviews from PR #36. **Pattern C liquid glass** (`<GlassPanel>`, `Button variant="glass"`, glass `Modal`, vendored `src/lib/liquid-glass.js`) from `fe180685` (2026-11-26), **restrained optics** from `29c1275`, then **compact frost** from `1a972ead` (2026-11-26): desktop Pattern C (`DESK_GLASS` chroma 0.06 / specular 0.35); mobile / narrow touch skips `feDisplacementMap` and uses `.liquid-glass-host--frost`. Even mesh (no left-edge hotspot). `@theme` color/type tokens unchanged.
 > **Product / agent docs:** [`PRODUCT.md`](./PRODUCT.md), [`AGENTS.md`](./AGENTS.md), [`README.md`](./README.md), [`docs/local-data.md`](./docs/local-data.md), [`docs/cloud-sync.md`](./docs/cloud-sync.md)
 > **Refresh this file** whenever the desk is built or rebuilt. If `HEAD` still matches **Documented from** and product facts are unchanged, leave handoff + design untouched.
 
@@ -34,7 +34,7 @@ Export is **table CSV** plus a Settings **JSON dump**. Header search is chrome o
 | Desk shell | Session required | `AppShell` (`data-td-glass-stage` + `.bg-mesh`; hover pill, collapsed glass tooltip, HeaderClock, header notification bell, InterviewReminderWatcher) |
 | Telegram | Session required | `TelegramPage` (`/telegram`, nav `07`) — creds/phone/code/2FA on `.card-surface`, then dialogs / thread / candidate match |
 | Overview … Settings | Same | lazy pages under `AppShell` + `PageTransition` (`springSoft` opacity/y; no CSS filter on wrapper) |
-| Overlays | Any desk page | `Modal` / `Drawer` portal to `document.body` (`z-[200]`, `springSnappy` on the panel). Offer preview uses Pattern C `glass` (`.liquid-glass-host`). |
+| Overlays | Any desk page | `Modal` / `Drawer` portal to `document.body` (`z-[200]`, `springSnappy` on the panel). Offer preview uses `glass` (desktop Pattern C / compact `--frost`). |
 | Admin | `canViewAdmin(role)` | `AdminRoute` + `AdminPage` |
 
 Unsigned visitors always go to `/login`. There is no `talent-desk-demo-ui` flag.
@@ -57,7 +57,7 @@ Browser (Vite 8 + React 19 + React Router 7)
   ├─ Interview alerts    →  in-app toast (body portal z-220) + browser Notification
   ├─ Header activity     →  1s TanStack poll of `activities` (+ cloud realtime invalidate)
   ├─ Motion              →  framer-motion + GSAP slide-pill
-  ├─ Liquid glass        →  src/lib/liquid-glass.js Pattern C (leaf panes / chrome only)
+  ├─ Liquid glass        →  src/lib/liquid-glass.js Pattern C on desktop; .liquid-glass-host--frost on compact (leaf panes / chrome only)
   └─ SFX                 →  Web Audio (muted by default)
 ```
 
@@ -167,11 +167,11 @@ No object storage. Header search does not query. Never put `service_role` in `VI
 ## File map
 
 ```
-src/index.css                          → @theme tokens + mesh / liquid-glass-host / frost leftover / card / nav / table CSS
+src/index.css                          → @theme tokens + even mesh / liquid-glass-host / --frost compact / leftover .glass-panel / card / nav / table CSS
 src/lib/liquid-glass.js                → vendored liquidglass.dev engine (Pattern C SVG lens)
 src/lib/liquid-glass.d.ts              → types for createGlass
-src/hooks/useLiquidGlass.ts            → DESK_GLASS / DESK_GLASS_BUTTON optics + prefersReducedTransparency
-src/components/ui/GlassPanel.tsx       → Pattern C pane over [data-td-glass-stage]
+src/hooks/useLiquidGlass.ts            → DESK_GLASS / DESK_GLASS_BUTTON + isCompactGlassViewport / prefersReducedTransparency
+src/components/ui/GlassPanel.tsx       → Pattern C on desktop; --frost on compact over [data-td-glass-stage]
 src/main.tsx                           → StrictMode mount
 src/App.tsx                            → QueryClient + AuthProvider + routes
 src/auth/AuthProvider.tsx              → cloud: getSession + onAuthStateChange; local: localStorage + notifyAuthChanged
@@ -202,7 +202,7 @@ src/components/layout/HeaderClock.tsx  → header date+time (browser locale / lo
 src/lib/datetime.ts                    → datetime-local helpers + header Intl formatters
 src/components/auth/AuthShell.tsx      → data-td-glass-stage orbs + GlassPanel card + sound toggle
 src/components/motion/*                → PageTransition (springSoft opacity/y, no filter), Motion, AnimatedNumber, SoundToggle
-src/components/ui/*                    → Button (`variant="glass"` Pattern C), Input, Card (p-6, CardTitle text-xl), Badge (`stageTone` / `marketTone` / `genderTone`), GlassPanel, Modal/Drawer (body portal, springSnappy, Pattern C `glass`), charts
+src/components/ui/*                    → Button (`variant="glass"` desktop Pattern C / compact frost), Input, Card (p-6, CardTitle text-xl), Badge (`stageTone` / `marketTone` / `genderTone`), GlassPanel, Modal/Drawer (body portal, springSnappy, `glass`), charts
 src/lib/api.ts                         → app façade (cloud-db when sync on, else local-db); canViewAdmin / canManagePipeline
 src/lib/supabase.ts                    → client + isCloudSyncEnabled feature flag
 src/lib/cloud-db.ts                    → hosted Supabase CRUD + upload/migrate
@@ -235,7 +235,7 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 | `.nav-tooltip` 70ms in / 180ms out | Collapsed rail labels |
 | Page `springSoft` y:14 in / y:-8 0.2s out (no CSS filter on wrapper) | `PageTransition` |
 | Overlay fade 0.2s; panel `springSnappy` blur-scale | `Modal` / `Drawer` |
-| `Modal glass` Pattern C (no Framer filter on panel) | Offer preview |
+| `Modal glass` desktop Pattern C / compact frost (no Framer filter on panel) | Offer preview |
 | `Button variant="glass"` | CSV export, calendar Today/prev/next, Scan offer, Edit offer |
 | `fadeUp` + stagger 0.07 | Dashboard, auth form |
 | `AnimatedNumber` | KPIs, gauge, live-desk money, **DeskTotalsStrip** |
@@ -262,8 +262,8 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 - Admin role badges: owner **magenta**, admin **lime**, moderator/user **violet**. Heritage tones on seats — not conversion.
 - Admin notes card prints the preferred-admin mailbox from `PRIMARY_ADMIN_EMAIL`. Do not copy that address into either docs file.
 - Offer-preview **Open**, interview-toast **Open interviews**, and Telegram candidate/API links are `text-cyan hover:text-lime`. In-page links in `DESIGN.md` are lime — do not canonize cyan as a second link color; new work should use lime.
-- `.glass-panel` CSS frost (`backdrop-filter: blur(20px) saturate(1.25)`) remains in `src/index.css` but **no live TSX uses the class**. Working panes are `<GlassPanel>` / `.liquid-glass-host`. Do not document frost CSS as the shipped surface.
-- Do not restore the hard repeating-stripe `.bg-mesh` / `.td-glass-silk` from `fe180685` — that produced oily rainbow glare under `feDisplacementMap` + chroma. Soft orbs only.
+- `.glass-panel` CSS (`backdrop-filter: blur(20px) saturate(1.25)`) remains in `src/index.css` but **no live TSX uses the class**. Live frost is `.liquid-glass-host--frost` on compact viewports only. Do not revive `.glass-panel` as a working pane.
+- Do not restore the hard repeating-stripe `.bg-mesh` / `.td-glass-silk` from `fe180685`, or the left-edge hotspot mesh from `29c1275` — those produced oily glare / mobile rim ripples. Even orbs only. Do not run Pattern C refraction on compact viewports.
 - Open PRs are **not** on `main` — do not document them as live: #30 (DeskTotalsStrip per-cell subtexts), #38 (mobile Overview layout + notifications portal), #39 (liquid-glass brand logo).
 
 ## Invariants for the next build
@@ -274,7 +274,7 @@ AGENTS.md                              → Vite SPA contributor / agent guardrai
 4. **Confirm estimated → Pending.** `confirmEarning` must not jump straight to Paid. Estimated is not income.
 5. **Empty desk is zeros.** Never invent `DEMO_METRICS` as live money. The Overview banner must stay while the pipeline is empty.
 6. **Friendly auth errors.** Map through `friendlyAuthError`. Do not surface stack traces on login.
-7. **Visual world is The Lime Glass Desk.** New UI goes through `DESIGN.md` (lime conversion, peach kickers, charcoal `#111`, Plus Jakarta / JetBrains Mono, stretchy pill, occupied type). Overview / auth / totals / glass modals use `<GlassPanel>` Pattern C over `[data-td-glass-stage]` via `src/lib/liquid-glass.js` (SVG `filter: url(#…)` in Chrome, Safari/iOS, Firefox). Skip refraction on `prefers-reduced-motion` / `prefers-reduced-transparency`. Chrome actions may use `Button variant="glass"`. Never put the lens on `PageTransition` or the modal overlay. Do not revive leftover `.glass-panel` CSS frost as a working pane. Do not restore The Neon Signal Desk (violet conversion, `#080A10`, magenta inset nav).
+7. **Visual world is The Lime Glass Desk.** New UI goes through `DESIGN.md` (lime conversion, peach kickers, charcoal `#111`, Plus Jakarta / JetBrains Mono, stretchy pill, occupied type). Overview / auth / totals / glass modals use `<GlassPanel>` over `[data-td-glass-stage]`: **desktop** Pattern C via `src/lib/liquid-glass.js` (`DESK_GLASS` chroma ≤ 0.06, specular ≈ 0.35); **compact** (`max-width: 767px` or `max-width: 900px` + coarse pointer) `.liquid-glass-host--frost` — no `feDisplacementMap`. Skip refraction on compact, `prefers-reduced-motion`, and `prefers-reduced-transparency`. Chrome actions may use `Button variant="glass"`. Never put the lens on `PageTransition` or the modal overlay. Do not revive leftover `.glass-panel` as a working pane. Do not restore The Neon Signal Desk (violet conversion, `#080A10`, magenta inset nav).
 8. **SFX stay muted by default.** Do not auto-unmute. Honor `prefers-reduced-motion`.
 9. **Cloud sync is opt-in via env.** Hosted Supabase with `VITE_SUPABASE_*` is supported; keep localStorage fallback when unset. Never require Docker. Never expose `service_role` to the client.
 10. **Do not commit secrets.** Password hashes, salts, and export JSON with credentials stay out of git. Do not print `OWNER_EMAIL` in docs.

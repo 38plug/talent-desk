@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-26T05:05:00Z",
+  "generatedAt": "2026-11-26T05:57:00Z",
   "title": "Design System: Talent Desk",
   "extensions": {
     "colorMeta": {
@@ -403,13 +403,13 @@
       },
       {
         "name": "liquid-glass-host",
-        "value": "inset 0 1px 0 rgb(255 255 255 / 0.1), 0 0 0 1px rgb(198 244 50 / 0.06), 0 16px 40px rgb(0 0 0 / 0.45)",
-        "purpose": "Pattern C GlassPanel host — transparent shell, SVG lens on the inner copy."
+        "value": "inset 0 1px 0 rgb(255 255 255 / 0.1), 0 0 0 1px rgb(198 244 50 / 0.05), 0 14px 36px rgb(0 0 0 / 0.42)",
+        "purpose": "GlassPanel host — desktop Pattern C transparent shell; compact adds --frost."
       },
       {
         "name": "glass-button",
         "value": "0 8px 24px rgb(0 0 0 / 0.35)",
-        "purpose": "Button variant=glass rest shadow; hover border lime/40."
+        "purpose": "Button variant=glass rest shadow; hover border lime/35. Compact uses --frost."
       },
       {
         "name": "focus-global",
@@ -491,17 +491,17 @@
       {
         "name": "reduced-motion",
         "value": "0.01ms",
-        "purpose": "Global prefers-reduced-motion override; also silences SFX and skips Pattern C refraction."
+        "purpose": "Global prefers-reduced-motion override; also silences SFX and skips Pattern C refraction (compact already uses frost)."
       },
       {
         "name": "desk-glass-optics",
-        "value": "radius 20 / refraction 22 / bezel 0.32 / curvature 4 / chroma 0.08 / blur 2 / specular 0.42 / specularWidth 1.15 / lightAngle -125",
-        "purpose": "DESK_GLASS default for GlassPanel panes. Keep chroma ≤ 0.08 and specular ≈ 0.4."
+        "value": "radius 20 / refraction 18 / bezel 0.28 / curvature 4 / chroma 0.06 / blur 2.2 / specular 0.35 / specularWidth 1.05 / lightAngle -125",
+        "purpose": "DESK_GLASS default for desktop GlassPanel panes. Keep chroma ≤ 0.06 and specular ≈ 0.35. Compact viewports skip this and use --frost."
       },
       {
         "name": "desk-glass-button-optics",
-        "value": "radius 12 / refraction 12 / bezel 0.55 / curvature 3.5 / chroma 0.06 / blur 1.5 / specular 0.4 / specularWidth 1.1 / lightAngle -125",
-        "purpose": "DESK_GLASS_BUTTON for Button variant=glass."
+        "value": "radius 12 / refraction 10 / bezel 0.45 / curvature 3.5 / chroma 0.04 / blur 1.5 / specular 0.32 / specularWidth 1 / lightAngle -125",
+        "purpose": "DESK_GLASS_BUTTON for Button variant=glass on desktop. Compact uses --frost, no lens."
       }
     ],
     "breakpoints": [
@@ -516,6 +516,10 @@
       {
         "name": "lg",
         "value": "1024px"
+      },
+      {
+        "name": "compact-glass",
+        "value": "max-width 767px, or max-width 900px and pointer: coarse"
       }
     ]
   },
@@ -532,9 +536,9 @@
       "name": "Glass Button",
       "kind": "button",
       "refersTo": "button-glass",
-      "description": "Quiet Pattern C chrome — CSV export, calendar Today, Scan offer. Not conversion.",
+      "description": "Quiet chrome — CSV export, calendar Today, Scan offer. Desktop Pattern C; compact --frost. Not conversion.",
       "html": "<button class=\"ds-btn-glass\">Export CSV</button>",
-      "css": ".ds-btn-glass { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; isolation: isolate; overflow: hidden; height: 40px; padding: 0 16px; border: 1px solid rgb(255 255 255 / 0.15); border-radius: 12px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; font-size: 14px; font-weight: 600; color: #F8FAFC; background: transparent; box-shadow: 0 8px 24px rgb(0 0 0 / 0.35); cursor: pointer; } .ds-btn-glass:hover { border-color: rgb(198 244 50 / 0.40); } .ds-btn-glass:focus-visible { outline: 2px solid #C6F432; outline-offset: 2px; }"
+      "css": ".ds-btn-glass { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; isolation: isolate; overflow: hidden; height: 40px; padding: 0 16px; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 12px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; font-size: 14px; font-weight: 600; color: #F8FAFC; background: transparent; box-shadow: 0 8px 24px rgb(0 0 0 / 0.35); cursor: pointer; } .ds-btn-glass:hover { border-color: rgb(198 244 50 / 0.35); } .ds-btn-glass:focus-visible { outline: 2px solid #C6F432; outline-offset: 2px; }"
     },
     {
       "name": "Lime Button",
@@ -580,7 +584,7 @@
       "name": "Glass Panel",
       "kind": "card",
       "refersTo": "glass-panel",
-      "description": "Pattern C working pane — transparent host, aligned mesh copy, SVG lens, tint + rim. 20px radius, p-6 inner padding. CardTitle is text-xl. Never on PageTransition.",
+      "description": "Working pane — desktop Pattern C (transparent host, aligned mesh copy, SVG lens, tint + rim); compact --frost (blur 24px saturate 1.4, no feDisplacementMap). 20px radius, p-6 inner padding. CardTitle is text-xl. Never on PageTransition.",
       "html": "<article class=\"ds-glass\"><h3>Total income</h3><p class=\"ds-card-value\">$18,400</p><p class=\"ds-card-meta\">Paid + Pending + Overdue</p></article>",
       "css": ".ds-glass { position: relative; isolation: isolate; overflow: hidden; padding: 24px; border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.14); background: linear-gradient(160deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.04) 38%, rgb(10 10 10 / 0.38)), linear-gradient(135deg, rgb(198 244 50 / 0.10), transparent 48%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 0 0 1px rgb(198 244 50 / 0.08), 0 18px 48px rgb(0 0 0 / 0.5); color: #F8FAFC; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; } .ds-glass h3 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.015em; } .ds-card-value { margin: 8px 0 0; font-family: \"JetBrains Mono\", ui-monospace, monospace; font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; } .ds-card-meta { margin: 4px 0 0; font-size: 15px; color: #94A3B8; }"
     },
@@ -596,7 +600,7 @@
       "name": "Confirm Dialog",
       "kind": "custom",
       "refersTo": "panel-card",
-      "description": "Body-portaled modal — springSnappy blur-scale on opaque panels, overlay fade 0.2s bg-black/75 with no backdrop-blur. glass variant is Pattern C liquid-glass-host (no Framer filter on the panel).",
+      "description": "Body-portaled modal — springSnappy blur-scale on opaque panels, overlay fade 0.2s bg-black/75 with no backdrop-blur. glass variant is liquid-glass-host (desktop Pattern C optics 16/0.26/0.05/0.32; compact --frost; no Framer filter on the panel).",
       "html": "<div class=\"ds-overlay\"><div class=\"ds-dialog\"><header><h2>Delete candidate</h2><button type=\"button\" aria-label=\"Close\">×</button></header><div class=\"ds-dialog-body\"><p>Delete <strong>Ana K.</strong>? This removes the candidate and any linked interviews or earnings from this device. Offers stay.</p><div class=\"ds-dialog-actions\"><button class=\"ds-btn-cancel\" type=\"button\">Cancel</button><button class=\"ds-btn-danger\" type=\"button\">Delete</button></div></div></div></div>",
       "css": ".ds-overlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; overflow-y: auto; background: rgb(0 0 0 / 0.75); padding: 24px; font-family: \"Plus Jakarta Sans\", ui-sans-serif, sans-serif; } .ds-dialog { width: 100%; max-width: 32rem; max-height: min(90vh, calc(100dvh - 2rem)); display: flex; flex-direction: column; border-radius: 20px; border: 1px solid rgb(255 255 255 / 0.08); background: #1A1A1A; color: #F8FAFC; box-shadow: 0 25px 50px rgb(0 0 0 / 0.55); } .ds-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; border-bottom: 1px solid rgb(255 255 255 / 0.08); } .ds-dialog h2 { margin: 0; font-size: 20px; font-weight: 700; } .ds-dialog header button { border: 0; background: transparent; color: #94A3B8; font-size: 22px; cursor: pointer; } .ds-dialog-body { padding: 20px 24px 24px; overflow-y: auto; } .ds-dialog-body p { margin: 0; font-size: 14px; color: #94A3B8; line-height: 1.5; } .ds-dialog-body strong { color: #F8FAFC; } .ds-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; } .ds-btn-cancel { height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid rgb(255 255 255 / 0.08); background: #1F1F1F; color: #F8FAFC; font-weight: 600; cursor: pointer; } .ds-btn-danger { height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid rgb(244 63 94 / 0.30); background: rgb(244 63 94 / 0.15); color: #F43F5E; font-weight: 600; cursor: pointer; } .ds-btn-danger:hover { background: rgb(244 63 94 / 0.25); } .ds-btn-cancel:focus-visible, .ds-btn-danger:focus-visible { outline: 2px solid #C6F432; outline-offset: 2px; }"
     },
@@ -691,15 +695,15 @@
   ],
   "narrative": {
     "northStar": "The Lime Glass Desk",
-    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel, not a marketing site and not a Next.js app. Persistence is hosted Supabase when VITE_SUPABASE_* is set, otherwise device-local localStorage; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on sm+, lime notification bell) hold the desk; the working canvas is Pattern C liquid-glass KPI heroes (GlassPanel over [data-td-glass-stage]), a glowing DeskTotalsStrip on Candidates / Offers / Interviews, an Interview Calendar at /calendar, a personal Telegram chat at /telegram, glowing Recharts, and data tables — never a photo-led landing. Interview start alerts portal a lime toast to document.body (z-[220]) while the desk is open.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, leftover field-focus, and candidate chips (cyan Chinese/Male, magenta Female) — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only. Candidate market uses the same forex/chinese values as offers, shown as lime/cyan pills.\n\nDensity is operational. Dashboard panes use GlassPanel Pattern C (aligned silk copy + SVG filter:url rim bend, 20px radius) with p-6 / sm:p-7 inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`), including the Settings Cloud sync card and Interview alerts card. Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview that lists linked candidates. A slow lime orb pulses on the totals strip unless prefers-reduced-motion. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
+    "overview": "Talent Desk is a charcoal operating floor: `#111` canvas, lime conversion, peach kickers, and Plus Jakarta Sans as the only working face. It is an operate-mode Vite SPA on Vercel, not a marketing site and not a Next.js app. Persistence is hosted Supabase when VITE_SUPABASE_* is set, otherwise device-local localStorage; the visual world does not change between those modes. Auth is a centered glass card on a mesh of lime / peach / violet orbs, with a film-grain overlay, a sound toggle, and a 12px muted helper line that says whether cloud sync is on. Once inside, a collapsible raised rail plus a sticky glass header (peach date kicker + mono live time on sm+, lime notification bell) hold the desk; the working canvas is liquid-glass KPI heroes (GlassPanel over [data-td-glass-stage] — Pattern C on desktop, frost on mobile), a glowing DeskTotalsStrip on Candidates / Offers / Interviews, an Interview Calendar at /calendar, a personal Telegram chat at /telegram, glowing Recharts, and data tables — never a photo-led landing. Interview start alerts portal a lime toast to document.body (z-[220]) while the desk is open.\n\nThe room is signed by a solid lime **TD** mark (14px at 44px in the rail, 18px at 64px on auth) with a lime bloom. Lime is the conversion color (primary CTA, active nav pill, selection wash, scrollbar). Peach is the floating-label / estimated-series voice. Violet, cyan, and magenta remain as heritage signals on charts, KPI sparks, leftover field-focus, and candidate chips (cyan Chinese/Male, magenta Female) — they do not replace lime on conversion. Emerald / amber / rose are pipeline status only. Candidate market uses the same forex/chinese values as offers, shown as lime/cyan pills.\n\nDensity is operational. Dashboard panes use GlassPanel (desktop Pattern C aligned mesh copy + SVG lens; compact --frost, 20px radius) with p-6 / sm:p-7 inner padding so titles do not hug the frost. Working forms still sit on `.card-surface` (charcoal gradient + 4% lime wash, default `p-6`), including the Settings Cloud sync card and Interview alerts card. Motion is cinematic: GSAP stretchy slide-pill that follows **hover and active** (in-flight tweens killed so rapid hover never stacks), icon micro-scale, collapsed-rail glass tooltips, Framer **spring** page enter (opacity + y only — no CSS `filter` on the wrapper, so overlays stay viewport-fixed), spring stagger on the dashboard. Modals and drawers portal to `document.body` and open with a snappy blur-scale on the **dialog panel** (not the overlay). Offer cards open a wide glass preview that lists linked candidates. A slow lime orb pulses on the totals strip unless prefers-reduced-motion. UI SFX (thud / bass / pop) exist but are **muted by default**. `prefers-reduced-motion` collapses animations to 0.01ms and silences SFX. The world rejects light SaaS, Inter as the product face, sharp 2px chrome, and the previous violet-conversion neon desk.",
     "keyCharacteristics": [
-      "Charcoal canvas (#111111) with a lime / violet / peach mesh and optional film grain on auth",
+      "Charcoal canvas (#111111) with an even lime / violet / peach orb mesh (centered, no left-edge hotspot, no hard stripes) and optional film grain on auth",
       "Lime (#C6F432) as conversion; peach (#F4B183) as kicker and estimated series; heritage violet / cyan / magenta as chart sparks only",
       "Soft 12–20px radii on controls and cards; pills for badges, search, and toggle chips",
       "Plus Jakarta Sans for all UI; JetBrains Mono only for money and counts (.tabular)",
       "Solid lime TD mark + glow as the brand lockup (not a three-stop gradient)",
       "GSAP stretchy lime nav pill on hover + active + collapsible 17rem → 4.75rem rail with glass tooltips",
-      "Pattern C liquid-glass panes (GlassPanel over [data-td-glass-stage]) as the working signature; neon Recharts (lime + peach)",
+      "Liquid-glass panes (GlassPanel over [data-td-glass-stage]): Pattern C refraction on desktop, polished frost on mobile / narrow touch; neon Recharts (lime + peach)",
       "Button variant=glass for quiet chrome (export, calendar, scan, offer edit) — not conversion",
       "Auth glass card on orbs — no rail until session; no demo-preview bypass",
       "Offer cards click into a wide glass preview modal with a linked-candidates list; Edit/Delete stay independent",
@@ -732,7 +736,7 @@
       },
       {
         "name": "The Mesh-Is-Atmosphere Rule",
-        "body": ".bg-mesh is a soft atmospheric wash of lime / violet / peach orbs (no hard repeating stripes). It is ground lighting and the Pattern C backdrop copy, not a fill token for cards. Dashboard panes stay on GlassPanel; forms stay on .card-surface.",
+        "body": ".bg-mesh is an even atmospheric wash of lime / violet / peach orbs (centered lime, no left-edge hotspot, no hard repeating stripes). It is ground lighting and the desktop Pattern C backdrop copy, not a fill token for cards. Dashboard panes stay on GlassPanel; forms stay on .card-surface.",
         "section": "colors"
       },
       {
@@ -757,7 +761,7 @@
       },
       {
         "name": "The Glass Desk Rule",
-        "body": "Overview, auth, totals, and Modal glass are GlassPanel / .liquid-glass-host over [data-td-glass-stage] (Pattern C): an aligned copy of the soft lime/violet/peach mesh is bent with filter: url(#…) so refraction reads in Chrome, Safari/iOS, and Firefox. Optics stay restrained (chroma ≤ 0.08, specular ≈ 0.4, soft orbs — no hard stripes) so rims read as glass without oily rainbow glare. Do not flatten panes to opaque slabs. Never put filter: url(...) on PageTransition or the modal overlay. Glass chrome buttons use Button variant=\"glass\". Honor prefers-reduced-transparency by skipping refraction. The leftover .glass-panel CSS frost class is not a live surface.",
+        "body": "Overview, auth, totals, and Modal glass are GlassPanel / .liquid-glass-host over [data-td-glass-stage]. Desktop uses Pattern C refraction (filter: url(#…), chroma ≤ 0.06, specular ≈ 0.35, even orbs). Mobile / narrow touch uses polished frost (.liquid-glass-host--frost) — no feDisplacementMap, so small cards don’t grow left-edge ripples. Do not flatten panes to opaque slabs. Never put filter: url(...) on PageTransition or the modal overlay. Glass chrome buttons use Button variant=\"glass\" (frost on compact, Pattern C on desktop). Honor prefers-reduced-transparency by skipping refraction. The leftover .glass-panel CSS class is not a live surface; live frost is --frost on compact only.",
         "section": "elevation"
       },
       {
@@ -770,8 +774,8 @@
       "Do keep canvas / canvas-raised / surface as the charcoal ground family and #C6F432 as the primary conversion color.",
       "Do set titles in extra-bold Plus Jakarta Sans; money and indexes in JetBrains Mono (.tabular).",
       "Do build the Overview from GlassPanel + .data-table; build Settings/forms from .card-surface.",
-      "Do keep Pattern C liquid glass on leaf panes/buttons only (GlassPanel, Button variant=glass, Modal glass) via src/lib/liquid-glass.js. Never put filter:url on PageTransition or the modal overlay.",
-      "Do skip refraction when prefers-reduced-motion or prefers-reduced-transparency match — tint + rim only.",
+      "Do keep liquid glass on leaf panes/buttons only (GlassPanel, Button variant=glass, Modal glass) via src/lib/liquid-glass.js. Desktop Pattern C; compact --frost. Never put filter:url on PageTransition or the modal overlay.",
+      "Do skip refraction on compact viewports and when prefers-reduced-motion or prefers-reduced-transparency match — frost or tint + rim only.",
       "Do map pipeline and earning states through stageTone — emerald / cyan / violet / rose / amber.",
       "Do keep the solid lime TD mark + glow as the lockup; keep the stretchy lime nav pill.",
       "Do honor prefers-reduced-motion (global 0.01ms, no SFX) and keep chrome transitions at 200ms unless a named motion token applies.",
@@ -803,8 +807,8 @@
       "Don't put project refs, anon keys, or service-role values into design files.",
       "Don't seed demo income or restore a demo-preview bypass on the login screen.",
       "Don't put CSS filter, SVG filter:url, or backdrop-blur on PageTransition or the modal overlay — that was the half-viewport black cut. Dialog-panel Framer blur during open is allowed on opaque modals only; glass modals skip it.",
-      "Don't revive the leftover .glass-panel CSS frost class as a working pane — live glass is GlassPanel / .liquid-glass-host.",
-      "Don't restore hard repeating-stripe mesh or raise chroma above 0.08 / specular much above 0.4 — that was the oily rainbow glare.",
+      "Don't revive the leftover .glass-panel CSS class as a working pane — live glass is GlassPanel / .liquid-glass-host (frost via --frost on compact only).",
+      "Don't restore hard repeating-stripe mesh, a left-edge hotspot, Pattern C refraction on compact viewports, or raise desktop chroma above 0.06 / specular much above 0.35 — that was the oily glare and mobile rim ripples.",
       "Don't use Button variant=glass as a conversion CTA. Conversion stays lime fill.",
       "Don't let GSAP pill tweens stack on rapid hover. Don't use a native title tooltip for collapsed nav labels.",
       "Don't commit secrets, password hashes, or live account JSON into either design file.",
