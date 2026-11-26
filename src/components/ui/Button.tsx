@@ -1,6 +1,10 @@
 import { forwardRef, useEffect, useRef, type ButtonHTMLAttributes } from 'react'
 import { useReducedMotion } from 'framer-motion'
-import { DESK_GLASS_BUTTON, prefersReducedTransparency } from '@/hooks/useLiquidGlass'
+import {
+  DESK_GLASS_BUTTON,
+  prefersReducedTransparency,
+  useCompactGlassViewport,
+} from '@/hooks/useLiquidGlass'
 import { createGlass, type GlassController } from '@/lib/liquid-glass.js'
 import { playSfx } from '@/lib/sfx'
 import { cn } from '@/lib/utils'
@@ -10,9 +14,9 @@ const variants = {
     'bg-lime text-canvas hover:bg-lime-glow shadow-[0_0_20px_rgb(198_244_50/0.35)] border-transparent',
   secondary:
     'bg-surface-raised text-ink border-border hover:border-border-strong hover:bg-surface-hover',
-  /** Liquid glass chrome — Pattern C rim refraction over desk mesh. */
+  /** Liquid glass chrome — frost on mobile, Pattern C on desktop. */
   glass:
-    'liquid-glass-host relative isolate overflow-hidden border-white/15 text-ink shadow-[0_8px_24px_rgb(0_0_0/0.35)] hover:border-lime/40',
+    'liquid-glass-host relative isolate overflow-hidden border-white/12 text-ink shadow-[0_8px_24px_rgb(0_0_0/0.35)] hover:border-lime/35',
   ghost: 'bg-transparent text-ink-muted hover:text-ink hover:bg-white/5 border-transparent',
   danger: 'bg-rose/15 text-rose border-rose/30 hover:bg-rose/25',
   cyan: 'bg-cyan text-canvas hover:bg-cyan-glow border-transparent glow-cyan',
@@ -69,14 +73,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const copyRef = useRef<HTMLSpanElement | null>(null)
     const glassRef = useRef<GlassController | null>(null)
     const reduceMotion = useReducedMotion()
+    const compact = useCompactGlassViewport()
     const liquid = variant === 'glass'
+    const useRefraction = liquid && !compact && !disabled && !reduceMotion && !prefersReducedTransparency()
 
     useEffect(() => {
       const host = localRef.current
       const layer = layerRef.current
       const copy = copyRef.current
-      if (!host || !layer || !copy || !liquid || disabled) return
-      if (reduceMotion || prefersReducedTransparency()) return
+      if (!host || !layer || !copy || !useRefraction) return
 
       const stage =
         (host.closest('[data-td-glass-stage]') as HTMLElement | null) ??
@@ -134,7 +139,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ro.disconnect()
         window.removeEventListener('scroll', onScroll, true)
       }
-    }, [liquid, disabled, reduceMotion, size])
+    }, [useRefraction, size])
 
     return (
       <button
@@ -150,6 +155,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           'disabled:pointer-events-none disabled:opacity-45',
           variants[variant],
           sizes[size],
+          liquid && compact && 'liquid-glass-host--frost',
           className,
         )}
         onMouseEnter={(e) => {
@@ -164,13 +170,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {liquid ? (
           <>
-            <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
-              <span ref={layerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]">
-                <span ref={copyRef} className="td-glass-copy absolute top-0 left-0" />
+            {useRefraction ? (
+              <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
+                <span ref={layerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                  <span ref={copyRef} className="td-glass-copy absolute top-0 left-0" />
+                </span>
+                <span className="td-glass-tint absolute inset-0 rounded-[inherit]" />
+                <span className="td-glass-rim absolute inset-0 rounded-[inherit]" />
               </span>
-              <span className="td-glass-tint absolute inset-0 rounded-[inherit]" />
-              <span className="td-glass-rim absolute inset-0 rounded-[inherit]" />
-            </span>
+            ) : (
+              <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
+                <span className="td-glass-tint absolute inset-0 rounded-[inherit]" />
+                <span className="td-glass-rim absolute inset-0 rounded-[inherit]" />
+              </span>
+            )}
             <span className="relative z-10 inline-flex items-center justify-center gap-2">{children}</span>
           </>
         ) : (

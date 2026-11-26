@@ -1,14 +1,18 @@
 import { useEffect, useRef, type HTMLAttributes, type ReactNode } from 'react'
 import { useReducedMotion } from 'framer-motion'
-import { DESK_GLASS, prefersReducedTransparency } from '@/hooks/useLiquidGlass'
+import {
+  DESK_GLASS,
+  prefersReducedTransparency,
+  useCompactGlassViewport,
+} from '@/hooks/useLiquidGlass'
 import { createGlass, type CreateGlassOptions, type GlassController } from '@/lib/liquid-glass.js'
 import { cn } from '@/lib/utils'
 
 export type GlassPanelProps = HTMLAttributes<HTMLDivElement> & {
   children?: ReactNode
-  /** Override desk liquid-glass optics. */
+  /** Override desk liquid-glass optics (desktop Pattern C only). */
   optics?: CreateGlassOptions
-  /** Skip refraction (keeps frosted CSS only). */
+  /** Skip refraction / frost liquid treatment. */
   liquid?: boolean
 }
 
@@ -23,8 +27,9 @@ const BG_KEYS = [
 ] as const
 
 /**
- * Real liquid glass (Pattern C): refracts an aligned copy of `[data-td-glass-stage]`
- * via `filter: url(#…)` — Chrome, Safari/iOS, and Firefox.
+ * Liquid glass panel.
+ * - Desktop: Pattern C backdrop copy + feDisplacementMap (real refraction).
+ * - Mobile / narrow touch: polished frost only — no rim ripples on small cards.
  * Keep off `PageTransition`.
  */
 export function GlassPanel({
@@ -39,6 +44,8 @@ export function GlassPanel({
   const copyRef = useRef<HTMLDivElement>(null)
   const glassRef = useRef<GlassController | null>(null)
   const reduceMotion = useReducedMotion()
+  const compact = useCompactGlassViewport()
+  const useRefraction = liquid && !compact && !reduceMotion && !prefersReducedTransparency()
 
   const refraction = optics?.refraction ?? DESK_GLASS.refraction
   const bezel = optics?.bezel ?? DESK_GLASS.bezel
@@ -53,8 +60,7 @@ export function GlassPanel({
     const host = hostRef.current
     const layer = layerRef.current
     const copy = copyRef.current
-    if (!host || !layer || !copy || !liquid) return
-    if (reduceMotion || prefersReducedTransparency()) return
+    if (!host || !layer || !copy || !useRefraction) return
 
     const stage =
       (host.closest('[data-td-glass-stage]') as HTMLElement | null) ??
@@ -80,7 +86,7 @@ export function GlassPanel({
       blur,
       specular,
       specularWidth,
-      lightAngle: -120,
+      lightAngle: -125,
     })
     glassRef.current = glass
 
@@ -126,8 +132,7 @@ export function GlassPanel({
       window.removeEventListener('resize', onScroll)
     }
   }, [
-    liquid,
-    reduceMotion,
+    useRefraction,
     radius,
     refraction,
     bezel,
@@ -141,16 +146,27 @@ export function GlassPanel({
   return (
     <div
       ref={hostRef}
-      className={cn('liquid-glass-host relative isolate overflow-hidden', className)}
+      className={cn(
+        'liquid-glass-host relative isolate overflow-hidden',
+        liquid && compact && 'liquid-glass-host--frost',
+        className,
+      )}
       {...props}
     >
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
-        <div ref={layerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]">
-          <div ref={copyRef} className="td-glass-copy absolute top-0 left-0" />
+      {useRefraction ? (
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
+          <div ref={layerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+            <div ref={copyRef} className="td-glass-copy absolute top-0 left-0" />
+          </div>
+          <div className="td-glass-tint absolute inset-0 rounded-[inherit]" />
+          <div className="td-glass-rim absolute inset-0 rounded-[inherit]" />
         </div>
-        <div className="td-glass-tint absolute inset-0 rounded-[inherit]" />
-        <div className="td-glass-rim absolute inset-0 rounded-[inherit]" />
-      </div>
+      ) : liquid ? (
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
+          <div className="td-glass-tint absolute inset-0 rounded-[inherit]" />
+          <div className="td-glass-rim absolute inset-0 rounded-[inherit]" />
+        </div>
+      ) : null}
       <div className="relative z-10">{children}</div>
     </div>
   )

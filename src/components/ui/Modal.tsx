@@ -2,7 +2,12 @@ import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { DESK_GLASS, prefersReducedTransparency } from '@/hooks/useLiquidGlass'
+import {
+  DESK_GLASS,
+  isCompactGlassViewport,
+  prefersReducedTransparency,
+  useCompactGlassViewport,
+} from '@/hooks/useLiquidGlass'
 import { createGlass, type GlassController } from '@/lib/liquid-glass.js'
 import { springSnappy } from '@/lib/motion'
 import { cn } from '@/lib/utils'
@@ -49,10 +54,12 @@ export function Modal({
   glass?: boolean
 }) {
   const reduce = useReducedMotion()
+  const compact = useCompactGlassViewport()
   const panelRef = useRef<HTMLDivElement | null>(null)
   const layerRef = useRef<HTMLDivElement | null>(null)
   const copyRef = useRef<HTMLDivElement | null>(null)
   const glassCtrl = useRef<GlassController | null>(null)
+  const useRefraction = Boolean(glass && !compact && !reduce)
 
   useEffect(() => {
     if (!open) return
@@ -69,6 +76,7 @@ export function Modal({
 
   useEffect(() => {
     if (!open || !glass || reduce || prefersReducedTransparency()) return
+    if (isCompactGlassViewport()) return
     const layer = layerRef.current
     const copy = copyRef.current
     if (!layer || !copy) return
@@ -85,10 +93,10 @@ export function Modal({
 
     const ctrl = createGlass(layer, {
       ...DESK_GLASS,
-      refraction: 20,
-      bezel: 0.3,
-      chroma: 0.07,
-      specular: 0.4,
+      refraction: 16,
+      bezel: 0.26,
+      chroma: 0.05,
+      specular: 0.32,
     })
     glassCtrl.current = ctrl
 
@@ -173,7 +181,10 @@ export function Modal({
               'relative my-auto flex w-full flex-col rounded-[20px] border border-border bg-surface shadow-2xl',
               'max-h-[min(90vh,calc(100dvh-2rem))]',
               glass &&
-                'liquid-glass-host isolate overflow-hidden border-lime/25 bg-transparent shadow-[0_0_0_1px_rgb(198_244_50/0.12),0_24px_64px_rgb(0_0_0/0.55)]',
+                cn(
+                  'liquid-glass-host isolate overflow-hidden border-lime/25 bg-transparent shadow-[0_0_0_1px_rgb(198_244_50/0.12),0_24px_64px_rgb(0_0_0/0.55)]',
+                  compact && 'liquid-glass-host--frost',
+                ),
               wide ? 'max-w-2xl' : 'max-w-lg',
               className,
             )}
@@ -181,9 +192,11 @@ export function Modal({
           >
             {glass ? (
               <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]" aria-hidden>
-                <div ref={layerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]">
-                  <div ref={copyRef} className="td-glass-copy absolute top-0 left-0" />
-                </div>
+                {useRefraction ? (
+                  <div ref={layerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                    <div ref={copyRef} className="td-glass-copy absolute top-0 left-0" />
+                  </div>
+                ) : null}
                 <div className="td-glass-tint absolute inset-0 rounded-[inherit]" />
                 <div className="td-glass-rim absolute inset-0 rounded-[inherit]" />
               </div>
